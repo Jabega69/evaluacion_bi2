@@ -1,33 +1,105 @@
-import { MOCK_PROJECTS, MOCK_USERS, WRITTEN_RUBRIC, ORAL_RUBRIC, TUTOR_RUBRIC } from './mock-data';
+import { supabase } from './supabase';
+import { WRITTEN_RUBRIC, ORAL_RUBRIC, TUTOR_RUBRIC } from './mock-data';
 import { Project, User, WrittenEvaluation, OralEvaluation, TutorEvaluation } from '@/types';
-
-// Simulating API Delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const api = {
     auth: {
         login: async (email: string): Promise<User | null> => {
-            await delay(500);
-            return MOCK_USERS.find(u => u.email === email) || null;
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', email)
+                .single();
+
+            if (error || !data) return null;
+            return data as User;
         },
-        getAllUsers: async () => {
-            await delay(200);
-            return MOCK_USERS;
+        getAllUsers: async (): Promise<User[]> => {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*');
+
+            if (error) return [];
+            return data as User[];
         }
     },
 
     projects: {
-        getById: async (id: string): Promise<Project | undefined> => {
-            await delay(300);
-            return MOCK_PROJECTS.find(p => p.id === id);
+        getAll: async (): Promise<Project[]> => {
+            const { data, error } = await supabase
+                .from('projects')
+                .select(`
+                    *,
+                    students (*)
+                `);
+
+            if (error) {
+                console.error('Error fetching projects:', error);
+                return [];
+            }
+            return (data as any[]).map(p => ({
+                id: p.id,
+                title: p.title,
+                tutorId: p.tutor_id,
+                students: p.students || [],
+                tribunalIds: p.tribunal_ids || []
+            })) as Project[];
         },
-        getByGrader: async (graderId: string): Promise<Project[]> => {
-            await delay(300);
-            return MOCK_PROJECTS.filter(p => p.tribunalIds.includes(graderId));
+        getById: async (id: string): Promise<Project | undefined> => {
+            const { data: project, error: pError } = await supabase
+                .from('projects')
+                .select(`*, students (*)`)
+                .eq('id', id)
+                .single();
+
+            if (pError || !project) return undefined;
+
+            return {
+                id: project.id,
+                title: project.title,
+                tutorId: project.tutor_id,
+                students: project.students || [],
+                tribunalIds: project.tribunal_ids || []
+            } as Project;
         },
         getByTutor: async (tutorId: string): Promise<Project[]> => {
-            await delay(300);
-            return MOCK_PROJECTS.filter(p => p.tutorId === tutorId);
+            const { data, error } = await supabase
+                .from('projects')
+                .select(`*, students (*)`)
+                .eq('tutor_id', tutorId);
+
+            if (error) return [];
+            return (data as any[]).map(p => ({
+                id: p.id,
+                title: p.title,
+                tutorId: p.tutor_id,
+                students: p.students || [],
+                tribunalIds: p.tribunal_ids || []
+            })) as Project[];
+        },
+        create: async (data: { title: string, tutorId: string, studentNames: string[] }) => {
+            // 1. Crear el proyecto
+            const { data: project, error: pError } = await supabase
+                .from('projects')
+                .insert({ title: data.title, tutor_id: data.tutorId })
+                .select()
+                .single();
+
+            if (pError || !project) throw pError;
+
+            // 2. Crear los alumnos vinculados
+            const studentsToInsert = data.studentNames.map(name => ({
+                name,
+                project_id: project.id
+            }));
+
+            const { error: sError } = await supabase
+                .from('students')
+                .insert(studentsToInsert);
+
+            if (sError) throw sError;
+
+            return project;
         }
     },
 
@@ -39,19 +111,48 @@ export const api = {
 
     submissions: {
         submitWritten: async (evaluation: WrittenEvaluation) => {
-            await delay(800);
-            console.log('Submitting Written:', evaluation);
-            return { success: true };
+            const { error } = await supabase
+                .from('evaluations')
+                .insert({
+                    project_id: evaluation.projectId,
+                    student_id: evaluation.studentId,
+                    grader_id: evaluation.graderId,
+                    type: 'written',
+                    scores: {
+                        contentScores: evaluation.contentScores,
+                        formatScores: evaluation.formatScores
+                    }
+                });
+            return { success: !error };
         },
         submitOral: async (evaluation: OralEvaluation) => {
-            await delay(800);
-            console.log('Submitting Oral:', evaluation);
-            return { success: true };
+            const { error } = await supabase
+                .from('evaluations')
+                .insert({
+                    project_id: evaluation.projectId,
+                    student_id: evaluation.studentId,
+                    grader_id: evaluation.graderId,
+                    type: 'oral',
+                    scores: {
+                        blockScores: evaluation.blockScores,
+                        timeScore: evaluation.timeScore
+                    }
+                });
+            return { success: !error };
         },
         submitTutor: async (evaluation: TutorEvaluation) => {
-            await delay(800);
-            console.log('Submitting Tutor:', evaluation);
-            return { success: true };
+            const { error } = await supabase
+                .from('evaluations')
+                .insert({
+                    project_id: evaluation.projectId,
+                    student_id: evaluation.studentId,
+                    grader_id: evaluation.studentId,
+                    type: 'tutor',
+                    scores: {
+                        attitudeScores: evaluation.attitudeScores
+                    }
+                });
+            return { success: !error };
         }
     }
 };
