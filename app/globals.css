@@ -144,10 +144,8 @@ h3 {
 .main-content {
   margin-left: 280px;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
   width: calc(100% - 280px);
+  background: white;
 }
 
 /* Page Header */
