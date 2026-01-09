@@ -131,6 +131,43 @@ export const api = {
             if (tRes.error) throw tRes.error;
 
             return project;
+        },
+        getReport: async (projectId: string, studentId: string) => {
+            const { data: evals, error } = await supabase
+                .from('evaluations')
+                .select('*')
+                .eq('project_id', projectId)
+                .eq('student_id', studentId);
+
+            if (error || !evals) return null;
+
+            // Agrupar evaluaciones por tipo
+            const writtenEvals = evals.filter(e => e.type === 'written');
+            const oralEvals = evals.filter(e => e.type === 'oral');
+            const tutorEvals = evals.filter(e => e.type === 'tutor');
+
+            // Calcular medias (si hay varios miembros del tribunal)
+            const calcMean = (arr: any[], scoreKey: string) => {
+                if (arr.length === 0) return 0;
+                const total = arr.reduce((acc, curr) => {
+                    // Aquí la lógica de cálculo dependerá de cómo se guardan las rúbricas
+                    // Por ahora asumimos un cálculo simplificado para la demostración
+                    return acc + (curr.scores.total || 0);
+                }, 0);
+                return total / arr.length;
+            };
+
+            const writtenScore = calcMean(writtenEvals, 'total');
+            const oralScore = calcMean(oralEvals, 'total');
+            const tutorScore = calcMean(tutorEvals, 'total');
+
+            return {
+                written: { score: writtenScore, final: writtenScore * 0.5 },
+                oral: { score: oralScore, final: oralScore * 0.3 },
+                tutor: { score: tutorScore, final: tutorScore * 0.2 },
+                total: (writtenScore * 0.5 + oralScore * 0.3 + tutorScore * 0.2).toFixed(2),
+                evaluations: evals
+            };
         }
     },
 
