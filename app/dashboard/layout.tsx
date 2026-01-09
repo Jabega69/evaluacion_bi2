@@ -84,7 +84,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
 
             {/* Main Content */}
-            <div className="main-content">
+            <div className="main-content" style={{ overflowX: 'hidden', width: '100%', minWidth: '0' }}>
                 {children}
             </div>
         </div>
