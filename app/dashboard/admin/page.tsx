@@ -103,17 +103,18 @@ export default function AdminDashboard() {
 
                 <button
                     onClick={() => setShowModal(true)}
-                    className="group relative inline-flex items-center gap-4 px-12 py-6 rounded-full text-white font-black text-xl transition-all hover:-translate-y-1 active:translate-y-0"
+                    className="group relative inline-flex items-center gap-4 px-12 py-6 rounded-full font-black text-xl transition-all hover:-translate-y-1 active:translate-y-0"
                     style={{
-                        background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                        boxShadow: '0 10px 25px -5px rgba(37, 99, 235, 0.4), 0 8px 10px -6px rgba(37, 99, 235, 0.1)',
-                        borderBottom: '6px solid #1E40AF'
+                        background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+                        boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5), 0 8px 10px -6px rgba(59, 130, 246, 0.2)',
+                        borderBottom: '6px solid #1D4ED8',
+                        color: '#FFFFFF'
                     }}
                 >
-                    <span className="bg-white/20 w-10 h-10 rounded-full flex items-center justify-center text-2xl shadow-inner">
+                    <span className="bg-white/30 w-10 h-10 rounded-full flex items-center justify-center text-2xl shadow-inner" style={{ color: '#FFFFFF' }}>
                         +
                     </span>
-                    <span>Nueva Investigación</span>
+                    <span style={{ color: '#FFFFFF' }}>Nueva Investigación</span>
                 </button>
             </div>
 
