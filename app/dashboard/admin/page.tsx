@@ -90,20 +90,20 @@ export default function AdminDashboard() {
     );
 
     return (
-        <div className="animate-in w-full min-h-screen p-8 md:p-16 max-w-[1600px] mx-auto">
+        <div className="animate-in w-full min-h-screen p-8 md:p-12 lg:p-16">
 
             {/* Header Simple y Funcional */}
-            <div className="text-center mb-20 max-w-4xl mx-auto">
-                <h1 className="text-4xl md:text-5xl font-black text-slate-800 mb-2" style={{ fontFamily: 'Poppins' }}>
+            <div className="text-center mb-16 w-full">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-800 mb-4" style={{ fontFamily: 'Poppins' }}>
                     Panel de Investigaciones
                 </h1>
-                <p className="text-slate-400 font-bold uppercase tracking-widest text-sm mb-12">
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-base md:text-lg mb-16">
                     Gestión Académica
                 </p>
 
                 <button
                     onClick={() => setShowModal(true)}
-                    className="group relative inline-flex items-center gap-4 px-12 py-6 rounded-full font-black text-xl transition-all hover:-translate-y-1 active:translate-y-0"
+                    className="group relative inline-flex items-center gap-4 px-16 py-7 rounded-full font-black text-2xl transition-all hover:-translate-y-1 active:translate-y-0"
                     style={{
                         background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
                         boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5), 0 8px 10px -6px rgba(59, 130, 246, 0.2)',
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
                         color: '#FFFFFF'
                     }}
                 >
-                    <span className="bg-white/30 w-10 h-10 rounded-full flex items-center justify-center text-2xl shadow-inner" style={{ color: '#FFFFFF' }}>
+                    <span className="bg-white/30 w-12 h-12 rounded-full flex items-center justify-center text-3xl shadow-inner" style={{ color: '#FFFFFF' }}>
                         +
                     </span>
                     <span style={{ color: '#FFFFFF' }}>Nueva Investigación</span>
@@ -119,7 +119,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Grid de Tarjetas Estilo Ucademy (Pastel + Bold Button) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 lg:gap-8">
                 {projects.map((p, idx) => {
                     const variant = CARD_VARIANTS[idx % CARD_VARIANTS.length];
                     return (
