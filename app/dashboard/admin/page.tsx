@@ -90,7 +90,7 @@ export default function AdminDashboard() {
     );
 
     return (
-        <div className="animate-in w-full min-h-screen p-8 md:p-12 lg:p-16">
+        <div className="animate-in w-full min-h-screen p-8 md:p-12 lg:p-16 max-w-[1800px] mx-auto">
 
             {/* Header Simple y Funcional */}
             <div className="text-center mb-16 w-full">
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
                             <p className="text-slate-500 font-medium">Configura los detalles de la nueva investigación</p>
                         </div>
 
-                        <form onSubmit={handleAddProject} className="p-10 md:p-14 space-y-10">
+                        <form onSubmit={handleAddProject} className="p-10 md:p-14 space-y-12 max-w-6xl mx-auto">
                             <div className="space-y-4">
                                 <label className="block text-center text-xs font-black uppercase tracking-[0.2em] text-slate-400">Título</label>
                                 <input
@@ -196,7 +196,7 @@ export default function AdminDashboard() {
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-8">
                                 <div className="space-y-4">
                                     <label className="block text-center text-xs font-black uppercase tracking-[0.2em] text-slate-400">Alumnos</label>
                                     <div className="space-y-3">
@@ -218,32 +218,51 @@ export default function AdminDashboard() {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <label className="block text-center text-xs font-black uppercase tracking-[0.2em] text-slate-400">Personal Docente</label>
-                                    <div className="space-y-4">
-                                        <select
-                                            required
-                                            className="w-full p-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-[#F97316] outline-none transition-all font-bold text-center appearance-none cursor-pointer"
-                                            value={tutorId}
-                                            onChange={(e) => setTutorId(e.target.value)}
-                                        >
-                                            <option value="">Selecciona Tutor...</option>
-                                            {tutors.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-                                        </select>
+                                    <label className="block text-center text-xs font-black uppercase tracking-[0.2em] text-slate-400">Tutor</label>
+                                    <select
+                                        required
+                                        className="w-full p-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-[#F97316] outline-none transition-all font-bold text-center appearance-none cursor-pointer"
+                                        value={tutorId}
+                                        onChange={(e) => setTutorId(e.target.value)}
+                                    >
+                                        <option value="">Selecciona Tutor...</option>
+                                        {tutors.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                    </select>
+                                </div>
 
-                                        <div className="bg-slate-50 p-4 rounded-xl max-h-40 overflow-y-auto">
-                                            <p className="text-xs font-bold text-slate-400 uppercase text-center mb-3">Tribunal</p>
-                                            <div className="space-y-2">
-                                                {tribunals.map(t => (
-                                                    <div key={t.id}
-                                                        onClick={() => toggleTribunal(t.id)}
-                                                        className={`p-2 rounded-lg text-sm font-bold text-center cursor-pointer transition-all ${selectedTribunals.includes(t.id) ? 'bg-slate-800 text-white' : 'hover:bg-slate-200 text-slate-600'}`}
-                                                    >
-                                                        {t.name}
+                                {/* Tribunal - Tarjetas Grandes Estilo Classroom */}
+                                <div className="space-y-6">
+                                    <label className="block text-center text-xs font-black uppercase tracking-[0.2em] text-slate-400">Tribunal Evaluador</label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {tribunals.map(t => (
+                                            <div
+                                                key={t.id}
+                                                onClick={() => toggleTribunal(t.id)}
+                                                className={`relative rounded-[32px] p-6 cursor-pointer transition-all hover:-translate-y-1 flex flex-col items-center text-center min-h-[180px] justify-center ${selectedTribunals.includes(t.id)
+                                                    ? 'bg-purple-600 text-white shadow-xl scale-105'
+                                                    : 'bg-slate-50 text-slate-700 hover:bg-slate-100'
+                                                    }`}
+                                            >
+                                                <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-black mb-4 ${selectedTribunals.includes(t.id) ? 'bg-white/20 text-white' : 'bg-white text-purple-600'
+                                                    }`}>
+                                                    {t.name.charAt(0)}
+                                                </div>
+                                                <h3 className="text-lg font-black mb-1">{t.name}</h3>
+                                                <p className={`text-xs font-bold uppercase tracking-wider ${selectedTribunals.includes(t.id) ? 'text-white/70' : 'text-slate-400'
+                                                    }`}>
+                                                    Evaluador
+                                                </p>
+                                                {selectedTribunals.includes(t.id) && (
+                                                    <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white text-purple-600 flex items-center justify-center font-black">
+                                                        ✓
                                                     </div>
-                                                ))}
+                                                )}
                                             </div>
-                                        </div>
+                                        ))}
                                     </div>
+                                    {selectedTribunals.length === 0 && (
+                                        <p className="text-center text-sm text-rose-500 font-bold">Selecciona al menos un evaluador</p>
+                                    )}
                                 </div>
                             </div>
 
