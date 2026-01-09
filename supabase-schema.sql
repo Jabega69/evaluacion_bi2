@@ -19,8 +19,16 @@ CREATE TABLE projects (
 CREATE TABLE students (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
-  project_id UUID REFERENCES projects(id),
+  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Tabla de Vinculación Proyectos-Tribunales (Muchos a Muchos)
+CREATE TABLE project_tribunals (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE(project_id, user_id)
 );
 
 -- Tabla de Evaluaciones

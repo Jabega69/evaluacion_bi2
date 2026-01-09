@@ -62,6 +62,29 @@ export const api = {
                 tribunalIds: project.tribunal_ids || []
             } as Project;
         },
+        getByGrader: async (graderId: string): Promise<Project[]> => {
+            const { data: assignments, error: aError } = await supabase
+                .from('project_tribunals')
+                .select('project_id')
+                .eq('user_id', graderId);
+
+            if (aError || !assignments || assignments.length === 0) return [];
+
+            const projectIds = assignments.map(a => a.project_id);
+            const { data, error } = await supabase
+                .from('projects')
+                .select(`*, students (*)`)
+                .in('id', projectIds);
+
+            if (error) return [];
+            return (data as any[]).map(p => ({
+                id: p.id,
+                title: p.title,
+                tutorId: p.tutor_id,
+                students: p.students || [],
+                tribunalIds: [graderId] // Simplificado para la vista actual
+            })) as Project[];
+        },
         getByTutor: async (tutorId: string): Promise<Project[]> => {
             const { data, error } = await supabase
                 .from('projects')
@@ -77,7 +100,7 @@ export const api = {
                 tribunalIds: p.tribunal_ids || []
             })) as Project[];
         },
-        create: async (data: { title: string, tutorId: string, studentNames: string[] }) => {
+        create: async (data: { title: string, tutorId: string, studentNames: string[], tribunalIds: string[] }) => {
             // 1. Crear el proyecto
             const { data: project, error: pError } = await supabase
                 .from('projects')
@@ -93,11 +116,19 @@ export const api = {
                 project_id: project.id
             }));
 
-            const { error: sError } = await supabase
-                .from('students')
-                .insert(studentsToInsert);
+            // 3. Crear los tribunales vinculados
+            const tribunalAssignments = data.tribunalIds.map(userId => ({
+                project_id: project.id,
+                user_id: userId
+            }));
 
-            if (sError) throw sError;
+            const [sRes, tRes] = await Promise.all([
+                supabase.from('students').insert(studentsToInsert),
+                supabase.from('project_tribunals').insert(tribunalAssignments)
+            ]);
+
+            if (sRes.error) throw sRes.error;
+            if (tRes.error) throw tRes.error;
 
             return project;
         }
