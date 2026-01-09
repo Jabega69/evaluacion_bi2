@@ -161,138 +161,276 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            {/* MODAL GIGANTE Y CENTRADO */}
+            {/* MODAL GIGANTE - CON ESTILOS INLINE PARA GARANTIZAR LAYOUT */}
             {showModal && (
-                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xl z-[3000] flex items-center justify-center p-4 md:p-8 lg:p-12 overflow-y-auto">
-                    <div className="w-full max-w-[1500px] bg-white rounded-[80px] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] overflow-hidden animate-in zoom-in-95 duration-300 relative border-[16px] border-white">
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                    backdropFilter: 'blur(16px)',
+                    zIndex: 9999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '2rem'
+                }}>
+                    <div style={{
+                        width: '100%',
+                        maxWidth: '1400px',
+                        backgroundColor: 'white',
+                        borderRadius: '40px',
+                        boxShadow: '0 50px 100px -20px rgba(0,0,0,0.3)',
+                        overflow: 'hidden',
+                        border: '12px solid white',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        maxHeight: '90vh'
+                    }}>
 
-                        {/* Botón de Cerrar */}
-                        <button
-                            onClick={() => setShowModal(false)}
-                            className="absolute top-10 right-10 w-20 h-20 rounded-full bg-slate-100 text-slate-400 hover:bg-rose-500 hover:text-white transition-all text-5xl font-light z-50 flex items-center justify-center shadow-xl hover:scale-110"
-                        >
-                            &times;
-                        </button>
-
-                        <div className="p-20 text-center bg-slate-50/80 border-b-4 border-slate-100">
-                            <h2 className="text-7xl lg:text-8xl font-black text-slate-900 mb-6" style={{ fontFamily: 'Poppins', letterSpacing: '-0.04em' }}>
-                                Lanzar <span className="text-blue-600">Investigación</span> 🚀
+                        {/* Header del Modal */}
+                        <div style={{ padding: '3rem', textAlign: 'center', backgroundColor: '#F8FAFC', borderBottom: '2px solid #E2E8F0', position: 'relative' }}>
+                            <button
+                                onClick={() => setShowModal(false)}
+                                style={{
+                                    position: 'absolute',
+                                    top: '2rem',
+                                    right: '2rem',
+                                    width: '60px',
+                                    height: '60px',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#F1F5F9',
+                                    border: 'none',
+                                    fontSize: '2rem',
+                                    cursor: 'pointer',
+                                    color: '#64748B'
+                                }}
+                            >
+                                &times;
+                            </button>
+                            <h2 style={{ fontSize: '3.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem', fontFamily: 'Poppins' }}>
+                                Lanzar <span style={{ color: '#2563EB' }}>Investigación</span> 🚀
                             </h2>
-                            <p className="text-2xl text-slate-400 font-bold max-w-3xl mx-auto leading-relaxed">
+                            <p style={{ fontSize: '1.25rem', color: '#64748B', fontWeight: 700 }}>
                                 Diseña una nueva ruta de conocimiento asignando estudiantes y expertos.
                             </p>
                         </div>
 
-                        <form onSubmit={handleAddProject} className="p-16 lg:p-24 space-y-24 max-w-[1300px] mx-auto">
+                        <div style={{ padding: '3rem', overflowY: 'auto', flex: 1 }}>
+                            <form onSubmit={handleAddProject} style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '4rem' }}>
 
-                            {/* TÍTULO - EXTREMADAMENTE GRANDE */}
-                            <div className="space-y-8 text-center">
-                                <label className="block text-lg font-black uppercase tracking-[0.5em] text-slate-400">Título de la Obra</label>
-                                <input
-                                    required
-                                    className="w-full p-12 rounded-[40px] bg-slate-50 border-4 border-transparent focus:border-blue-500 focus:bg-white outline-none transition-all text-5xl md:text-6xl font-black text-center text-slate-800 placeholder:text-slate-200 shadow-inner"
-                                    style={{ fontFamily: 'Poppins' }}
-                                    placeholder="ESCRIBE EL TÍTULO AQUÍ..."
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                />
-                            </div>
-
-                            {/* EQUIPO DE ALUMNOS - 3 COLUMNAS CON TARJETAS GIGANTES */}
-                            <div className="space-y-10">
-                                <label className="block text-center text-lg font-black uppercase tracking-[0.5em] text-slate-400">Equipo de Estudiantes</label>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                                    {studentNames.map((name, i) => (
-                                        <div key={i} className="relative rounded-[50px] p-2" style={{
-                                            background: 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)',
-                                            padding: '8px' // EL FILO CHULO MÁS GRANDE
-                                        }}>
-                                            <div className="bg-white rounded-[42px] p-10 h-full flex flex-col items-center shadow-xl">
-                                                <div className="w-20 h-20 rounded-[28px] bg-slate-50 text-blue-600 flex items-center justify-center font-black text-3xl mb-8 shadow-inner">
-                                                    0{i + 1}
-                                                </div>
-                                                <input
-                                                    required={i === 0}
-                                                    className="w-full p-6 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-blue-300 focus:bg-white outline-none transition-all font-black text-center text-3xl placeholder:text-slate-200"
-                                                    placeholder="NOMBRE"
-                                                    value={name}
-                                                    onChange={(e) => {
-                                                        const newNames = [...studentNames];
-                                                        newNames[i] = e.target.value;
-                                                        setStudentNames(newNames);
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* TUTOR Y TRIBUNAL - DISTRIBUCIÓN HORIZONTAL */}
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 border-t-4 border-slate-50 pt-24">
-
-                                {/* TUTOR - 4 COLUMNAS */}
-                                <div className="lg:col-span-4 space-y-8">
-                                    <label className="block text-center text-lg font-black uppercase tracking-[0.4em] text-slate-400">Profesor Tutor</label>
-                                    <div className="bg-slate-50 rounded-[50px] p-12 border-4 border-slate-100 flex flex-col items-center justify-center h-full min-h-[300px]">
-                                        <div className="text-7xl mb-10">👨‍🏫</div>
-                                        <select
-                                            required
-                                            className="w-full p-8 rounded-[30px] bg-white border-4 border-transparent focus:border-orange-400 outline-none transition-all font-black text-2xl text-center appearance-none cursor-pointer shadow-lg"
-                                            value={tutorId}
-                                            onChange={(e) => setTutorId(e.target.value)}
-                                        >
-                                            <option value="">Elegir Tutor...</option>
-                                            {tutors.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-                                        </select>
-                                    </div>
+                                {/* TÍTULO */}
+                                <div style={{ textAlign: 'center' }}>
+                                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94A3B8', marginBottom: '1rem' }}>Título de la Obra</label>
+                                    <input
+                                        required
+                                        style={{
+                                            width: '100%',
+                                            padding: '2rem',
+                                            borderRadius: '24px',
+                                            backgroundColor: '#F8FAFC',
+                                            border: '2px solid #E2E8F0',
+                                            fontSize: '2.5rem',
+                                            fontWeight: 900,
+                                            textAlign: 'center',
+                                            color: '#1E293B',
+                                            outline: 'none',
+                                            fontFamily: 'Poppins'
+                                        }}
+                                        placeholder="ESCRIBE EL TÍTULO AQUÍ..."
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                    />
                                 </div>
 
-                                {/* TRIBUNAL SELECCIONABLE - 8 COLUMNAS (3 COLUMNAS INTERNAS) */}
-                                <div className="lg:col-span-8 space-y-8">
-                                    <label className="block text-center text-lg font-black uppercase tracking-[0.4em] text-slate-400">Miembros del Tribunal</label>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                        {tribunals.map(t => (
-                                            <div
-                                                key={t.id}
-                                                onClick={() => toggleTribunal(t.id)}
-                                                className={`relative rounded-[50px] p-10 cursor-pointer transition-all hover:-translate-y-3 flex flex-col items-center text-center justify-center min-h-[280px] ${selectedTribunals.includes(t.id)
-                                                        ? 'bg-slate-900 text-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] scale-105'
-                                                        : 'bg-white border-4 border-slate-100 text-slate-700 hover:border-blue-200'
-                                                    }`}
-                                            >
-                                                <div className={`w-24 h-24 rounded-[35px] flex items-center justify-center text-4xl font-black mb-6 transition-all ${selectedTribunals.includes(t.id) ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-blue-600'
-                                                    }`}>
-                                                    {t.name.charAt(0)}
-                                                </div>
-                                                <h3 className="text-2xl font-black mb-2" style={{ fontFamily: 'Poppins' }}>{t.name}</h3>
-                                                <p className={`text-xs font-black uppercase tracking-widest ${selectedTribunals.includes(t.id) ? 'text-blue-400' : 'text-slate-400'
-                                                    }`}>
-                                                    EXPERTO EVALUADOR
-                                                </p>
-                                                {selectedTribunals.includes(t.id) && (
-                                                    <div className="absolute top-6 right-6 w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl font-black animate-in zoom-in">
-                                                        ✓
+                                {/* ALUMNOS - GRID DE 3 COLUMNAS REAL */}
+                                <div>
+                                    <label style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94A3B8', marginBottom: '2rem' }}>Equipo de Estudiantes</label>
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(3, 1fr)',
+                                        gap: '2rem',
+                                        width: '100%'
+                                    }}>
+                                        {studentNames.map((name, i) => (
+                                            <div key={i} style={{
+                                                position: 'relative',
+                                                borderRadius: '30px',
+                                                padding: '6px',
+                                                background: 'linear-gradient(135deg, #3B82F6 0%, #EC4899 100%)', // FILO CHULO
+                                                boxShadow: '0 10px 30px -10px rgba(59, 130, 246, 0.3)'
+                                            }}>
+                                                <div style={{
+                                                    backgroundColor: 'white',
+                                                    borderRadius: '24px',
+                                                    padding: '2rem',
+                                                    height: '100%',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    gap: '1.5rem'
+                                                }}>
+                                                    <div style={{
+                                                        width: '60px',
+                                                        height: '60px',
+                                                        borderRadius: '16px',
+                                                        backgroundColor: '#EFF6FF',
+                                                        color: '#2563EB',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontSize: '1.5rem',
+                                                        fontWeight: 900
+                                                    }}>
+                                                        0{i + 1}
                                                     </div>
-                                                )}
+                                                    <input
+                                                        required={i === 0}
+                                                        style={{
+                                                            width: '100%',
+                                                            padding: '1rem',
+                                                            borderRadius: '12px',
+                                                            backgroundColor: '#F8FAFC',
+                                                            border: 'none',
+                                                            textAlign: 'center',
+                                                            fontSize: '1.25rem',
+                                                            fontWeight: 800,
+                                                            color: '#334155',
+                                                            outline: 'none'
+                                                        }}
+                                                        placeholder="NOMBRE"
+                                                        value={name}
+                                                        onChange={(e) => {
+                                                            const newNames = [...studentNames];
+                                                            newNames[i] = e.target.value;
+                                                            setStudentNames(newNames);
+                                                        }}
+                                                    />
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* BOTÓN FINAL - CENTRADO Y GIGANTE */}
-                            <div className="flex justify-center pt-12 pb-8">
-                                <button
-                                    disabled={isSaving || selectedTribunals.length === 0}
-                                    type="submit"
-                                    className="group relative px-28 py-10 rounded-[40px] bg-[#10B981] text-white font-black text-4xl hover:scale-110 active:scale-95 transition-all shadow-[0_35px_70px_-15px_rgba(16,185,129,0.5)] disabled:opacity-30 disabled:grayscale"
-                                    style={{ fontFamily: 'Poppins' }}
-                                >
-                                    {isSaving ? 'PLANIFICANDO...' : '¡LANZAR INVESTIGACIÓN! 🚀'}
-                                </button>
-                            </div>
-                        </form>
+                                {/* PROFESORES - GRID DE 4 COLUMNAS (1 Tutor + 3 Tribunal) */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '3rem', borderTop: '4px solid #F1F5F9', paddingTop: '3rem' }}>
+
+                                    {/* TUTOR */}
+                                    <div>
+                                        <label style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94A3B8', marginBottom: '1.5rem' }}>Profesor Tutor</label>
+                                        <div style={{
+                                            backgroundColor: '#FFF7ED',
+                                            borderRadius: '30px',
+                                            padding: '2rem',
+                                            border: '2px solid #FFEDD5',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            'alignItems': 'center',
+                                            justifyContent: 'center',
+                                            height: '100%'
+                                        }}>
+                                            <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>👨‍🏫</div>
+                                            <select
+                                                required
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '1rem',
+                                                    borderRadius: '16px',
+                                                    backgroundColor: 'white',
+                                                    border: 'none',
+                                                    fontSize: '1.1rem',
+                                                    fontWeight: 800,
+                                                    textAlign: 'center',
+                                                    color: '#EA580C',
+                                                    cursor: 'pointer',
+                                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                                                }}
+                                                value={tutorId}
+                                                onChange={(e) => setTutorId(e.target.value)}
+                                            >
+                                                <option value="">Elegir Tutor...</option>
+                                                {tutors.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    {/* TRIBUNAL */}
+                                    <div>
+                                        <label style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94A3B8', marginBottom: '1.5rem' }}>Miembros del Tribunal</label>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                                            {tribunals.map(t => (
+                                                <div
+                                                    key={t.id}
+                                                    onClick={() => toggleTribunal(t.id)}
+                                                    style={{
+                                                        position: 'relative',
+                                                        borderRadius: '30px',
+                                                        padding: '2rem',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        textAlign: 'center',
+                                                        backgroundColor: selectedTribunals.includes(t.id) ? '#1E293B' : 'white',
+                                                        color: selectedTribunals.includes(t.id) ? 'white' : '#334155',
+                                                        border: selectedTribunals.includes(t.id) ? 'none' : '4px solid #F1F5F9',
+                                                        transform: selectedTribunals.includes(t.id) ? 'scale(1.05)' : 'scale(1)',
+                                                        boxShadow: selectedTribunals.includes(t.id) ? '0 20px 40px -10px rgba(0,0,0,0.3)' : 'none'
+                                                    }}
+                                                >
+                                                    <div style={{
+                                                        width: '80px',
+                                                        height: '80px',
+                                                        borderRadius: '24px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontSize: '2rem',
+                                                        fontWeight: 900,
+                                                        marginBottom: '1rem',
+                                                        backgroundColor: selectedTribunals.includes(t.id) ? '#3B82F6' : '#F1F5F9',
+                                                        color: selectedTribunals.includes(t.id) ? 'white' : '#3B82F6'
+                                                    }}>
+                                                        {t.name.charAt(0)}
+                                                    </div>
+                                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 900, marginBottom: '0.25rem', fontFamily: 'Poppins' }}>{t.name}</h3>
+                                                    <p style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.7 }}>
+                                                        Evaluador
+                                                    </p>
+                                                    {selectedTribunals.includes(t.id) && (
+                                                        <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', color: '#10B981', fontSize: '1.5rem', fontWeight: 900 }}>✓</div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                {/* BOTÓN FINAL */}
+                                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+                                    <button
+                                        disabled={isSaving || selectedTribunals.length === 0}
+                                        type="submit"
+                                        style={{
+                                            padding: '1.5rem 4rem',
+                                            borderRadius: '50px',
+                                            backgroundColor: '#10B981',
+                                            color: 'white',
+                                            fontSize: '1.5rem',
+                                            fontWeight: 900,
+                                            border: 'none',
+                                            cursor: selectedTribunals.length === 0 ? 'not-allowed' : 'pointer',
+                                            boxShadow: '0 20px 40px -10px rgba(16, 185, 129, 0.4)',
+                                            fontFamily: 'Poppins',
+                                            opacity: selectedTribunals.length === 0 ? 0.5 : 1
+                                        }}
+                                    >
+                                        {isSaving ? 'PLANIFICANDO...' : '¡LANZAR INVESTIGACIÓN! 🚀'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}
