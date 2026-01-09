@@ -92,21 +92,28 @@ export default function AdminDashboard() {
     return (
         <div className="animate-in w-full min-h-screen p-8 md:p-16 max-w-[1600px] mx-auto">
 
-            {/* Header Centrado con Márgenes */}
-            <div className="text-center mb-24 max-w-4xl mx-auto">
-                <h1 className="text-5xl md:text-6xl font-black text-slate-800 mb-6 leading-tight" style={{ fontFamily: 'Poppins' }}>
-                    ¡Gestiona tus investigaciones <br /> <span className="text-[#3B82F6]">sin perder el tiempo!</span> ⚡
+            {/* Header Simple y Funcional */}
+            <div className="text-center mb-20 max-w-4xl mx-auto">
+                <h1 className="text-4xl md:text-5xl font-black text-slate-800 mb-2" style={{ fontFamily: 'Poppins' }}>
+                    Panel de Investigaciones
                 </h1>
-                <p className="text-xl text-slate-500 font-medium mb-12">
-                    Administra proyectos, asigna tutores y revisa el progreso de todos tus alumnos desde un único lugar.
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-sm mb-12">
+                    Gestión Académica
                 </p>
 
                 <button
                     onClick={() => setShowModal(true)}
-                    className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-slate-900 text-white font-bold text-lg hover:scale-105 transition-transform shadow-xl hover:shadow-2xl"
+                    className="group relative inline-flex items-center gap-4 px-12 py-6 rounded-full text-white font-black text-xl transition-all hover:-translate-y-1 active:translate-y-0"
+                    style={{
+                        background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                        boxShadow: '0 10px 25px -5px rgba(37, 99, 235, 0.4), 0 8px 10px -6px rgba(37, 99, 235, 0.1)',
+                        borderBottom: '6px solid #1E40AF'
+                    }}
                 >
-                    <span className="text-2xl">+</span>
-                    Crear Nueva Investigación
+                    <span className="bg-white/20 w-10 h-10 rounded-full flex items-center justify-center text-2xl shadow-inner">
+                        +
+                    </span>
+                    <span>Nueva Investigación</span>
                 </button>
             </div>
 
