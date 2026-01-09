@@ -161,76 +161,79 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            {/* MODAL GIGANTE - CON ESTILOS INLINE PARA GARANTIZAR LAYOUT */}
+            {/* MODAL GIGANTE - CON ESTILOS INLINE PARA GARANTIZAR LAYOUT (VERSIÓN COMPACTA) */}
             {showModal && (
                 <div style={{
                     position: 'fixed',
                     inset: 0,
                     backgroundColor: 'rgba(15, 23, 42, 0.6)',
-                    backdropFilter: 'blur(16px)',
+                    backdropFilter: 'blur(8px)',
                     zIndex: 9999,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '2rem'
+                    padding: '1rem'
                 }}>
                     <div style={{
                         width: '100%',
-                        maxWidth: '1400px',
+                        maxWidth: '1100px', // Reducido de 1400px
                         backgroundColor: 'white',
-                        borderRadius: '40px',
-                        boxShadow: '0 50px 100px -20px rgba(0,0,0,0.3)',
+                        borderRadius: '24px', // Reducido de 40px
+                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
                         overflow: 'hidden',
-                        border: '12px solid white',
+                        border: '8px solid white', // Reducido de 12px
                         display: 'flex',
                         flexDirection: 'column',
-                        maxHeight: '90vh'
+                        maxHeight: '95vh'
                     }}>
 
                         {/* Header del Modal */}
-                        <div style={{ padding: '3rem', textAlign: 'center', backgroundColor: '#F8FAFC', borderBottom: '2px solid #E2E8F0', position: 'relative' }}>
+                        <div style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0', position: 'relative' }}>
                             <button
                                 onClick={() => setShowModal(false)}
                                 style={{
                                     position: 'absolute',
-                                    top: '2rem',
-                                    right: '2rem',
-                                    width: '60px',
-                                    height: '60px',
+                                    top: '1rem',
+                                    right: '1rem',
+                                    width: '40px', // Reducido
+                                    height: '40px',
                                     borderRadius: '50%',
                                     backgroundColor: '#F1F5F9',
                                     border: 'none',
-                                    fontSize: '2rem',
+                                    fontSize: '1.5rem',
                                     cursor: 'pointer',
-                                    color: '#64748B'
+                                    color: '#64748B',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
                                 }}
                             >
                                 &times;
                             </button>
-                            <h2 style={{ fontSize: '3.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem', fontFamily: 'Poppins' }}>
+                            <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.25rem', fontFamily: 'Poppins' }}>
                                 Lanzar <span style={{ color: '#2563EB' }}>Investigación</span> 🚀
                             </h2>
-                            <p style={{ fontSize: '1.25rem', color: '#64748B', fontWeight: 700 }}>
+                            <p style={{ fontSize: '0.95rem', color: '#64748B', fontWeight: 600 }}>
                                 Diseña una nueva ruta de conocimiento asignando estudiantes y expertos.
                             </p>
                         </div>
 
-                        <div style={{ padding: '3rem', overflowY: 'auto', flex: 1 }}>
-                            <form onSubmit={handleAddProject} style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '4rem' }}>
+                        <div style={{ padding: '2rem', overflowY: 'auto', flex: 1 }}>
+                            <form onSubmit={handleAddProject} style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
                                 {/* TÍTULO */}
                                 <div style={{ textAlign: 'center' }}>
-                                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94A3B8', marginBottom: '1rem' }}>Título de la Obra</label>
+                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94A3B8', marginBottom: '0.5rem' }}>Título de la Obra</label>
                                     <input
                                         required
                                         style={{
                                             width: '100%',
-                                            padding: '2rem',
-                                            borderRadius: '24px',
+                                            padding: '1rem', // Reducido de 2rem
+                                            borderRadius: '16px',
                                             backgroundColor: '#F8FAFC',
                                             border: '2px solid #E2E8F0',
-                                            fontSize: '2.5rem',
-                                            fontWeight: 900,
+                                            fontSize: '1.5rem', // Reducido de 2.5rem
+                                            fontWeight: 700,
                                             textAlign: 'center',
                                             color: '#1E293B',
                                             outline: 'none',
@@ -244,42 +247,42 @@ export default function AdminDashboard() {
 
                                 {/* ALUMNOS - GRID DE 3 COLUMNAS REAL */}
                                 <div>
-                                    <label style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94A3B8', marginBottom: '2rem' }}>Equipo de Estudiantes</label>
+                                    <label style={{ display: 'block', textAlign: 'center', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94A3B8', marginBottom: '1rem' }}>Equipo de Estudiantes</label>
                                     <div style={{
                                         display: 'grid',
                                         gridTemplateColumns: 'repeat(3, 1fr)',
-                                        gap: '2rem',
+                                        gap: '1rem', // Reducido de 2rem
                                         width: '100%'
                                     }}>
                                         {studentNames.map((name, i) => (
                                             <div key={i} style={{
                                                 position: 'relative',
-                                                borderRadius: '30px',
-                                                padding: '6px',
+                                                borderRadius: '20px',
+                                                padding: '4px',
                                                 background: 'linear-gradient(135deg, #3B82F6 0%, #EC4899 100%)', // FILO CHULO
-                                                boxShadow: '0 10px 30px -10px rgba(59, 130, 246, 0.3)'
+                                                boxShadow: '0 4px 12px -2px rgba(59, 130, 246, 0.2)'
                                             }}>
                                                 <div style={{
                                                     backgroundColor: 'white',
-                                                    borderRadius: '24px',
-                                                    padding: '2rem',
+                                                    borderRadius: '16px',
+                                                    padding: '1rem', // Reducido
                                                     height: '100%',
                                                     display: 'flex',
                                                     flexDirection: 'column',
                                                     alignItems: 'center',
-                                                    gap: '1.5rem'
+                                                    gap: '0.75rem'
                                                 }}>
                                                     <div style={{
-                                                        width: '60px',
-                                                        height: '60px',
-                                                        borderRadius: '16px',
+                                                        width: '40px', // Reducido
+                                                        height: '40px',
+                                                        borderRadius: '10px',
                                                         backgroundColor: '#EFF6FF',
                                                         color: '#2563EB',
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
-                                                        fontSize: '1.5rem',
-                                                        fontWeight: 900
+                                                        fontSize: '1rem',
+                                                        fontWeight: 800
                                                     }}>
                                                         0{i + 1}
                                                     </div>
@@ -287,17 +290,17 @@ export default function AdminDashboard() {
                                                         required={i === 0}
                                                         style={{
                                                             width: '100%',
-                                                            padding: '1rem',
-                                                            borderRadius: '12px',
+                                                            padding: '0.5rem',
+                                                            borderRadius: '8px',
                                                             backgroundColor: '#F8FAFC',
                                                             border: 'none',
                                                             textAlign: 'center',
-                                                            fontSize: '1.25rem',
-                                                            fontWeight: 800,
+                                                            fontSize: '1rem', // Reducido
+                                                            fontWeight: 600,
                                                             color: '#334155',
                                                             outline: 'none'
                                                         }}
-                                                        placeholder="NOMBRE"
+                                                        placeholder="Nombre Alumno"
                                                         value={name}
                                                         onChange={(e) => {
                                                             const newNames = [...studentNames];
@@ -312,37 +315,37 @@ export default function AdminDashboard() {
                                 </div>
 
                                 {/* PROFESORES - GRID DE 4 COLUMNAS (1 Tutor + 3 Tribunal) */}
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '3rem', borderTop: '4px solid #F1F5F9', paddingTop: '3rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '2rem', borderTop: '2px solid #F1F5F9', paddingTop: '2rem' }}>
 
                                     {/* TUTOR */}
                                     <div>
-                                        <label style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94A3B8', marginBottom: '1.5rem' }}>Profesor Tutor</label>
+                                        <label style={{ display: 'block', textAlign: 'center', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94A3B8', marginBottom: '1rem' }}>Profesor Tutor</label>
                                         <div style={{
                                             backgroundColor: '#FFF7ED',
-                                            borderRadius: '30px',
-                                            padding: '2rem',
+                                            borderRadius: '20px',
+                                            padding: '1.5rem',
                                             border: '2px solid #FFEDD5',
                                             display: 'flex',
                                             flexDirection: 'column',
-                                            'alignItems': 'center',
+                                            alignItems: 'center',
                                             justifyContent: 'center',
                                             height: '100%'
                                         }}>
-                                            <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>👨‍🏫</div>
+                                            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>👨‍🏫</div>
                                             <select
                                                 required
                                                 style={{
                                                     width: '100%',
-                                                    padding: '1rem',
-                                                    borderRadius: '16px',
+                                                    padding: '0.75rem',
+                                                    borderRadius: '12px',
                                                     backgroundColor: 'white',
                                                     border: 'none',
-                                                    fontSize: '1.1rem',
-                                                    fontWeight: 800,
+                                                    fontSize: '0.9rem',
+                                                    fontWeight: 700,
                                                     textAlign: 'center',
                                                     color: '#EA580C',
                                                     cursor: 'pointer',
-                                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                                                    boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.05)'
                                                 }}
                                                 value={tutorId}
                                                 onChange={(e) => setTutorId(e.target.value)}
@@ -355,16 +358,16 @@ export default function AdminDashboard() {
 
                                     {/* TRIBUNAL */}
                                     <div>
-                                        <label style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94A3B8', marginBottom: '1.5rem' }}>Miembros del Tribunal</label>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                                        <label style={{ display: 'block', textAlign: 'center', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94A3B8', marginBottom: '1rem' }}>Miembros del Tribunal</label>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
                                             {tribunals.map(t => (
                                                 <div
                                                     key={t.id}
                                                     onClick={() => toggleTribunal(t.id)}
                                                     style={{
                                                         position: 'relative',
-                                                        borderRadius: '30px',
-                                                        padding: '2rem',
+                                                        borderRadius: '20px',
+                                                        padding: '1rem',
                                                         cursor: 'pointer',
                                                         transition: 'all 0.2s',
                                                         display: 'flex',
@@ -373,32 +376,32 @@ export default function AdminDashboard() {
                                                         textAlign: 'center',
                                                         backgroundColor: selectedTribunals.includes(t.id) ? '#1E293B' : 'white',
                                                         color: selectedTribunals.includes(t.id) ? 'white' : '#334155',
-                                                        border: selectedTribunals.includes(t.id) ? 'none' : '4px solid #F1F5F9',
-                                                        transform: selectedTribunals.includes(t.id) ? 'scale(1.05)' : 'scale(1)',
-                                                        boxShadow: selectedTribunals.includes(t.id) ? '0 20px 40px -10px rgba(0,0,0,0.3)' : 'none'
+                                                        border: selectedTribunals.includes(t.id) ? 'none' : '2px solid #F1F5F9',
+                                                        transform: selectedTribunals.includes(t.id) ? 'scale(1.02)' : 'scale(1)',
+                                                        boxShadow: selectedTribunals.includes(t.id) ? '0 10px 20px -5px rgba(0,0,0,0.3)' : 'none'
                                                     }}
                                                 >
                                                     <div style={{
-                                                        width: '80px',
-                                                        height: '80px',
-                                                        borderRadius: '24px',
+                                                        width: '50px', // Reducido
+                                                        height: '50px',
+                                                        borderRadius: '14px',
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
-                                                        fontSize: '2rem',
-                                                        fontWeight: 900,
-                                                        marginBottom: '1rem',
+                                                        fontSize: '1.25rem',
+                                                        fontWeight: 800,
+                                                        marginBottom: '0.5rem',
                                                         backgroundColor: selectedTribunals.includes(t.id) ? '#3B82F6' : '#F1F5F9',
                                                         color: selectedTribunals.includes(t.id) ? 'white' : '#3B82F6'
                                                     }}>
                                                         {t.name.charAt(0)}
                                                     </div>
-                                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 900, marginBottom: '0.25rem', fontFamily: 'Poppins' }}>{t.name}</h3>
-                                                    <p style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.7 }}>
+                                                    <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.1rem', fontFamily: 'Poppins', lineHeight: '1.2' }}>{t.name}</h3>
+                                                    <p style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.7 }}>
                                                         Evaluador
                                                     </p>
                                                     {selectedTribunals.includes(t.id) && (
-                                                        <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', color: '#10B981', fontSize: '1.5rem', fontWeight: 900 }}>✓</div>
+                                                        <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', color: '#10B981', fontSize: '1rem', fontWeight: 900 }}>✓</div>
                                                     )}
                                                 </div>
                                             ))}
@@ -408,20 +411,20 @@ export default function AdminDashboard() {
                                 </div>
 
                                 {/* BOTÓN FINAL */}
-                                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
                                     <button
                                         disabled={isSaving || selectedTribunals.length === 0}
                                         type="submit"
                                         style={{
-                                            padding: '1.5rem 4rem',
-                                            borderRadius: '50px',
+                                            padding: '1rem 3rem',
+                                            borderRadius: '30px',
                                             backgroundColor: '#10B981',
                                             color: 'white',
-                                            fontSize: '1.5rem',
-                                            fontWeight: 900,
+                                            fontSize: '1.25rem',
+                                            fontWeight: 800,
                                             border: 'none',
                                             cursor: selectedTribunals.length === 0 ? 'not-allowed' : 'pointer',
-                                            boxShadow: '0 20px 40px -10px rgba(16, 185, 129, 0.4)',
+                                            boxShadow: '0 10px 20px -5px rgba(16, 185, 129, 0.4)',
                                             fontFamily: 'Poppins',
                                             opacity: selectedTribunals.length === 0 ? 0.5 : 1
                                         }}
