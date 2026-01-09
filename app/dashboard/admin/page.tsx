@@ -5,6 +5,14 @@ import { api } from '@/lib/api';
 import { Project, User } from '@/types';
 import Link from 'next/link';
 
+// Ucademy-inspired palettes
+const CARD_VARIANTS = [
+    { bg: '#FFEDD5', btn: '#F97316', label: 'orange' }, // Calido
+    { bg: '#DBEAFE', btn: '#3B82F6', label: 'blue' },   // Azul
+    { bg: '#DCFCE7', btn: '#10B981', label: 'green' },  // Verde
+    { bg: '#FEF9C3', btn: '#EAB308', label: 'yellow' }  // Amarillo
+];
+
 export default function AdminDashboard() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -75,115 +83,121 @@ export default function AdminDashboard() {
     };
 
     if (loading) return (
-        <div className="flex flex-col items-center justify-center p-20 min-h-[60vh]">
-            <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-2xl font-black text-indigo-600 animate-pulse" style={{ fontFamily: 'Poppins' }}>CARGANDO...</p>
+        <div className="flex flex-col items-center justify-center min-h-[80vh]">
+            <div className="w-16 h-16 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin mb-4"></div>
+            <p className="text-xl font-bold text-slate-400">Cargando...</p>
         </div>
     );
 
     return (
-        <div className="animate-in w-full min-h-screen flex flex-col items-center p-10">
+        <div className="animate-in w-full min-h-screen p-8 md:p-16 max-w-[1600px] mx-auto">
 
-            {/* Header Section - CENTRADO TOTAL */}
-            <div className="w-full max-w-5xl flex flex-col items-center justify-center text-center mb-16 space-y-8">
-                <div>
-                    <h1 className="text-6xl md:text-7xl font-black text-slate-900 mb-4 tracking-tight" style={{ fontFamily: 'Poppins' }}>
-                        MIS <span className="text-indigo-600">INVESTIGACIONES</span>
-                    </h1>
-                    <p className="text-xl font-bold text-slate-400 uppercase tracking-[0.3em]">PANEL DE GESTIÓN ACADÉMICA</p>
-                </div>
+            {/* Header Centrado con Márgenes */}
+            <div className="text-center mb-24 max-w-4xl mx-auto">
+                <h1 className="text-5xl md:text-6xl font-black text-slate-800 mb-6 leading-tight" style={{ fontFamily: 'Poppins' }}>
+                    ¡Gestiona tus investigaciones <br /> <span className="text-[#3B82F6]">sin perder el tiempo!</span> ⚡
+                </h1>
+                <p className="text-xl text-slate-500 font-medium mb-12">
+                    Administra proyectos, asigna tutores y revisa el progreso de todos tus alumnos desde un único lugar.
+                </p>
 
-                {/* BOTÓN BLANCO ÚNICO */}
                 <button
                     onClick={() => setShowModal(true)}
-                    className="group px-12 py-6 rounded-[30px] bg-white border-2 border-indigo-50 text-indigo-900 font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_20px_40px_-10px_rgba(79,70,229,0.2)] hover:shadow-[0_30px_60px_-15px_rgba(79,70,229,0.3)] flex items-center gap-4"
+                    className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-slate-900 text-white font-bold text-lg hover:scale-105 transition-transform shadow-xl hover:shadow-2xl"
                 >
-                    <span className="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 text-2xl">+</span>
-                    <span>CREAR NUEVO PROYECTO</span>
+                    <span className="text-2xl">+</span>
+                    Crear Nueva Investigación
                 </button>
             </div>
 
-            {/* Project List - Grid Centrada y Limpia */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl px-4">
-                {projects.map((p) => (
-                    <div key={p.id} className="group flex flex-col items-center bg-white rounded-[40px] p-8 text-center border-4 border-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2">
-                        <div className="w-20 h-20 rounded-full bg-indigo-50 flex items-center justify-center text-3xl mb-6 text-indigo-500 shadow-inner group-hover:scale-110 transition-transform">
-                            🎓
+            {/* Grid de Tarjetas Estilo Ucademy (Pastel + Bold Button) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {projects.map((p, idx) => {
+                    const variant = CARD_VARIANTS[idx % CARD_VARIANTS.length];
+                    return (
+                        <div key={p.id} className="group relative rounded-[32px] overflow-hidden transition-all hover:-translate-y-2 flex flex-col h-[400px]"
+                            style={{ background: variant.bg }}>
+
+                            {/* Card Content */}
+                            <div className="p-8 flex-1 flex flex-col items-center justify-center text-center">
+                                <div className="w-24 h-24 mb-6 rounded-full bg-white/50 flex items-center justify-center text-5xl shadow-sm group-hover:scale-110 transition-transform">
+                                    {idx % 2 === 0 ? '📝' : '🔬'}
+                                </div>
+                                <h3 className="text-2xl font-black text-slate-800 mb-2 line-clamp-2 leading-tight" style={{ fontFamily: 'Poppins' }}>
+                                    {p.title}
+                                </h3>
+                                <p className="text-sm font-bold text-slate-500/80 uppercase tracking-wider">
+                                    {p.students?.length} Alumnos
+                                </p>
+
+                                <div className="mt-6 flex -space-x-2 justify-center">
+                                    {p.students?.slice(0, 3).map((s, i) => (
+                                        <div key={i} className="w-8 h-8 rounded-full bg-white border-2 border-transparent flex items-center justify-center text-[10px] font-bold shadow-sm" title={s.name}>
+                                            {s.name.charAt(0)}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Bottom Action Button */}
+                            <Link
+                                href={`/dashboard/admin/reports/${p.id}`}
+                                className="w-full py-5 text-center text-white font-black text-lg hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                                style={{ background: variant.btn }}
+                            >
+                                Ver Informe ➜
+                            </Link>
                         </div>
+                    );
+                })}
 
-                        <h3 className="text-2xl font-black text-slate-900 mb-3 leading-tight w-full" style={{ fontFamily: 'Poppins' }}>{p.title}</h3>
-
-                        <div className="flex flex-wrap justify-center gap-2 mb-8">
-                            {p.students?.map((s) => (
-                                <span key={s.id} className="px-3 py-1 rounded-lg bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-wider">
-                                    {s.name}
-                                </span>
-                            ))}
-                        </div>
-
-                        <Link
-                            href={`/dashboard/admin/reports/${p.id}`}
-                            className="mt-auto px-8 py-3 rounded-2xl bg-slate-900 text-white font-bold text-sm tracking-wide hover:bg-indigo-600 transition-colors w-full"
-                        >
-                            VER INFORME
-                        </Link>
+                {/* Empty State Card */}
+                {projects.length === 0 && (
+                    <div className="col-span-full text-center py-20">
+                        <div className="text-6xl mb-4 opacity-20">📂</div>
+                        <h3 className="text-2xl font-bold text-slate-300">No hay proyectos activos</h3>
                     </div>
-                ))}
+                )}
             </div>
 
-            {projects.length === 0 && (
-                <div className="text-center p-20 opacity-50">
-                    <p className="text-2xl font-black text-slate-300 font-poppins">NO HAY PROYECTOS ACTIVOS</p>
-                </div>
-            )}
-
-
-            {/* MODAL DE NUEVO PROYECTO - CENTRADO Y VISTOSO */}
+            {/* Modal Rediseñado (Mantiene funcionalidad pero adapta estética) */}
             {showModal && (
-                <div className="fixed inset-0 bg-white/90 backdrop-blur-xl z-[2000] flex flex-col items-center justify-center p-4 overflow-y-auto">
-
-                    {/* Botón de Cerrar Flotante */}
+                <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[2000] flex items-center justify-center p-4 overflow-y-auto">
                     <button
                         onClick={() => setShowModal(false)}
-                        className="fixed top-8 right-8 w-16 h-16 rounded-full bg-slate-100 text-slate-400 hover:bg-rose-100 hover:text-rose-500 font-light text-4xl transition-all z-50 flex items-center justify-center shadow-lg"
+                        className="fixed top-6 right-6 w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white hover:text-rose-500 transition-all text-3xl font-light z-50 flex items-center justify-center backdrop-blur-md"
                     >
                         &times;
                     </button>
 
-                    <div className="w-full max-w-4xl animate-in space-y-12 py-12">
-
-                        <div className="text-center space-y-4">
-                            <h2 className="text-6xl font-black text-slate-900 tracking-tighter" style={{ fontFamily: 'Poppins' }}>NUEVO PROYECTO</h2>
-                            <div className="h-2 w-32 bg-indigo-500 mx-auto rounded-full"></div>
+                    <div className="w-full max-w-3xl bg-white rounded-[40px] shadow-2xl overflow-hidden animate-in">
+                        <div className="p-12 text-center bg-slate-50 border-b border-slate-100">
+                            <h2 className="text-4xl font-black text-slate-900 mb-2" style={{ fontFamily: 'Poppins' }}>Lanzar Proyecto 🚀</h2>
+                            <p className="text-slate-500 font-medium">Configura los detalles de la nueva investigación</p>
                         </div>
 
-                        <form onSubmit={handleAddProject} className="space-y-16 w-full flex flex-col items-center">
-
-                            {/* 1. TÍTULO - EXTRAMADAMENTE GRANDE */}
-                            <div className="w-full space-y-4 text-center">
-                                <label className="text-sm font-black text-slate-400 uppercase tracking-[0.5em]">TÍTULO DEL PROYECTO</label>
+                        <form onSubmit={handleAddProject} className="p-10 md:p-14 space-y-10">
+                            <div className="space-y-4">
+                                <label className="block text-center text-xs font-black uppercase tracking-[0.2em] text-slate-400">Título</label>
                                 <input
                                     required
-                                    className="w-full h-32 text-center text-4xl md:text-5xl font-black text-slate-800 bg-transparent border-b-8 border-slate-200 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-200"
-                                    style={{ fontFamily: 'Poppins' }}
-                                    placeholder="ESCRIBE AQUÍ..."
+                                    className="w-full p-6 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-slate-900 focus:bg-white outline-none transition-all text-xl font-bold text-center text-slate-800 placeholder:text-slate-300"
+                                    placeholder="Ej: Historia del Arte Moderno"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
                                 />
                             </div>
 
-                            {/* 2. ALUMNOS - MÁS ANCHOS Y ESPACIADOS */}
-                            <div className="w-full space-y-10 text-center">
-                                <label className="text-sm font-black text-slate-400 uppercase tracking-[0.5em]">ALUMNOS PARTICIPANTES</label>
-                                <div className="flex flex-col gap-10 w-full max-w-5xl mx-auto">
-                                    {studentNames.map((name, i) => (
-                                        <div key={i} className="relative transition-transform hover:scale-[1.02]">
-                                            <span className="absolute left-8 top-1/2 -translate-y-1/2 text-3xl font-black text-indigo-200 pointer-events-none">0{i + 1}</span>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <label className="block text-center text-xs font-black uppercase tracking-[0.2em] text-slate-400">Alumnos</label>
+                                    <div className="space-y-3">
+                                        {studentNames.map((name, i) => (
                                             <input
+                                                key={i}
                                                 required={i === 0}
-                                                className="w-full h-28 pl-24 pr-10 rounded-[30px] bg-white shadow-[0_10px_40px_-5px_rgba(0,0,0,0.05)] border-4 border-slate-50 focus:border-indigo-500 outline-none text-3xl font-black text-slate-800 placeholder:text-slate-300 text-left transition-all"
-                                                style={{ fontFamily: 'Poppins' }}
-                                                placeholder={`NOMBRE DEL ALUMNO ${i + 1}`}
+                                                className="w-full p-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-[#3B82F6] focus:bg-white outline-none transition-all font-semibold text-center"
+                                                placeholder={`Alumno ${i + 1}`}
                                                 value={name}
                                                 onChange={(e) => {
                                                     const newNames = [...studentNames];
@@ -191,65 +205,47 @@ export default function AdminDashboard() {
                                                     setStudentNames(newNames);
                                                 }}
                                             />
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* 3. SELECCIÓN DE PROFESORES - CARDS CENTRALES */}
-                            <div className="w-full space-y-8 text-center pt-8">
-                                <label className="text-sm font-black text-slate-400 uppercase tracking-[0.5em]">TUTOR & TRIBUNAL</label>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full">
-                                    {/* Select Tutor */}
-                                    <div className="bg-white p-8 rounded-[40px] shadow-xl border-4 border-white flex flex-col items-center text-center">
-                                        <div className="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-3xl mb-4">👨‍🏫</div>
-                                        <h3 className="text-xl font-black text-slate-900 mb-4" style={{ fontFamily: 'Poppins' }}>TUTOR</h3>
+                                <div className="space-y-4">
+                                    <label className="block text-center text-xs font-black uppercase tracking-[0.2em] text-slate-400">Personal Docente</label>
+                                    <div className="space-y-4">
                                         <select
                                             required
-                                            className="w-full p-4 rounded-xl bg-slate-50 font-bold text-lg text-center outline-none border-2 border-transparent focus:border-teal-400 appearance-none leading-tight"
+                                            className="w-full p-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-[#F97316] outline-none transition-all font-bold text-center appearance-none cursor-pointer"
                                             value={tutorId}
                                             onChange={(e) => setTutorId(e.target.value)}
                                         >
-                                            <option value="">Seleccionar...</option>
+                                            <option value="">Selecciona Tutor...</option>
                                             {tutors.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                                         </select>
-                                    </div>
 
-                                    {/* Select Tribunal */}
-                                    <div className="bg-white p-8 rounded-[40px] shadow-xl border-4 border-white flex flex-col items-center text-center">
-                                        <div className="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-3xl mb-4">⚖️</div>
-                                        <h3 className="text-xl font-black text-slate-900 mb-4" style={{ fontFamily: 'Poppins' }}>TRIBUNAL</h3>
-                                        <div className="flex flex-wrap justify-center gap-3">
-                                            {tribunals.map(t => (
-                                                <button
-                                                    key={t.id}
-                                                    type="button"
-                                                    onClick={() => toggleTribunal(t.id)}
-                                                    className={`px-4 py-2 rounded-full font-bold text-sm transition-all ${selectedTribunals.includes(t.id)
-                                                        ? 'bg-purple-600 text-white shadow-lg scale-105'
-                                                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                                                        }`}
-                                                >
-                                                    {t.name}
-                                                </button>
-                                            ))}
+                                        <div className="bg-slate-50 p-4 rounded-xl max-h-40 overflow-y-auto">
+                                            <p className="text-xs font-bold text-slate-400 uppercase text-center mb-3">Tribunal</p>
+                                            <div className="space-y-2">
+                                                {tribunals.map(t => (
+                                                    <div key={t.id}
+                                                        onClick={() => toggleTribunal(t.id)}
+                                                        className={`p-2 rounded-lg text-sm font-bold text-center cursor-pointer transition-all ${selectedTribunals.includes(t.id) ? 'bg-slate-800 text-white' : 'hover:bg-slate-200 text-slate-600'}`}
+                                                    >
+                                                        {t.name}
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
-                                        {selectedTribunals.length === 0 && <span className="text-xs text-rose-500 font-bold mt-2">Selecciona al menos uno</span>}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* SUBMIT BUTTON - BLANCO Y GIGANTE */}
                             <button
                                 disabled={isSaving || selectedTribunals.length === 0}
                                 type="submit"
-                                className="w-full md:w-auto px-20 py-8 rounded-[40px] bg-indigo-600 text-white font-black text-3xl tracking-wide shadow-[0_20px_50px_rgba(79,70,229,0.4)] hover:scale-105 active:scale-95 transition-all text-center"
-                                style={{ fontFamily: 'Poppins' }}
+                                className="w-full py-6 rounded-2xl bg-[#10B981] text-white font-black text-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-green-200"
                             >
-                                {isSaving ? 'GUARDANDO...' : 'CREAR AHORA'}
+                                {isSaving ? 'Guardando...' : 'Crear Proyecto Ahora'}
                             </button>
-
                         </form>
                     </div>
                 </div>
