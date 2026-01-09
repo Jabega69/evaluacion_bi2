@@ -172,18 +172,18 @@ export default function AdminDashboard() {
                                 />
                             </div>
 
-                            {/* 2. ALUMNOS - TARJETAS FLOTANTES GRANDES */}
-                            <div className="w-full space-y-8 text-center">
+                            {/* 2. ALUMNOS - MÁS ANCHOS Y ESPACIADOS */}
+                            <div className="w-full space-y-10 text-center">
                                 <label className="text-sm font-black text-slate-400 uppercase tracking-[0.5em]">ALUMNOS PARTICIPANTES</label>
-                                <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto">
+                                <div className="flex flex-col gap-10 w-full max-w-5xl mx-auto">
                                     {studentNames.map((name, i) => (
-                                        <div key={i} className="relative transition-transform hover:scale-105">
-                                            <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-indigo-200">0{i + 1}</span>
+                                        <div key={i} className="relative transition-transform hover:scale-[1.02]">
+                                            <span className="absolute left-8 top-1/2 -translate-y-1/2 text-3xl font-black text-indigo-200 pointer-events-none">0{i + 1}</span>
                                             <input
                                                 required={i === 0}
-                                                className="w-full h-24 pl-20 pr-8 rounded-[30px] bg-white shadow-[0_10px_40px_-5px_rgba(0,0,0,0.05)] border-4 border-transparent focus:border-indigo-500 outline-none text-2xl font-black text-slate-800 placeholder:text-slate-300 text-left"
+                                                className="w-full h-28 pl-24 pr-10 rounded-[30px] bg-white shadow-[0_10px_40px_-5px_rgba(0,0,0,0.05)] border-4 border-slate-50 focus:border-indigo-500 outline-none text-3xl font-black text-slate-800 placeholder:text-slate-300 text-left transition-all"
                                                 style={{ fontFamily: 'Poppins' }}
-                                                placeholder="NOMBRE DEL ALUMNO"
+                                                placeholder={`NOMBRE DEL ALUMNO ${i + 1}`}
                                                 value={name}
                                                 onChange={(e) => {
                                                     const newNames = [...studentNames];
@@ -227,8 +227,8 @@ export default function AdminDashboard() {
                                                     type="button"
                                                     onClick={() => toggleTribunal(t.id)}
                                                     className={`px-4 py-2 rounded-full font-bold text-sm transition-all ${selectedTribunals.includes(t.id)
-                                                            ? 'bg-purple-600 text-white shadow-lg scale-105'
-                                                            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                                        ? 'bg-purple-600 text-white shadow-lg scale-105'
+                                                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                                                         }`}
                                                 >
                                                     {t.name}
