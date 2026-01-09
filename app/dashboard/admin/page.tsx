@@ -77,215 +77,181 @@ export default function AdminDashboard() {
     if (loading) return (
         <div className="flex flex-col items-center justify-center p-20 min-h-[60vh]">
             <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-indigo-600 font-bold animate-pulse">Cargando gestión de proyectos...</p>
+            <p className="text-2xl font-black text-indigo-600 animate-pulse" style={{ fontFamily: 'Poppins' }}>CARGANDO...</p>
         </div>
     );
 
     return (
-        <div className="animate-in" style={{ padding: '60px 80px', maxWidth: '1440px', margin: '0 auto', width: '100%' }}>
-            {/* Action Bar - Muy visible y centrada */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-16 bg-white p-10 rounded-[40px] shadow-2xl border-4 border-white">
-                <div className="text-center md:text-left">
-                    <h1 className="text-5xl font-black text-slate-900 mb-3" style={{ fontFamily: 'Poppins', letterSpacing: '-0.02em' }}>
-                        Mis <span className="text-indigo-600">Investigaciones</span>
+        <div className="animate-in w-full min-h-screen flex flex-col items-center p-10">
+
+            {/* Header Section - CENTRADO TOTAL */}
+            <div className="w-full max-w-5xl flex flex-col items-center justify-center text-center mb-16 space-y-8">
+                <div>
+                    <h1 className="text-6xl md:text-7xl font-black text-slate-900 mb-4 tracking-tight" style={{ fontFamily: 'Poppins' }}>
+                        MIS <span className="text-indigo-600">INVESTIGACIONES</span>
                     </h1>
-                    <p className="text-slate-400 font-black text-sm uppercase tracking-[0.3em]">Gestión Central de Evaluaciones</p>
+                    <p className="text-xl font-bold text-slate-400 uppercase tracking-[0.3em]">PANEL DE GESTIÓN ACADÉMICA</p>
                 </div>
 
+                {/* BOTÓN BLANCO ÚNICO */}
                 <button
                     onClick={() => setShowModal(true)}
-                    className="flex items-center gap-4 px-12 py-6 rounded-3xl font-black text-white transition-all shadow-[0_20px_40px_rgba(79,70,229,0.3)] hover:scale-105 active:scale-95 z-10"
-                    style={{
-                        background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
-                        fontSize: '18px'
-                    }}
+                    className="group px-12 py-6 rounded-[30px] bg-white border-2 border-indigo-50 text-indigo-900 font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_20px_40px_-10px_rgba(79,70,229,0.2)] hover:shadow-[0_30px_60px_-15px_rgba(79,70,229,0.3)] flex items-center gap-4"
                 >
-                    <span className="text-3xl">+</span>
-                    <span>CREAR PROYECTO</span>
+                    <span className="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 text-2xl">+</span>
+                    <span>CREAR NUEVO PROYECTO</span>
                 </button>
             </div>
 
-            {/* Modal de Nuevo Proyecto - Estilo Classroom / Inputs Grandes */}
-            {showModal && (
-                <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-2xl z-[1000] flex items-center justify-center p-6 overflow-y-auto">
-                    <div className="bg-[#f1f5f9] rounded-[60px] w-full max-w-6xl shadow-2xl animate-in my-10 overflow-hidden border-[12px] border-white">
-                        <div className="p-12 border-b border-white/50 flex justify-between items-center bg-white/30">
-                            <div>
-                                <h2 className="text-5xl font-black text-slate-900" style={{ fontFamily: 'Poppins' }}>Nuevo Proyecto</h2>
-                                <p className="text-indigo-600 font-black text-xs uppercase tracking-[0.4em] mt-3">Panel de configuración académica</p>
-                            </div>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="w-16 h-16 rounded-3xl flex items-center justify-center bg-white text-slate-400 hover:text-rose-500 hover:scale-110 transition-all text-5xl font-light shadow-xl"
-                            >
-                                &times;
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleAddProject} className="p-12 space-y-16">
-                            {/* Titulo - Input Gigante */}
-                            <div className="space-y-6 text-center max-w-4xl mx-auto">
-                                <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400 block">Título de la Investigación</label>
-                                <input
-                                    required
-                                    className="w-full px-10 py-8 h-24 rounded-[32px] border-8 border-white focus:border-indigo-500 outline-none transition-all font-black text-3xl text-center shadow-2xl bg-white text-slate-800"
-                                    placeholder="ESCRIBE EL TÍTULO AQUÍ..."
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                                {/* Alumnos - Cajas Blancas Grandes */}
-                                <div className="space-y-8">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400 block px-4">Alumnos Participantes</label>
-                                    <div className="space-y-4">
-                                        {studentNames.map((name, i) => (
-                                            <div key={i} className="group">
-                                                <input
-                                                    required={i === 0}
-                                                    className="w-full px-8 py-6 rounded-[28px] border-4 border-white focus:border-indigo-400 outline-none transition-all font-bold text-xl shadow-xl bg-white text-slate-700"
-                                                    placeholder={`Nombre del Alumno ${i + 1}...`}
-                                                    value={name}
-                                                    onChange={(e) => {
-                                                        const newNames = [...studentNames];
-                                                        newNames[i] = e.target.value;
-                                                        setStudentNames(newNames);
-                                                    }}
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Tutor - Caja Blanca Grande */}
-                                <div className="space-y-8">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400 block px-4">Tutor Académico</label>
-                                    <div className="relative group">
-                                        <select
-                                            required
-                                            className="w-full px-8 py-6 h-[76px] rounded-[28px] border-4 border-white focus:border-indigo-400 outline-none transition-all font-bold text-xl shadow-xl bg-white text-slate-700 appearance-none cursor-pointer"
-                                            value={tutorId}
-                                            onChange={(e) => setTutorId(e.target.value)}
-                                        >
-                                            <option value="">Selecciona tutor encargado...</option>
-                                            {tutors.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-                                        </select>
-                                        <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-indigo-500">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M6 9l6 6 6-6" /></svg>
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-slate-400 font-bold bg-white/50 p-4 rounded-2xl border-2 border-white text-center italic">
-                                        El tutor asignado será el responsable de calificar la actitud y el seguimiento semanal.
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Tribunal - Estilo Imagen Classroom */}
-                            <div className="space-y-10">
-                                <div className="text-center">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400">Seleccionar Tribunal (Evaluadores)</label>
-                                    <div className="h-2 w-24 bg-indigo-500 mx-auto mt-4 rounded-full"></div>
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                                    {tribunals.map((t) => (
-                                        <div
-                                            key={t.id}
-                                            onClick={() => toggleTribunal(t.id)}
-                                            className={`relative h-60 rounded-[40px] border-[6px] cursor-pointer transition-all flex flex-col p-8 bg-white shadow-xl hover:-translate-y-2 ${selectedTribunals.includes(t.id)
-                                                    ? 'border-indigo-500 ring-12 ring-indigo-50/50'
-                                                    : 'border-white hover:border-slate-100'
-                                                }`}
-                                        >
-                                            <div className="flex justify-between items-start mb-auto">
-                                                <div>
-                                                    <h4 className="text-2xl font-black text-slate-800 leading-tight mb-2">{t.name}</h4>
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Docente / Evaluador</span>
-                                                </div>
-                                                <div className="text-slate-100">
-                                                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex justify-between items-end">
-                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black ${selectedTribunals.includes(t.id) ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-300'
-                                                    }`}>
-                                                    {t.name.charAt(0)}
-                                                </div>
-                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all ${selectedTribunals.includes(t.id) ? 'bg-indigo-50 border-indigo-500 text-indigo-600' : 'bg-white border-slate-50 text-slate-100'
-                                                    }`}>
-                                                    {selectedTribunals.includes(t.id) ? '✓' : '...'}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row gap-8 pt-12 border-t-4 border-white">
-                                <button type="button" onClick={() => setShowModal(false)} className="flex-1 p-8 rounded-[32px] font-black text-slate-400 hover:text-slate-600 hover:bg-white transition-all text-2xl">Cancelar</button>
-                                <button
-                                    disabled={isSaving || selectedTribunals.length === 0}
-                                    type="submit"
-                                    className="flex-[2] p-8 rounded-[32px] font-black text-white transition-all disabled:opacity-50 text-2xl shadow-2xl"
-                                    style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' }}
-                                >
-                                    {isSaving ? 'GUARDANDO...' : '¡LISTO, CREAR PROYECTO!'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Project List - Estilo Classroom Mejorado */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {/* Project List - Grid Centrada y Limpia */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl px-4">
                 {projects.map((p) => (
-                    <div key={p.id} className="group relative bg-white rounded-[48px] border-[6px] border-white shadow-xl hover:shadow-[0_30px_60px_rgba(0,0,0,0.1)] transition-all hover:-translate-y-3 flex flex-col min-h-[440px]">
-                        {/* Cabecera Estilo Classroom */}
-                        <div className="p-10 border-b-2 border-slate-50 relative overflow-hidden flex-1">
-                            <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-50 rounded-full -mr-24 -mt-24 blur-3xl opacity-50"></div>
-
-                            <div className="flex justify-between items-start mb-8 relative z-10">
-                                <div>
-                                    <h3 className="text-3xl font-black text-slate-900 leading-[1.1] mb-2 line-clamp-2" style={{ fontFamily: 'Poppins' }}>{p.title}</h3>
-                                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{p.students?.length} Estudiantes asignados</span>
-                                </div>
-                                <div className="text-slate-100 group-hover:text-indigo-100 transition-colors">
-                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
-                                </div>
-                            </div>
-
-                            <p className="text-sm font-medium text-slate-500 mt-4 italic leading-relaxed">
-                                Las evaluaciones escritas, orales y el seguimiento del tutor de este proyecto se consolidarán en el informe final.
-                            </p>
+                    <div key={p.id} className="group flex flex-col items-center bg-white rounded-[40px] p-8 text-center border-4 border-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2">
+                        <div className="w-20 h-20 rounded-full bg-indigo-50 flex items-center justify-center text-3xl mb-6 text-indigo-500 shadow-inner group-hover:scale-110 transition-transform">
+                            🎓
                         </div>
 
-                        {/* Pie con botón de Informe */}
-                        <div className="p-10 bg-slate-50/50 rounded-b-[42px] border-t-2 border-white">
-                            <Link
-                                href={`/dashboard/admin/reports/${p.id}`}
-                                className="w-full py-6 rounded-3xl bg-white border-4 border-white text-slate-900 font-black flex items-center justify-center gap-3 hover:bg-slate-900 hover:text-white transition-all shadow-lg text-lg group/btn"
-                            >
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="group-hover/btn:scale-110 transition-transform"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
-                                GENERAR INFORME
-                            </Link>
+                        <h3 className="text-2xl font-black text-slate-900 mb-3 leading-tight w-full" style={{ fontFamily: 'Poppins' }}>{p.title}</h3>
+
+                        <div className="flex flex-wrap justify-center gap-2 mb-8">
+                            {p.students?.map((s) => (
+                                <span key={s.id} className="px-3 py-1 rounded-lg bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-wider">
+                                    {s.name}
+                                </span>
+                            ))}
                         </div>
+
+                        <Link
+                            href={`/dashboard/admin/reports/${p.id}`}
+                            className="mt-auto px-8 py-3 rounded-2xl bg-slate-900 text-white font-bold text-sm tracking-wide hover:bg-indigo-600 transition-colors w-full"
+                        >
+                            VER INFORME
+                        </Link>
                     </div>
                 ))}
             </div>
 
             {projects.length === 0 && (
-                <div className="flex flex-col items-center justify-center p-40 bg-white rounded-[80px] border-[10px] border-dashed border-slate-50 text-center">
-                    <div className="text-[160px] mb-12 opacity-5 grayscale">🎓</div>
-                    <h3 className="text-5xl font-black text-slate-300 mb-6" style={{ fontFamily: 'Poppins' }}>VACÍO</h3>
-                    <p className="text-slate-200 text-2xl font-bold max-w-lg mb-12">No hay investigaciones registradas. Comienza creando una ahora mismo.</p>
+                <div className="text-center p-20 opacity-50">
+                    <p className="text-2xl font-black text-slate-300 font-poppins">NO HAY PROYECTOS ACTIVOS</p>
+                </div>
+            )}
+
+
+            {/* MODAL DE NUEVO PROYECTO - CENTRADO Y VISTOSO */}
+            {showModal && (
+                <div className="fixed inset-0 bg-white/90 backdrop-blur-xl z-[2000] flex flex-col items-center justify-center p-4 overflow-y-auto">
+
+                    {/* Botón de Cerrar Flotante */}
                     <button
-                        onClick={() => setShowModal(true)}
-                        className="px-16 py-8 rounded-3xl bg-indigo-600 text-white font-black text-xl shadow-2xl shadow-indigo-200 hover:scale-110 transition-all"
+                        onClick={() => setShowModal(false)}
+                        className="fixed top-8 right-8 w-16 h-16 rounded-full bg-slate-100 text-slate-400 hover:bg-rose-100 hover:text-rose-500 font-light text-4xl transition-all z-50 flex items-center justify-center shadow-lg"
                     >
-                        + CREAR PROYECTO
+                        &times;
                     </button>
+
+                    <div className="w-full max-w-4xl animate-in space-y-12 py-12">
+
+                        <div className="text-center space-y-4">
+                            <h2 className="text-6xl font-black text-slate-900 tracking-tighter" style={{ fontFamily: 'Poppins' }}>NUEVO PROYECTO</h2>
+                            <div className="h-2 w-32 bg-indigo-500 mx-auto rounded-full"></div>
+                        </div>
+
+                        <form onSubmit={handleAddProject} className="space-y-16 w-full flex flex-col items-center">
+
+                            {/* 1. TÍTULO - EXTRAMADAMENTE GRANDE */}
+                            <div className="w-full space-y-4 text-center">
+                                <label className="text-sm font-black text-slate-400 uppercase tracking-[0.5em]">TÍTULO DEL PROYECTO</label>
+                                <input
+                                    required
+                                    className="w-full h-32 text-center text-4xl md:text-5xl font-black text-slate-800 bg-transparent border-b-8 border-slate-200 focus:border-indigo-600 outline-none transition-all placeholder:text-slate-200"
+                                    style={{ fontFamily: 'Poppins' }}
+                                    placeholder="ESCRIBE AQUÍ..."
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                />
+                            </div>
+
+                            {/* 2. ALUMNOS - TARJETAS FLOTANTES GRANDES */}
+                            <div className="w-full space-y-8 text-center">
+                                <label className="text-sm font-black text-slate-400 uppercase tracking-[0.5em]">ALUMNOS PARTICIPANTES</label>
+                                <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto">
+                                    {studentNames.map((name, i) => (
+                                        <div key={i} className="relative transition-transform hover:scale-105">
+                                            <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-indigo-200">0{i + 1}</span>
+                                            <input
+                                                required={i === 0}
+                                                className="w-full h-24 pl-20 pr-8 rounded-[30px] bg-white shadow-[0_10px_40px_-5px_rgba(0,0,0,0.05)] border-4 border-transparent focus:border-indigo-500 outline-none text-2xl font-black text-slate-800 placeholder:text-slate-300 text-left"
+                                                style={{ fontFamily: 'Poppins' }}
+                                                placeholder="NOMBRE DEL ALUMNO"
+                                                value={name}
+                                                onChange={(e) => {
+                                                    const newNames = [...studentNames];
+                                                    newNames[i] = e.target.value;
+                                                    setStudentNames(newNames);
+                                                }}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* 3. SELECCIÓN DE PROFESORES - CARDS CENTRALES */}
+                            <div className="w-full space-y-8 text-center pt-8">
+                                <label className="text-sm font-black text-slate-400 uppercase tracking-[0.5em]">TUTOR & TRIBUNAL</label>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full">
+                                    {/* Select Tutor */}
+                                    <div className="bg-white p-8 rounded-[40px] shadow-xl border-4 border-white flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-3xl mb-4">👨‍🏫</div>
+                                        <h3 className="text-xl font-black text-slate-900 mb-4" style={{ fontFamily: 'Poppins' }}>TUTOR</h3>
+                                        <select
+                                            required
+                                            className="w-full p-4 rounded-xl bg-slate-50 font-bold text-lg text-center outline-none border-2 border-transparent focus:border-teal-400 appearance-none leading-tight"
+                                            value={tutorId}
+                                            onChange={(e) => setTutorId(e.target.value)}
+                                        >
+                                            <option value="">Seleccionar...</option>
+                                            {tutors.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                        </select>
+                                    </div>
+
+                                    {/* Select Tribunal */}
+                                    <div className="bg-white p-8 rounded-[40px] shadow-xl border-4 border-white flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-3xl mb-4">⚖️</div>
+                                        <h3 className="text-xl font-black text-slate-900 mb-4" style={{ fontFamily: 'Poppins' }}>TRIBUNAL</h3>
+                                        <div className="flex flex-wrap justify-center gap-3">
+                                            {tribunals.map(t => (
+                                                <button
+                                                    key={t.id}
+                                                    type="button"
+                                                    onClick={() => toggleTribunal(t.id)}
+                                                    className={`px-4 py-2 rounded-full font-bold text-sm transition-all ${selectedTribunals.includes(t.id)
+                                                            ? 'bg-purple-600 text-white shadow-lg scale-105'
+                                                            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                                        }`}
+                                                >
+                                                    {t.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        {selectedTribunals.length === 0 && <span className="text-xs text-rose-500 font-bold mt-2">Selecciona al menos uno</span>}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* SUBMIT BUTTON - BLANCO Y GIGANTE */}
+                            <button
+                                disabled={isSaving || selectedTribunals.length === 0}
+                                type="submit"
+                                className="w-full md:w-auto px-20 py-8 rounded-[40px] bg-indigo-600 text-white font-black text-3xl tracking-wide shadow-[0_20px_50px_rgba(79,70,229,0.4)] hover:scale-105 active:scale-95 transition-all text-center"
+                                style={{ fontFamily: 'Poppins' }}
+                            >
+                                {isSaving ? 'GUARDANDO...' : 'CREAR AHORA'}
+                            </button>
+
+                        </form>
+                    </div>
                 </div>
             )}
         </div>
