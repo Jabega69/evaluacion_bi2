@@ -2,7 +2,19 @@
 
 Sistema de gestión y evaluación de proyectos académicos (TFG/TFM).
 
-## 🚀 Características
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Jabega69/Evaluacion_BI)
+
+## 🚀 Despliegue Rápido
+
+Para desplegar esta aplicación en internet:
+1. Haz clic en el botón **"Deploy with Vercel"** de arriba.
+2. Inicia sesión con tu cuenta de GitHub.
+3. Vercel te pedirá las **Variables de Entorno**. Copia los valores de tu archivo local `.env.local`:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. ¡Listo! Tu aplicación estará online en unos minutos.
+
+## 🌟 Características
 
 - **Panel de Administración**: 
   - Gestión de Usuarios (Tutores, Tribunales, Alumnos)
