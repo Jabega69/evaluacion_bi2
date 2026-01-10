@@ -36,72 +36,175 @@ export default function TribunalDashboard() {
     );
 
     return (
-        <div className="animate-in w-full min-h-screen p-8 md:p-16 max-w-[1600px] mx-auto">
-            <div className="text-center mb-24 max-w-4xl mx-auto">
-                <h1 className="text-5xl md:text-6xl font-black text-slate-800 mb-6 leading-tight" style={{ fontFamily: 'Poppins' }}>
-                    Tu criterio define el <br /> <span className="text-purple-600">futuro académico</span> 🎓
+        <div style={{
+            width: '100%',
+            minHeight: '100vh',
+            padding: '2rem',
+            backgroundColor: '#F9FAFB',
+            fontFamily: "'Poppins', sans-serif"
+        }}>
+
+            {/* Header Centrado */}
+            <div style={{
+                maxWidth: '1200px',
+                margin: '0 auto 4rem auto',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            }}>
+                <h1 style={{
+                    fontSize: '2.5rem',
+                    fontWeight: 900,
+                    color: '#0F172A',
+                    marginBottom: '1rem',
+                    lineHeight: 1.2
+                }}>
+                    Evaluación del <span style={{ color: '#8B5CF6' }}>Tribunal</span> ⚖️
                 </h1>
-                <p className="text-xl text-slate-500 font-medium">
-                    Proyectos asignados para tu evaluación como miembro del Tribunal.
+                <p style={{
+                    fontSize: '1rem',
+                    color: '#64748B',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.2em'
+                }}>
+                    Tu criterio define el futuro académico
                 </p>
             </div>
 
-            {projects.length === 0 ? (
-                <div className="text-center py-20">
-                    <div className="text-6xl mb-4 opacity-20">⚖️</div>
-                    <h3 className="text-2xl font-bold text-slate-300">No tienes evaluaciones pendientes</h3>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 gap-12">
-                    {projects.map((project, idx) => {
-                        const variant = VARIANTS[idx % VARIANTS.length];
-                        return (
-                            <div key={project.id} className="rounded-[40px] p-10 md:p-16 transition-all hover:shadow-xl"
-                                style={{ background: variant.bg }}>
-                                <div className="text-center mb-12">
-                                    <span className="inline-block px-4 py-2 rounded-full bg-white/50 text-slate-600 font-bold text-xs uppercase tracking-widest mb-4">
-                                        Proyecto #{idx + 1}
-                                    </span>
-                                    <h2 className="text-3xl md:text-4xl font-black text-slate-800 mb-2" style={{ fontFamily: 'Poppins' }}>
-                                        {project.title}
-                                    </h2>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {project.students.map((student) => (
-                                        <div key={student.id} className="bg-white rounded-[32px] overflow-hidden flex flex-col shadow-sm transition-transform hover:-translate-y-2">
-                                            <div className="p-8 flex-1 flex flex-col items-center text-center">
-                                                <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center text-2xl font-bold text-slate-400 mb-4">
-                                                    {student.name.charAt(0)}
-                                                </div>
-                                                <h3 className="text-xl font-bold text-slate-900">{student.name}</h3>
-                                                <p className="text-sm text-slate-400 font-medium">Estudiante</p>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 border-t border-slate-100">
-                                                <Link
-                                                    href={`/dashboard/tribunal/${project.id}/escrita?studentId=${student.id}`}
-                                                    className="py-4 text-center font-bold text-sm transition-colors hover:bg-slate-50 flex flex-col items-center gap-1"
-                                                    style={{ color: variant.btn1 }}
-                                                >
-                                                    <span>📝 Escrita</span>
-                                                </Link>
-                                                <Link
-                                                    href={`/dashboard/tribunal/${project.id}/oral?studentId=${student.id}`}
-                                                    className="py-4 text-center font-bold text-sm transition-colors hover:bg-slate-50 flex flex-col items-center gap-1 border-l border-slate-100"
-                                                    style={{ color: variant.btn2 }}
-                                                >
-                                                    <span>🎤 Oral</span>
-                                                </Link>
-                                            </div>
+            {/* Lista de Proyectos */}
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                {projects.length === 0 ? (
+                    <div style={{
+                        textAlign: 'center',
+                        padding: '5rem',
+                        backgroundColor: 'white',
+                        borderRadius: '30px',
+                        border: '4px dashed #E2E8F0',
+                        color: '#94A3B8'
+                    }}>
+                        <div style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.3 }}>⚖️</div>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Todo al día</h3>
+                        <p>No tienes evaluaciones pendientes</p>
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+                        {projects.map((project, idx) => {
+                            const variant = VARIANTS[idx % VARIANTS.length];
+                            return (
+                                <div key={project.id} style={{
+                                    backgroundColor: variant.bg,
+                                    borderRadius: '30px',
+                                    overflow: 'hidden',
+                                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                                    border: '8px solid white'
+                                }}>
+                                    <div style={{ padding: '3rem', textAlign: 'center' }}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            width: '60px',
+                                            height: '60px',
+                                            borderRadius: '16px',
+                                            backgroundColor: 'rgba(255,255,255,0.5)',
+                                            fontSize: '1.5rem',
+                                            fontWeight: 800,
+                                            marginBottom: '1rem',
+                                            color: '#1E293B'
+                                        }}>
+                                            {idx + 1}
                                         </div>
-                                    ))}
+                                        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '2rem' }}>
+                                            {project.title}
+                                        </h2>
+
+                                        {/* Grid de Alumnos */}
+                                        <div style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                                            gap: '2rem'
+                                        }}>
+                                            {project.students.map((student) => (
+                                                <div key={student.id} style={{
+                                                    backgroundColor: 'white',
+                                                    borderRadius: '24px',
+                                                    padding: '2rem',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                                                }}>
+                                                    <div style={{
+                                                        width: '80px',
+                                                        height: '80px',
+                                                        borderRadius: '50%',
+                                                        backgroundColor: '#F1F5F9',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontSize: '2rem',
+                                                        fontWeight: 900,
+                                                        marginBottom: '1rem',
+                                                        color: '#64748B'
+                                                    }}>
+                                                        {student.name.charAt(0)}
+                                                    </div>
+                                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.25rem' }}>{student.name}</h3>
+                                                    <p style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8', marginBottom: '1.5rem' }}>Estudiante</p>
+
+                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', width: '100%' }}>
+                                                        <Link
+                                                            href={`/dashboard/tribunal/${project.id}/escrita?studentId=${student.id}`}
+                                                            style={{
+                                                                padding: '0.75rem',
+                                                                borderRadius: '12px',
+                                                                backgroundColor: variant.bg,
+                                                                color: variant.btn1,
+                                                                textAlign: 'center',
+                                                                fontWeight: 800,
+                                                                fontSize: '0.9rem',
+                                                                textDecoration: 'none',
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                alignItems: 'center',
+                                                                gap: '0.25rem'
+
+                                                            }}
+                                                        >
+                                                            <span style={{ fontSize: '1.2rem' }}>📝</span> Escrita
+                                                        </Link>
+                                                        <Link
+                                                            href={`/dashboard/tribunal/${project.id}/oral?studentId=${student.id}`}
+                                                            style={{
+                                                                padding: '0.75rem',
+                                                                borderRadius: '12px',
+                                                                backgroundColor: variant.bg,
+                                                                color: variant.btn2,
+                                                                textAlign: 'center',
+                                                                fontWeight: 800,
+                                                                fontSize: '0.9rem',
+                                                                textDecoration: 'none',
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                alignItems: 'center',
+                                                                gap: '0.25rem'
+                                                            }}
+                                                        >
+                                                            <span style={{ fontSize: '1.2rem' }}>🎤</span> Oral
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

@@ -7,6 +7,8 @@ import { useEffect } from 'react';
 const navItems = {
     admin: [
         { icon: '📊', label: 'Proyectos', path: '/dashboard/admin', color: 'purple' },
+        { icon: '👥', label: 'Profesores', path: '/dashboard/admin/users', color: 'orange' },
+        { icon: '🗓️', label: 'Calendario', path: '/dashboard/admin/calendar', color: 'blue' },
         { icon: '📈', label: 'Informes', path: '/dashboard/admin/reports', color: 'pink' },
     ],
     tribunal: [

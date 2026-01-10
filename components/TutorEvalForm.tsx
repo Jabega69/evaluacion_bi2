@@ -28,6 +28,7 @@ export default function TutorEvalForm({ rubric, project, student, tutorId }: Pro
             id: crypto.randomUUID(),
             projectId: project.id,
             tutorId: tutorId,
+            studentId: student.id,
             scores, // We should also store which student is being evaluated, simplified here to project context
             submittedAt: new Date().toISOString()
         });
@@ -53,8 +54,8 @@ export default function TutorEvalForm({ rubric, project, student, tutorId }: Pro
                                             key={val}
                                             onClick={() => setScores(prev => ({ ...prev, [item.id]: val }))}
                                             className={`px-4 py-2 rounded-md border text-sm font-medium transition-colors ${scores[item.id] === val
-                                                    ? 'bg-indigo-600 text-white border-indigo-600'
-                                                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600'
+                                                ? 'bg-indigo-600 text-white border-indigo-600'
+                                                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600'
                                                 }`}
                                         >
                                             {val}

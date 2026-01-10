@@ -30,58 +30,172 @@ export default function TutorDashboard() {
     );
 
     return (
-        <div className="animate-in w-full min-h-screen p-8 md:p-16 max-w-[1600px] mx-auto">
-            <div className="text-center mb-24 max-w-4xl mx-auto">
-                <h1 className="text-5xl md:text-6xl font-black text-slate-800 mb-6 leading-tight" style={{ fontFamily: 'Poppins' }}>
-                    Guía el camino al <br /> <span className="text-teal-500">éxito</span> 🌱
+        <div style={{
+            width: '100%',
+            minHeight: '100vh',
+            padding: '2rem',
+            backgroundColor: '#F9FAFB',
+            fontFamily: "'Poppins', sans-serif"
+        }}>
+
+            {/* Header Centrado */}
+            <div style={{
+                maxWidth: '1200px',
+                margin: '0 auto 4rem auto',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            }}>
+                <h1 style={{
+                    fontSize: '2.5rem',
+                    fontWeight: 900,
+                    color: '#0F172A',
+                    marginBottom: '1rem',
+                    lineHeight: 1.2
+                }}>
+                    Guía al <span style={{ color: '#14B8A6' }}>Éxito</span> 🌱
                 </h1>
-                <p className="text-xl text-slate-500 font-medium">
-                    Seguimiento y tutoría de los alumnos asignados.
+                <p style={{
+                    fontSize: '1rem',
+                    color: '#64748B',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.2em'
+                }}>
+                    Tutoría y seguimiento personalizado
                 </p>
             </div>
 
-            {projects.length === 0 ? (
-                <div className="text-center py-20">
-                    <div className="text-6xl mb-4 opacity-20">🌱</div>
-                    <h3 className="text-2xl font-bold text-slate-300">No tienes alumnos asignados</h3>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {projects.map((project) => (
-                        <div key={project.id} className="rounded-[40px] overflow-hidden bg-[#CCFBF1] flex flex-col h-full hover:shadow-xl transition-shadow">
-                            <div className="p-10 flex-1">
-                                <span className="inline-block px-3 py-1 bg-white/60 text-teal-800 rounded-lg text-xs font-bold uppercase tracking-wider mb-6">
-                                    Proyecto Tutorizado
-                                </span>
-                                <h3 className="text-3xl font-black text-slate-800 mb-8 leading-tight" style={{ fontFamily: 'Poppins' }}>
-                                    {project.title}
-                                </h3>
+            {/* Lista de Proyectos */}
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                {projects.length === 0 ? (
+                    <div style={{
+                        textAlign: 'center',
+                        padding: '5rem',
+                        backgroundColor: 'white',
+                        borderRadius: '30px',
+                        border: '4px dashed #E2E8F0',
+                        color: '#94A3B8'
+                    }}>
+                        <div style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.3 }}>🌱</div>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Sin asignaciones</h3>
+                        <p>Aún no tienes alumnos que tutelar</p>
+                    </div>
+                ) : (
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+                        gap: '2rem'
+                    }}>
+                        {projects.map((project, idx) => (
+                            <div key={project.id} style={{
+                                backgroundColor: '#CCFBF1', // Teal 100
+                                borderRadius: '30px',
+                                overflow: 'hidden',
+                                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                                border: '8px solid white',
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}>
 
-                                <div className="space-y-4">
-                                    {project.students.map(student => (
-                                        <Link
-                                            key={student.id}
-                                            href={`/dashboard/tutor/${student.id}`}
-                                            className="block bg-white p-4 rounded-2xl flex items-center justify-between group hover:scale-[1.02] transition-transform"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-bold">
-                                                    {student.name.charAt(0)}
+                                <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+                                        <div style={{
+                                            width: '50px',
+                                            height: '50px',
+                                            borderRadius: '12px',
+                                            backgroundColor: 'rgba(255,255,255,0.6)',
+                                            color: '#0D9488',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '1.25rem',
+                                            fontWeight: 900
+                                        }}>
+                                            {idx + 1}
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <span style={{
+                                                display: 'inline-block',
+                                                padding: '0.25rem 0.5rem',
+                                                backgroundColor: '#0D9488',
+                                                color: 'white',
+                                                borderRadius: '6px',
+                                                fontSize: '0.65rem',
+                                                fontWeight: 800,
+                                                textTransform: 'uppercase',
+                                                marginBottom: '0.25rem'
+                                            }}>
+                                                Tutorizando
+                                            </span>
+                                            <h3 style={{
+                                                fontSize: '1.25rem',
+                                                fontWeight: 900,
+                                                color: '#134E4A',
+                                                lineHeight: 1.2
+                                            }}>
+                                                {project.title}
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
+                                        {project.students.map(student => (
+                                            <Link
+                                                key={student.id}
+                                                href={`/dashboard/tutor/${student.id}`}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    backgroundColor: 'rgba(255,255,255,0.8)',
+                                                    padding: '0.75rem 1rem',
+                                                    borderRadius: '16px',
+                                                    textDecoration: 'none',
+                                                    color: '#334155',
+                                                    transition: 'transform 0.2s',
+                                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                                                }}
+                                            >
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                    <div style={{
+                                                        width: '36px',
+                                                        height: '36px',
+                                                        borderRadius: '10px',
+                                                        backgroundColor: '#F0FDFA',
+                                                        color: '#0D9488',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontWeight: 800
+                                                    }}>
+                                                        {student.name.charAt(0)}
+                                                    </div>
+                                                    <span style={{ fontWeight: 700, fontSize: '1rem' }}>{student.name}</span>
                                                 </div>
-                                                <span className="font-bold text-slate-700">{student.name}</span>
-                                            </div>
-                                            <span className="text-teal-500 text-xl font-bold group-hover:translate-x-1 transition-transform">→</span>
-                                        </Link>
-                                    ))}
+                                                <span style={{ color: '#0D9488', fontWeight: 900 }}>➜</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div style={{
+                                    backgroundColor: '#0D9488',
+                                    padding: '1rem',
+                                    textAlign: 'center',
+                                    color: 'white',
+                                    fontWeight: 800,
+                                    fontSize: '0.8rem',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.1em'
+                                }}>
+                                    Evaluar Seguimiento ⚡️
                                 </div>
                             </div>
-                            <div className="bg-teal-500 p-4 text-center text-white/90 font-bold text-sm">
-                                Evaluación de Actitud y Seguimiento
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

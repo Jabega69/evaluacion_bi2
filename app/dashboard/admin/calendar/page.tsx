@@ -1,0 +1,219 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { api } from '@/lib/api';
+import { Project } from '@/types';
+
+export default function CalendarPage() {
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState<string | null>(null); // project id being saved
+
+    // Local state for edits before saving
+    const [edits, setEdits] = useState<Record<string, { date: string, location: string }>>({});
+
+    useEffect(() => {
+        loadProjects();
+    }, []);
+
+    async function loadProjects() {
+        setLoading(true);
+        const data = await api.projects.getAll();
+        // Sort by date (asc) handling nulls last
+        data.sort((a, b) => {
+            if (!a.presentationDate) return 1;
+            if (!b.presentationDate) return -1;
+            return new Date(a.presentationDate).getTime() - new Date(b.presentationDate).getTime();
+        });
+
+        // Init edits state
+        const initialEdits: any = {};
+        data.forEach(p => {
+            initialEdits[p.id] = {
+                date: p.presentationDate ? new Date(p.presentationDate).toISOString().slice(0, 16) : '', // format for datetime-local
+                location: p.presentationLocation || ''
+            };
+        });
+        setEdits(initialEdits);
+        setProjects(data);
+        setLoading(false);
+    }
+
+    async function handleSave(projectId: string) {
+        setSubmitting(projectId);
+        const edit = edits[projectId];
+
+        // Convert local datetime to ISO for storage
+        const dateToSave = edit.date ? new Date(edit.date).toISOString() : null;
+
+        const success = await api.projects.update(projectId, {
+            presentationDate: dateToSave || undefined,
+            presentationLocation: edit.location
+        });
+
+        if (success) {
+            // alert('Guardado'); // Optional feedback
+        } else {
+            alert('Error al guardar');
+        }
+        setSubmitting(null);
+    }
+
+    const handleChange = (projectId: string, field: 'date' | 'location', value: string) => {
+        setEdits(prev => ({
+            ...prev,
+            [projectId]: {
+                ...prev[projectId],
+                [field]: value
+            }
+        }));
+    };
+
+    return (
+        <div style={{
+            width: '100%',
+            minHeight: '100vh',
+            padding: '2rem',
+            backgroundColor: '#F9FAFB',
+            fontFamily: "'Poppins', sans-serif"
+        }}>
+            {/* Header */}
+            <div style={{
+                maxWidth: '1200px',
+                margin: '0 auto 3rem auto',
+                textAlign: 'center'
+            }}>
+                <h1 style={{
+                    fontSize: '3rem',
+                    fontWeight: 900,
+                    color: '#0F172A',
+                    marginBottom: '1rem'
+                }}>
+                    Agenda de <span style={{ color: '#8B5CF6' }}>Exposiciones</span> 🗓️
+                </h1>
+                <p style={{
+                    fontSize: '1.1rem',
+                    color: '#64748B',
+                    fontWeight: 600,
+                    letterSpacing: '0.05em',
+                    textTransform: 'uppercase'
+                }}>
+                    Planificación de defensas y tribunales
+                </p>
+            </div>
+
+            {/* List */}
+            <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '4rem', color: '#CBD5E1', fontSize: '1.5rem', fontWeight: 700 }}>
+                        Cargando agenda...
+                    </div>
+                ) : projects.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '4rem', border: '4px dashed #E2E8F0', borderRadius: '24px' }}>
+                        <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#94A3B8' }}>No hay proyectos para agendar</p>
+                    </div>
+                ) : (
+                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                        {projects.map(p => (
+                            <div key={p.id} style={{
+                                backgroundColor: 'white',
+                                borderRadius: '20px',
+                                padding: '2rem',
+                                display: 'grid',
+                                gridTemplateColumns: 'minmax(300px, 1fr) auto',
+                                gap: '2rem',
+                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                                border: '1px solid #F1F5F9',
+                                alignItems: 'center'
+                            }}>
+                                <div>
+                                    <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>{p.title}</h3>
+                                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                        {p.students.map(s => (
+                                            <span key={s.id} style={{
+                                                padding: '0.25rem 0.75rem',
+                                                backgroundColor: '#F3F4F6',
+                                                borderRadius: '99px',
+                                                fontSize: '0.85rem',
+                                                fontWeight: 600,
+                                                color: '#4B5563'
+                                            }}>
+                                                {s.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '300px' }}>
+                                    <div style={{ display: 'flex', gap: '1rem' }}>
+                                        <div style={{ flex: 1 }}>
+                                            <label style={{ display: 'block', textTransform: 'uppercase', fontSize: '0.7rem', fontWeight: 800, color: '#94A3B8', marginBottom: '0.25rem' }}>
+                                                Fecha y Hora
+                                            </label>
+                                            <input
+                                                type="datetime-local"
+                                                value={edits[p.id]?.date || ''}
+                                                onChange={(e) => handleChange(p.id, 'date', e.target.value)}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '0.75rem',
+                                                    borderRadius: '10px',
+                                                    border: '2px solid #E2E8F0',
+                                                    fontWeight: 600,
+                                                    fontSize: '0.9rem',
+                                                    outline: 'none',
+                                                    color: '#334155'
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', gap: '1rem' }}>
+                                        <div style={{ flex: 1 }}>
+                                            <label style={{ display: 'block', textTransform: 'uppercase', fontSize: '0.7rem', fontWeight: 800, color: '#94A3B8', marginBottom: '0.25rem' }}>
+                                                Ubicación / Aula
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="Ej. Aula Magna, Zoom..."
+                                                value={edits[p.id]?.location || ''}
+                                                onChange={(e) => handleChange(p.id, 'location', e.target.value)}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '0.75rem',
+                                                    borderRadius: '10px',
+                                                    border: '2px solid #E2E8F0',
+                                                    fontWeight: 600,
+                                                    fontSize: '0.9rem',
+                                                    outline: 'none',
+                                                    color: '#334155'
+                                                }}
+                                            />
+                                        </div>
+                                        <button
+                                            onClick={() => handleSave(p.id)}
+                                            disabled={submitting === p.id}
+                                            style={{
+                                                alignSelf: 'flex-end',
+                                                padding: '0.75rem 1.5rem',
+                                                borderRadius: '10px',
+                                                border: 'none',
+                                                background: submitting === p.id ? '#CBD5E1' : 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+                                                color: 'white',
+                                                fontWeight: 800,
+                                                cursor: submitting === p.id ? 'not-allowed' : 'pointer',
+                                                boxShadow: submitting === p.id ? 'none' : '0 4px 12px rgba(124, 58, 237, 0.3)'
+                                            }}
+                                        >
+                                            {submitting === p.id ? '...' : 'Guardar'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}

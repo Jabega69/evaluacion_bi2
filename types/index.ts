@@ -18,6 +18,8 @@ export interface Project {
   students: Student[];
   tribunalIds: string[]; // 3 IDs needed
   tutorId: string;
+  presentationDate?: string;
+  presentationLocation?: string;
 }
 
 // Rubric Structures

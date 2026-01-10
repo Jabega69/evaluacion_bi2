@@ -13,14 +13,50 @@ export const api = {
 
             if (error || !data) return null;
             return data as User;
-        },
-        getAllUsers: async (): Promise<User[]> => {
+        }
+    },
+
+    users: {
+        getAll: async (): Promise<User[]> => {
             const { data, error } = await supabase
                 .from('users')
-                .select('*');
+                .select('*')
+                .order('name');
 
             if (error) return [];
             return data as User[];
+        },
+        create: async (user: Omit<User, 'id'>): Promise<User | null> => {
+            const { data, error } = await supabase
+                .from('users')
+                .insert([user])
+                .select()
+                .single();
+
+            if (error) {
+                console.error('Error creating user:', error);
+                return null;
+            }
+            return data as User;
+        },
+        update: async (id: string, updates: Partial<User>): Promise<User | null> => {
+            const { data, error } = await supabase
+                .from('users')
+                .update(updates)
+                .eq('id', id)
+                .select()
+                .single();
+
+            if (error) return null;
+            return data as User;
+        },
+        delete: async (id: string): Promise<boolean> => {
+            const { error } = await supabase
+                .from('users')
+                .delete()
+                .eq('id', id);
+
+            return !error;
         }
     },
 
@@ -42,7 +78,9 @@ export const api = {
                 title: p.title,
                 tutorId: p.tutor_id,
                 students: p.students || [],
-                tribunalIds: p.tribunal_ids || []
+                tribunalIds: p.tribunal_ids || [],
+                presentationDate: p.presentation_date,
+                presentationLocation: p.presentation_location
             })) as Project[];
         },
         getById: async (id: string): Promise<Project | undefined> => {
@@ -59,8 +97,23 @@ export const api = {
                 title: project.title,
                 tutorId: project.tutor_id,
                 students: project.students || [],
-                tribunalIds: project.tribunal_ids || []
+                tribunalIds: project.tribunal_ids || [],
+                presentationDate: project.presentation_date,
+                presentationLocation: project.presentation_location
             } as Project;
+        },
+        update: async (id: string, updates: Partial<Project>): Promise<boolean> => {
+            const dbUpdates: any = {};
+            if (updates.title) dbUpdates.title = updates.title;
+            if (updates.tutorId) dbUpdates.tutor_id = updates.tutorId;
+            if (updates.presentationDate) dbUpdates.presentation_date = updates.presentationDate;
+            if (updates.presentationLocation) dbUpdates.presentation_location = updates.presentationLocation;
+
+            const { error } = await supabase
+                .from('projects')
+                .update(dbUpdates)
+                .eq('id', id);
+            return !error;
         },
         getByGrader: async (graderId: string): Promise<Project[]> => {
             const { data: assignments, error: aError } = await supabase
@@ -217,7 +270,7 @@ export const api = {
                     grader_id: evaluation.studentId,
                     type: 'tutor',
                     scores: {
-                        attitudeScores: evaluation.attitudeScores
+                        scores: evaluation.scores
                     }
                 });
             return { success: !error };

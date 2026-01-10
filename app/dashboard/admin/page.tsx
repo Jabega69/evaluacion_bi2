@@ -35,7 +35,7 @@ export default function AdminDashboard() {
         try {
             const [pData, uData] = await Promise.all([
                 api.projects.getAll(),
-                api.auth.getAllUsers()
+                api.users.getAll()
             ]);
             setProjects(pData);
             setAllUsers(uData);
@@ -90,75 +90,150 @@ export default function AdminDashboard() {
     );
 
     return (
-        <div className="animate-in w-full min-h-screen p-8 md:p-12 lg:p-20 overflow-x-hidden">
+        <div style={{
+            width: '100%',
+            minHeight: '100vh',
+            padding: '2rem',
+            backgroundColor: '#F9FAFB', // Fondo base claro
+            fontFamily: "'Poppins', sans-serif"
+        }}>
 
-            {/* Contenedor Centrado de la Página */}
-            <div className="max-w-[1600px] mx-auto flex flex-col items-center w-full">
+            {/* Cabecera Principal - Estilo Garantizado */}
+            <div style={{
+                maxWidth: '1400px',
+                margin: '0 auto 3rem auto',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            }}>
+                <h1 style={{
+                    fontSize: '3rem',
+                    fontWeight: 900,
+                    color: '#0F172A', // Slate 900
+                    marginBottom: '1rem',
+                    lineHeight: 1.2
+                }}>
+                    Panel de <span style={{ color: '#2563EB' }}>Investigaciones</span> 🔬
+                </h1>
+                <p style={{
+                    fontSize: '1.1rem',
+                    color: '#64748B', // Slate 500
+                    fontWeight: 600,
+                    marginBottom: '2rem',
+                    letterSpacing: '0.05em',
+                    textTransform: 'uppercase'
+                }}>
+                    Gestión Académica y Control de Proyectos
+                </p>
 
-                {/* Header Simple y Funcional */}
-                <div className="text-center mb-20 w-full flex flex-col items-center">
-                    <h1 className="text-6xl md:text-7xl lg:text-8xl font-black text-slate-800 mb-6" style={{ fontFamily: 'Poppins', letterSpacing: '-0.04em' }}>
-                        Panel de Investigaciones
-                    </h1>
-                    <p className="text-slate-400 font-bold uppercase tracking-[0.5em] text-lg lg:text-xl mb-20">
-                        Gestión Académica
-                    </p>
+                {/* Botón Nueva Investigación - Estilo 3D Manual */}
+                <button
+                    onClick={() => setShowModal(true)}
+                    style={{
+                        background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                        color: 'white',
+                        padding: '1rem 2.5rem',
+                        borderRadius: '50px',
+                        fontSize: '1.25rem',
+                        fontWeight: 800,
+                        border: 'none',
+                        cursor: 'pointer',
+                        boxShadow: '0 10px 20px -5px rgba(37, 99, 235, 0.4)',
+                        transition: 'transform 0.2s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                    <span style={{ fontSize: '1.5rem' }}>+</span> Nueva Investigación
+                </button>
+            </div>
 
-                    <button
-                        onClick={() => setShowModal(true)}
-                        className="group relative inline-flex items-center gap-6 px-20 py-8 rounded-[40px] font-black text-3xl transition-all hover:-translate-y-2 active:translate-y-0 text-white shadow-2xl"
-                        style={{
-                            background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-                            boxShadow: '0 25px 50px -12px rgba(59, 130, 246, 0.5)',
-                            borderBottom: '8px solid #1D4ED8'
-                        }}
-                    >
-                        <span className="bg-white/20 w-16 h-16 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
-                            +
-                        </span>
-                        <span>Nueva Investigación</span>
-                    </button>
-                </div>
-
-                {/* Grid de Tarjetas de Proyectos */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-12 w-full mt-12">
-                    {projects.map((p, idx) => {
-                        const variant = CARD_VARIANTS[idx % CARD_VARIANTS.length];
-                        return (
-                            <div key={p.id} className="group relative rounded-[45px] overflow-hidden transition-all hover:-translate-y-3 flex flex-col h-[450px] shadow-xl hover:shadow-2xl"
-                                style={{ background: variant.bg }}>
-
-                                <div className="p-10 flex-1 flex flex-col items-center justify-center text-center">
-                                    <div className="w-32 h-32 mb-8 rounded-[40px] bg-white/60 flex items-center justify-center text-6xl shadow-inner group-hover:scale-110 transition-transform">
-                                        {idx % 2 === 0 ? '📝' : '🔬'}
+            {/* Contenido Principal */}
+            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                {projects.length === 0 ? (
+                    <div style={{
+                        textAlign: 'center',
+                        padding: '5rem 2rem',
+                        backgroundColor: 'white',
+                        borderRadius: '30px',
+                        border: '4px dashed #E2E8F0',
+                        color: '#94A3B8'
+                    }}>
+                        <div style={{ fontSize: '5rem', marginBottom: '1.5rem', opacity: 0.5 }}>📂</div>
+                        <h3 style={{ fontSize: '2rem', fontWeight: 800, color: '#CBD5E1', marginBottom: '0.5rem' }}>No hay proyectos activos</h3>
+                        <p style={{ fontWeight: 600 }}>¡Comienza pulsando el botón azul superior!</p>
+                    </div>
+                ) : (
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', // Grid responsivo
+                        gap: '2rem'
+                    }}>
+                        {projects.map((project) => (
+                            <div key={project.id} style={{
+                                backgroundColor: 'white',
+                                borderRadius: '24px',
+                                overflow: 'hidden',
+                                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                                border: '1px solid #F1F5F9',
+                                transition: 'all 0.2s',
+                                position: 'relative'
+                            }}>
+                                <div style={{ padding: '1.5rem' }}>
+                                    <div style={{
+                                        display: 'inline-block',
+                                        padding: '0.25rem 0.75rem',
+                                        borderRadius: '99px',
+                                        backgroundColor: '#EFF6FF',
+                                        color: '#2563EB',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 800,
+                                        marginBottom: '1rem',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.05em'
+                                    }}>
+                                        Proyecto
                                     </div>
-                                    <h3 className="text-3xl font-black text-slate-800 mb-3 line-clamp-2 leading-[1.1]" style={{ fontFamily: 'Poppins' }}>
-                                        {p.title}
+                                    <h3 style={{
+                                        fontSize: '1.5rem',
+                                        fontWeight: 800,
+                                        color: '#0F172A',
+                                        marginBottom: '0.5rem',
+                                        lineHeight: 1.3
+                                    }}>
+                                        {project.title}
                                     </h3>
-                                    <p className="text-base font-black text-slate-500/60 uppercase tracking-widest">
-                                        {p.students?.length} Estudiantes
+                                    <p style={{ fontSize: '0.9rem', color: '#64748B' }}>
+                                        {project.students.length} Estudiante{project.students.length !== 1 ? 's' : ''}
                                     </p>
                                 </div>
-
-                                <Link
-                                    href={`/dashboard/admin/reports/${p.id}`}
-                                    className="w-full py-7 text-center text-white font-black text-xl hover:brightness-110 transition-all flex items-center justify-center gap-3"
-                                    style={{ background: variant.btn }}
-                                >
-                                    Ver Informe Completo ➜
-                                </Link>
+                                <div style={{
+                                    padding: '1rem 1.5rem',
+                                    backgroundColor: '#F8FAFC',
+                                    borderTop: '1px solid #E2E8F0',
+                                    display: 'flex',
+                                    justifyContent: 'flex-end'
+                                }}>
+                                    <Link href={`/dashboard/admin/reports/${project.id}`} style={{
+                                        color: '#2563EB',
+                                        fontWeight: 700,
+                                        fontSize: '0.9rem',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        textDecoration: 'none'
+                                    }}>
+                                        Ver Detalles →
+                                    </Link>
+                                </div>
                             </div>
-                        );
-                    })}
-
-                    {projects.length === 0 && (
-                        <div className="col-span-full text-center py-32 bg-slate-50 rounded-[60px] border-8 border-dashed border-slate-100">
-                            <div className="text-9xl mb-8 grayscale opacity-10">📂</div>
-                            <h3 className="text-4xl font-black text-slate-200" style={{ fontFamily: 'Poppins' }}>No hay proyectos activos</h3>
-                            <p className="text-slate-300 font-bold mt-4 text-xl">¡Comienza pulsando el botón azul!</p>
-                        </div>
-                    )}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* MODAL GIGANTE - CON ESTILOS INLINE PARA GARANTIZAR LAYOUT (VERSIÓN COMPACTA) */}
