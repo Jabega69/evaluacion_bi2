@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
-    const { login, loginWithGoogle, user } = useAuth();
+    const { login, loginWithGoogle, user, isLoading } = useAuth();
     const router = useRouter();
 
     const [email, setEmail] = useState('');
@@ -14,11 +14,13 @@ export default function LoginForm() {
     const [loading, setLoading] = useState(false);
 
     // Redirect if already logged in
-    if (user) {
-        if (user.role === 'admin') router.push('/dashboard/admin');
-        else if (user.role === 'tribunal') router.push('/dashboard/tribunal');
-        else if (user.role === 'tutor') router.push('/dashboard/tutor');
-    }
+    useEffect(() => {
+        if (user && !isLoading) {
+            if (user.role === 'admin') router.push('/dashboard/admin');
+            else if (user.role === 'tribunal') router.push('/dashboard/tribunal');
+            else if (user.role === 'tutor') router.push('/dashboard/tutor');
+        }
+    }, [user, isLoading, router]);
 
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();

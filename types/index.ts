@@ -5,6 +5,7 @@ export interface User {
   name: string;
   email: string;
   role: Role;
+  needs_password_reset?: boolean;
 }
 
 export interface Student {

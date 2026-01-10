@@ -9,10 +9,10 @@ export default function AdminUsersPage() {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
 
-    // Form State
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        password: '',
         role: 'tutor' as 'tutor' | 'tribunal' | 'admin'
     });
     const [submitting, setSubmitting] = useState(false);
@@ -41,22 +41,28 @@ export default function AdminUsersPage() {
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setSubmitting(true);
-        // Create user
-        const newUser = await api.users.create({
-            name: formData.name,
-            email: formData.email,
-            role: formData.role
-            // created_at is automatic
-        } as any); // Type cast as necessary if Omit is strictly checked
 
-        if (newUser) {
-            setShowModal(false);
-            setFormData({ name: '', email: '', role: 'tutor' });
-            loadUsers();
-        } else {
-            alert('Error al crear usuario');
+        try {
+            const response = await fetch('/api/admin/create-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setShowModal(false);
+                setFormData({ name: '', email: '', password: '', role: 'tutor' });
+                loadUsers();
+            } else {
+                alert(result.error || 'Error al crear usuario');
+            }
+        } catch (err) {
+            alert('Error de conexión');
+        } finally {
+            setSubmitting(false);
         }
-        setSubmitting(false);
     }
 
     return (
@@ -252,6 +258,25 @@ export default function AdminUsersPage() {
                                         outline: 'none'
                                     }}
                                     placeholder="usuario@ejemplo.com"
+                                />
+                            </div>
+
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem' }}>Contraseña Temporal</label>
+                                <input
+                                    required
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={e => setFormData({ ...formData, password: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        padding: '1rem',
+                                        borderRadius: '12px',
+                                        border: '2px solid #E2E8F0',
+                                        fontSize: '1rem',
+                                        outline: 'none'
+                                    }}
+                                    placeholder="Clave inicial"
                                 />
                             </div>
 
