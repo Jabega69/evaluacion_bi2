@@ -41,9 +41,9 @@ export default function LoginForm() {
             setTimeout(() => {
                 if (!window.location.pathname.includes('/dashboard')) {
                     setLoading(false);
-                    setError('Autenticado pero sin perfil. Contacta al admin.');
+                    setError('No se pudo cargar tu perfil. Por favor, contacta con secretaría.');
                 }
-            }, 3000);
+            }, 5000);
         }
     };
 
@@ -203,10 +203,6 @@ export default function LoginForm() {
                 </svg>
                 Continuar con Google
             </button>
-
-            <div style={{ marginTop: '2rem', fontSize: '0.7rem', color: '#CBD5E1', fontWeight: 700 }}>
-                v2.0.4-DEBUG-LOGS
-            </div>
         </div>
     );
 }

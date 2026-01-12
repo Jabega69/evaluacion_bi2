@@ -23,16 +23,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
 
     useEffect(() => {
-        console.log('AuthProvider initialized, checking session...');
         // Check active session
         const checkSession = async () => {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session?.user?.email) {
-                    console.log('Session found for:', session.user.email);
                     await fetchUserRole(session.user.email);
                 } else {
-                    console.log('No active session found.');
                     setUser(null);
                     setIsLoading(false);
                 }
@@ -45,12 +42,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         checkSession();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            console.log('Auth state change event:', event);
             if (session?.user?.email) {
-                console.log('AuthChange session found for:', session.user.email);
                 await fetchUserRole(session.user.email);
             } else {
-                console.log('AuthChange: no session.');
                 setUser(null);
                 setIsLoading(false);
             }
@@ -60,7 +54,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const fetchUserRole = async (email: string) => {
-        console.log('Fetching profile for:', email);
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -75,7 +68,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             if (data) {
-                console.log('User profile found:', data);
                 // Defensive check: handle both 'roles' (new) and 'role' (old) during transition
                 const roles = data.roles || (data.role ? [data.role] : []);
                 const userData: User = {
@@ -85,7 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 };
                 setUser(userData);
             } else {
-                console.warn('User authenticated but not found in public.users table');
                 setUser(null);
             }
         } catch (err) {
