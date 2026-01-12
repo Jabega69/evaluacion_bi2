@@ -54,22 +54,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const fetchUserRole = async (email: string) => {
-        // Fetch role from public.users
-        const { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('email', email)
-            .single();
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', email)
+                .single();
 
-        if (data) {
-            const userData = data as User;
-            // If only one role, set it as active automatically
-            if (userData.roles?.length === 1) {
-                userData.activeRole = userData.roles[0];
+            if (data) {
+                // Defensive check: handle both 'roles' (new) and 'role' (old) during transition
+                const roles = data.roles || (data.role ? [data.role] : []);
+                const userData: User = {
+                    ...data,
+                    roles: roles,
+                    activeRole: roles.length === 1 ? roles[0] : undefined
+                };
+                setUser(userData);
+            } else {
+                console.warn('User authenticated but not found in public.users');
+                setUser(null);
             }
-            setUser(userData);
-        } else {
-            console.warn('User authenticated but not found in public.users');
+        } catch (err) {
+            console.error('Error fetching user roles:', err);
             setUser(null);
         }
     };

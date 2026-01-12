@@ -21,7 +21,7 @@ export default function LoginForm() {
             if (role === 'admin') router.push('/dashboard/admin');
             else if (role === 'tribunal') router.push('/dashboard/tribunal');
             else if (role === 'tutor') router.push('/dashboard/tutor');
-        } else if (user && !isLoading && !user.activeRole && user.roles.length > 1) {
+        } else if (user && !isLoading && !user.activeRole && user.roles && user.roles.length > 1) {
             setShowRoleSelector(true);
         }
     }, [user, isLoading, router]);

@@ -12,9 +12,11 @@ export default function DashboardPage() {
         if (!isLoading) {
             if (!user) {
                 router.push('/');
+            } else if (user.activeRole) {
+                // Redirection logic based on active role
+                router.push(`/dashboard/${user.activeRole}`);
             } else {
-                // Redirection logic based on role
-                router.push(`/dashboard/${user.role}`);
+                router.push('/');
             }
         }
     }, [user, isLoading, router]);

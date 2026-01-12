@@ -12,7 +12,8 @@ export const api = {
                 .single();
 
             if (error || !data) return null;
-            return data as User;
+            const roles = data.roles || (data.role ? [data.role] : []);
+            return { ...data, roles } as User;
         }
     },
 
@@ -23,8 +24,11 @@ export const api = {
                 .select('*')
                 .order('name');
 
-            if (error) return [];
-            return data as User[];
+            if (error || !data) return [];
+            return data.map((u: any) => ({
+                ...u,
+                roles: u.roles || (u.role ? [u.role] : [])
+            })) as User[];
         },
         create: async (user: Omit<User, 'id'>): Promise<User | null> => {
             const { data, error } = await supabase
