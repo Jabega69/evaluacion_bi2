@@ -23,30 +23,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
 
     useEffect(() => {
+        console.log('AuthProvider initialized, checking session...');
         // Check active session
         const checkSession = async () => {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session?.user?.email) {
+                    console.log('Session found for:', session.user.email);
                     await fetchUserRole(session.user.email);
                 } else {
+                    console.log('No active session found.');
                     setUser(null);
+                    setIsLoading(false);
                 }
             } catch (error) {
                 console.error('Session check error:', error);
-            } finally {
                 setIsLoading(false);
             }
         };
 
         checkSession();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('Auth state change event:', event);
             if (session?.user?.email) {
+                console.log('AuthChange session found for:', session.user.email);
                 await fetchUserRole(session.user.email);
             } else {
+                console.log('AuthChange: no session.');
                 setUser(null);
-                // router.push('/'); // Optional: Force redirect on logout
+                setIsLoading(false);
             }
         });
 
