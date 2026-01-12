@@ -2,11 +2,11 @@ import { Project, User, WrittenRubric, OralRubric, TutorRubric } from '@/types';
 
 // USERS
 export const MOCK_USERS: User[] = [
-    { id: 'admin-1', name: 'Administrador Principal', email: 'admin@school.edu', role: 'admin' },
-    { id: 'tutor-1', name: 'Dr. Roberto Tutor', email: 'tutor1@school.edu', role: 'tutor' },
-    { id: 'tribunal-1', name: 'Prof. Ana Garcia', email: 'ana@school.edu', role: 'tribunal' },
-    { id: 'tribunal-2', name: 'Prof. Carlos Ruiz', email: 'carlos@school.edu', role: 'tribunal' },
-    { id: 'tribunal-3', name: 'Prof. Elena Diaz', email: 'elena@school.edu', role: 'tribunal' },
+    { id: 'admin-1', name: 'Administrador Principal', email: 'admin@school.edu', roles: ['admin'] },
+    { id: 'tutor-1', name: 'Dr. Roberto Tutor', email: 'tutor1@school.edu', roles: ['tutor'] },
+    { id: 'tribunal-1', name: 'Prof. Ana Garcia', email: 'ana@school.edu', roles: ['tribunal'] },
+    { id: 'tribunal-2', name: 'Prof. Carlos Ruiz', email: 'carlos@school.edu', roles: ['tribunal'] },
+    { id: 'tribunal-3', name: 'Prof. Elena Diaz', email: 'elena@school.edu', roles: ['tribunal'] },
 ];
 
 // PROJECTS

@@ -44,8 +44,8 @@ export default function AdminDashboard() {
         }
     };
 
-    const tutors = allUsers.filter(u => u.role === 'tutor');
-    const tribunals = allUsers.filter(u => u.role === 'tribunal');
+    const tutors = allUsers.filter(u => u.roles?.includes('tutor'));
+    const tribunals = allUsers.filter(u => u.roles?.includes('tribunal'));
 
     const handleAddProject = async (e: React.FormEvent) => {
         e.preventDefault();
