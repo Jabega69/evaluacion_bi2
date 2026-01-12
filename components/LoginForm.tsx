@@ -103,6 +103,17 @@ export default function LoginForm() {
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             textAlign: 'center'
         }}>
+            <div style={{
+                backgroundColor: '#EF4444',
+                color: 'white',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                marginBottom: '1rem',
+                fontWeight: 900,
+                fontSize: '0.8rem'
+            }}>
+                SISTEMA ACTUALIZADO ✅
+            </div>
             <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '2rem', color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
                 Bienvenido 👋
             </h2>
