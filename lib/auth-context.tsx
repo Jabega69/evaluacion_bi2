@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '@/types';
+import { User, Role } from '@/types';
 import { supabase } from './supabase';
 import { useRouter } from 'next/navigation';
 
@@ -11,6 +11,7 @@ interface AuthContextType {
     loginWithGoogle: () => Promise<void>;
     signUp: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
     logout: () => Promise<void>;
+    setActiveRole: (role: Role) => void;
     isLoading: boolean;
 }
 
@@ -61,12 +62,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .single();
 
         if (data) {
-            setUser(data as User);
+            const userData = data as User;
+            // If only one role, set it as active automatically
+            if (userData.roles?.length === 1) {
+                userData.activeRole = userData.roles[0];
+            }
+            setUser(userData);
         } else {
-            // User authenticated but not in our system (no role)
-            // You might want to handle this case (e.g., create a default user or show error)
             console.warn('User authenticated but not found in public.users');
             setUser(null);
+        }
+    };
+
+    const setActiveRole = (role: Role) => {
+        if (user) {
+            setUser({ ...user, activeRole: role });
         }
     };
 
@@ -82,7 +92,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 return { success: false, error: error.message };
             }
 
-            // fetchUserRole will be triggered by onAuthStateChange
             return { success: true };
         } catch (err) {
             return { success: false, error: 'An unexpected error occurred' };
@@ -96,11 +105,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/dashboard` // Or just origin
+                redirectTo: `${window.location.origin}/dashboard`
             }
         });
         if (error) console.error('Google Auth Error:', error);
-        // Will redirect, so loading state stays true
     };
 
     const signUp = async (email: string, password: string) => {
@@ -121,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, loginWithGoogle, signUp, logout, isLoading }}>
+        <AuthContext.Provider value={{ user, login, loginWithGoogle, signUp, logout, setActiveRole, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

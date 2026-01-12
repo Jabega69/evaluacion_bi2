@@ -5,20 +5,24 @@ import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
-    const { login, loginWithGoogle, user, isLoading } = useAuth();
+    const { login, loginWithGoogle, user, isLoading, setActiveRole } = useAuth();
     const router = useRouter();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showRoleSelector, setShowRoleSelector] = useState(false);
 
-    // Redirect if already logged in
+    // Redirect if already logged in and role is selected
     useEffect(() => {
-        if (user && !isLoading) {
-            if (user.role === 'admin') router.push('/dashboard/admin');
-            else if (user.role === 'tribunal') router.push('/dashboard/tribunal');
-            else if (user.role === 'tutor') router.push('/dashboard/tutor');
+        if (user && !isLoading && user.activeRole) {
+            const role = user.activeRole;
+            if (role === 'admin') router.push('/dashboard/admin');
+            else if (role === 'tribunal') router.push('/dashboard/tribunal');
+            else if (role === 'tutor') router.push('/dashboard/tutor');
+        } else if (user && !isLoading && !user.activeRole && user.roles.length > 1) {
+            setShowRoleSelector(true);
         }
     }, [user, isLoading, router]);
 
@@ -34,6 +38,52 @@ export default function LoginForm() {
         }
         // If success, auth-context redirects
     };
+
+    if (showRoleSelector && user) {
+        return (
+            <div style={{
+                width: '100%',
+                maxWidth: '500px',
+                background: 'white',
+                borderRadius: '24px',
+                padding: '3rem',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                textAlign: 'center'
+            }}>
+                <h2 style={{ fontSize: '1.75rem', fontWeight: 900, marginBottom: '1rem', color: '#0F172A' }}>
+                    Selecciona tu Rol
+                </h2>
+                <p style={{ color: '#64748B', marginBottom: '2rem' }}>
+                    Tienes varios roles asignados. ¿Cómo quieres entrar hoy?
+                </p>
+
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                    {user.roles.map((role) => (
+                        <button
+                            key={role}
+                            onClick={() => setActiveRole(role as any)}
+                            style={{
+                                padding: '1.25rem',
+                                borderRadius: '16px',
+                                border: '2px solid #E2E8F0',
+                                background: 'white',
+                                color: '#0F172A',
+                                fontWeight: 700,
+                                fontSize: '1.1rem',
+                                cursor: 'pointer',
+                                textTransform: 'capitalize',
+                                transition: 'all 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.borderColor = '#6366F1'}
+                            onMouseLeave={(e) => e.currentTarget.style.borderColor = '#E2E8F0'}
+                        >
+                            Entrar como {role === 'tutor' ? 'Tutor' : role === 'tribunal' ? 'Tribunal' : 'Admin'}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div style={{

@@ -4,7 +4,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: Role;
+  roles: Role[];
+  activeRole?: Role;
   needs_password_reset?: boolean;
 }
 

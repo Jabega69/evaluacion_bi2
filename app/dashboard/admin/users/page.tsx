@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import { User } from '@/types';
+import { User, Role } from '@/types';
 
 export default function AdminUsersPage() {
     const [users, setUsers] = useState<User[]>([]);
@@ -13,7 +13,7 @@ export default function AdminUsersPage() {
         name: '',
         email: '',
         password: '',
-        role: 'tutor' as 'tutor' | 'tribunal' | 'admin'
+        roles: ['tutor'] as Role[]
     });
     const [submitting, setSubmitting] = useState(false);
 
@@ -53,7 +53,7 @@ export default function AdminUsersPage() {
 
             if (response.ok) {
                 setShowModal(false);
-                setFormData({ name: '', email: '', password: '', role: 'tutor' });
+                setFormData({ name: '', email: '', password: '', roles: ['tutor'] });
                 loadUsers();
             } else {
                 alert(result.error || 'Error al crear usuario');
@@ -146,8 +146,8 @@ export default function AdminUsersPage() {
                                         width: '56px',
                                         height: '56px',
                                         borderRadius: '16px',
-                                        backgroundColor: u.role === 'admin' ? '#F1F5F9' : (u.role === 'tutor' ? '#CCFBF1' : '#F3E8FF'),
-                                        color: u.role === 'admin' ? '#64748B' : (u.role === 'tutor' ? '#0D9488' : '#7C3AED'),
+                                        backgroundColor: u.roles?.includes('admin') ? '#F1F5F9' : (u.roles?.includes('tutor') ? '#CCFBF1' : '#F3E8FF'),
+                                        color: u.roles?.includes('admin') ? '#64748B' : (u.roles?.includes('tutor') ? '#0D9488' : '#7C3AED'),
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -158,19 +158,21 @@ export default function AdminUsersPage() {
                                     </div>
                                     <div>
                                         <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.2rem' }}>{u.name}</h3>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                                             <span style={{ fontSize: '0.9rem', color: '#64748B', fontWeight: 500 }}>{u.email}</span>
-                                            <span style={{
-                                                padding: '0.2rem 0.6rem',
-                                                borderRadius: '6px',
-                                                fontSize: '0.75rem',
-                                                fontWeight: 800,
-                                                textTransform: 'uppercase',
-                                                backgroundColor: u.role === 'admin' ? '#E2E8F0' : (u.role === 'tutor' ? '#E0F2FE' : '#FAE8FF'),
-                                                color: u.role === 'admin' ? '#475569' : (u.role === 'tutor' ? '#0284C7' : '#A855F7'),
-                                            }}>
-                                                {u.role}
-                                            </span>
+                                            {u.roles?.map(role => (
+                                                <span key={role} style={{
+                                                    padding: '0.2rem 0.6rem',
+                                                    borderRadius: '6px',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: 800,
+                                                    textTransform: 'uppercase',
+                                                    backgroundColor: role === 'admin' ? '#E2E8F0' : (role === 'tutor' ? '#E0F2FE' : '#FAE8FF'),
+                                                    color: role === 'admin' ? '#475569' : (role === 'tutor' ? '#0284C7' : '#A855F7'),
+                                                }}>
+                                                    {role}
+                                                </span>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
@@ -281,24 +283,32 @@ export default function AdminUsersPage() {
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem' }}>Rol Asignado</label>
-                                <select
-                                    value={formData.role}
-                                    onChange={e => setFormData({ ...formData, role: e.target.value as any })}
-                                    style={{
-                                        width: '100%',
-                                        padding: '1rem',
-                                        borderRadius: '12px',
-                                        border: '2px solid #E2E8F0',
-                                        fontSize: '1rem',
-                                        outline: 'none',
-                                        backgroundColor: 'white'
-                                    }}
-                                >
-                                    <option value="tutor">Tutor (Seguimiento)</option>
-                                    <option value="tribunal">Tribunal (Evaluador)</option>
-                                    <option value="admin">Administrador</option>
-                                </select>
+                                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#475569', marginBottom: '0.75rem' }}>Roles Asignados</label>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                    {[
+                                        { id: 'tutor', label: 'Tutor (Seguimiento)' },
+                                        { id: 'tribunal', label: 'Tribunal (Evaluador)' },
+                                        { id: 'admin', label: 'Administrador' }
+                                    ].map((role) => (
+                                        <label key={role.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.roles.includes(role.id as Role)}
+                                                onChange={(e) => {
+                                                    const checked = e.target.checked;
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        roles: checked
+                                                            ? [...prev.roles, role.id as Role]
+                                                            : prev.roles.filter(r => r !== role.id)
+                                                    }));
+                                                }}
+                                                style={{ width: '18px', height: '18px' }}
+                                            />
+                                            <span style={{ fontSize: '1rem', color: '#1e293b' }}>{role.label}</span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
 
                             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>

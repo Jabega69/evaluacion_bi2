@@ -32,9 +32,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
     }, [user, isLoading, router, pathname]);
 
-    if (!user) return null;
+    if (!user || !user.activeRole) return null;
 
-    const items = navItems[user.role as keyof typeof navItems] || [];
+    const items = navItems[user.activeRole as keyof typeof navItems] || [];
 
     return (
         <div className="min-h-screen">
@@ -48,7 +48,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <div className="sidebar-logo">EvalResearch</div>
                     </div>
                     <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                        {user.role} Panel
+                        {user.activeRole} Panel
                     </p>
                 </div>
 

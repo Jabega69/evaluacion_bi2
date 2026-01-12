@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
     try {
-        const { email, password, name, role } = await req.json();
+        const { email, password, name, roles } = await req.json();
 
         // 1. Initialize Supabase with Service Role Key (Server-side only)
         // This allows creating users without signing them in
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
             email,
             password,
             email_confirm: true,
-            user_metadata: { name, role }
+            user_metadata: { name, roles }
         });
 
         if (authError) {
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
                 id: authUser.user.id,
                 email,
                 name,
-                role,
+                roles,
                 needs_password_reset: true
             });
 
