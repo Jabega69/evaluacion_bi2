@@ -35,8 +35,16 @@ export default function LoginForm() {
         if (!res.success) {
             setError(res.error || 'Error al iniciar sesión');
             setLoading(false);
+        } else {
+            // Wait a bit to check if redirect happens. 
+            // If it doesn't, it means we found no profile row.
+            setTimeout(() => {
+                if (!window.location.pathname.includes('/dashboard')) {
+                    setLoading(false);
+                    setError('Autenticado pero sin perfil. Contacta al admin.');
+                }
+            }, 3000);
         }
-        // If success, auth-context redirects
     };
 
     if (showRoleSelector && user) {

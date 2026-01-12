@@ -54,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const fetchUserRole = async (email: string) => {
+        console.log('Fetching profile for:', email);
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -61,7 +62,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 .eq('email', email)
                 .single();
 
+            if (error) {
+                console.error('Error fetching user profile:', error);
+                setUser(null);
+                return;
+            }
+
             if (data) {
+                console.log('User profile found:', data);
                 // Defensive check: handle both 'roles' (new) and 'role' (old) during transition
                 const roles = data.roles || (data.role ? [data.role] : []);
                 const userData: User = {
@@ -71,12 +79,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 };
                 setUser(userData);
             } else {
-                console.warn('User authenticated but not found in public.users');
+                console.warn('User authenticated but not found in public.users table');
                 setUser(null);
             }
         } catch (err) {
-            console.error('Error fetching user roles:', err);
+            console.error('Unexpected error in fetchUserRole:', err);
             setUser(null);
+        } finally {
+            setIsLoading(false);
         }
     };
 
