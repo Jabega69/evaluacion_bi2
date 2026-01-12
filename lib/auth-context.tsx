@@ -94,19 +94,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const login = async (email: string, password: string) => {
+        console.log('[AuthContext] login called for:', email);
         setIsLoading(true);
         try {
+            console.log('[AuthContext] Attempting signInWithPassword...');
             const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password
             });
 
             if (error) {
+                console.error('[AuthContext] Login error:', error.message);
                 return { success: false, error: error.message };
             }
 
+            console.log('[AuthContext] Login successful, session created');
             return { success: true };
         } catch (err) {
+            console.error('[AuthContext] Unexpected error during login:', err);
             return { success: false, error: 'An unexpected error occurred' };
         } finally {
             setIsLoading(false);
