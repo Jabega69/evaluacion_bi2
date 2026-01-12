@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { User, Role } from '@/types';
+import { useAuth } from '@/lib/auth-context';
 
 export default function AdminUsersPage() {
+    const { user: currentUser } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -28,13 +30,19 @@ export default function AdminUsersPage() {
         setLoading(false);
     }
 
-    async function handleDelete(id: string) {
-        if (!confirm('¿Seguro que quieres dar de baja a este usuario?')) return;
+    async function handleDelete(id: string, name: string) {
+        if (id === currentUser?.id) {
+            alert('No puedes darte de baja a ti mismo por seguridad.');
+            return;
+        }
+
+        if (!confirm(`¿Seguro que quieres dar de baja a ${name}? Se eliminará permanentemente de la plataforma.`)) return;
+
         const success = await api.users.delete(id);
         if (success) {
             loadUsers();
         } else {
-            alert('Error al eliminar usuario');
+            alert('Error al eliminar usuario. Es posible que el administrador principal no pueda ser eliminado.');
         }
     }
 
@@ -177,7 +185,7 @@ export default function AdminUsersPage() {
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => handleDelete(u.id)}
+                                    onClick={() => handleDelete(u.id, u.name)}
                                     style={{
                                         padding: '0.75rem',
                                         borderRadius: '12px',

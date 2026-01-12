@@ -55,12 +55,17 @@ export const api = {
             return data as User;
         },
         delete: async (id: string): Promise<boolean> => {
-            const { error } = await supabase
-                .from('users')
-                .delete()
-                .eq('id', id);
-
-            return !error;
+            try {
+                const response = await fetch('/api/admin/delete-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: id })
+                });
+                return response.ok;
+            } catch (error) {
+                console.error('Delete API Error:', error);
+                return false;
+            }
         }
     },
 
