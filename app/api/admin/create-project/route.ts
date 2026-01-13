@@ -17,8 +17,7 @@ export async function POST(req: Request) {
             .from('projects')
             .insert({
                 title,
-                tutor_id: tutorId,
-                tribunal_ids: tribunalIds // Syncing with the array column if it exists
+                tutor_id: tutorId
             })
             .select()
             .single();

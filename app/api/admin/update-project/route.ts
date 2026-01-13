@@ -14,13 +14,12 @@ export async function POST(req: Request) {
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         );
 
-        // 1. Update project title, tutor and tribunal_ids
+        // 1. Update project title and tutor
         const { error: pError } = await supabaseAdmin
             .from('projects')
             .update({
                 title,
-                tutor_id: tutorId,
-                tribunal_ids: tribunalIds
+                tutor_id: tutorId
             })
             .eq('id', projectId);
 
