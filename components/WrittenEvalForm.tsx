@@ -140,7 +140,7 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
                                             // Lógica blindada con Spread: Solo aplicamos la propiedad necesaria
                                             left: '50%',
                                             transform: 'translateX(-50%)',
-                                            backgroundColor: '#1E293B',
+                                            backgroundColor: isTopItem ? '#334155' : '#1E293B', // Debug distinction
                                             color: 'white',
                                             padding: '1.2rem',
                                             borderRadius: '16px',
@@ -155,7 +155,7 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
                                             )
                                         }}>
                                             <h4 style={{ fontSize: '0.8rem', fontWeight: 800, color: '#94A3B8', marginBottom: '0.75rem', textTransform: 'uppercase', textAlign: 'center' }}>
-                                                Rúbrica: {item.label}
+                                                Rúbrica (v2.0): {item.label}
                                             </h4>
                                             <div style={{ display: 'grid', gap: '0.6rem' }}>
                                                 {item.levels.map((level, i) => (
