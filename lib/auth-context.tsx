@@ -53,15 +53,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return () => subscription.unsubscribe();
     }, []);
 
-    // Use a Ref to track the last fetched email and prevent duplicate/abort errors
     const lastFetchedEmail = useRef<string | null>(null);
+    const isFetching = useRef<boolean>(false);
 
-    const fetchUserRole = async (email: string) => {
-        // If we are already fetching or just fetched this email, skip to avoid AbortError
-        if (lastFetchedEmail.current === email && user) return;
-        lastFetchedEmail.current = email;
+    const fetchUserRole = async (email: string, retryCount = 0) => {
+        if (!email) return;
 
-        console.log(`[AuthContext] fetchUserRole starting for ${email}`);
+        // If we are already fetching, don't start another one
+        if (isFetching.current) {
+            console.log('[AuthContext] Already fetching profile, skipping overlapping call');
+            return;
+        }
+
+        console.log(`[AuthContext] fetchUserRole starting for ${email} (attempt ${retryCount + 1})`);
+        isFetching.current = true;
         setIsLoading(true);
 
         try {
@@ -71,38 +76,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 .eq('email', email);
 
             if (error) {
-                console.error('[AuthContext] Error fetching user profile:', error);
-
-                // If it's an AbortError, it's likely a collision. Don't clear user yet.
-                if (error.message?.includes('AbortError')) {
-                    console.log('[AuthContext] AbortError ignored (overlap)');
+                // If it's an AbortError, retry after a short delay
+                if (error.message?.includes('AbortError') && retryCount < 3) {
+                    console.log('[AuthContext] AbortError detected, retrying in 500ms...');
+                    isFetching.current = false;
+                    setTimeout(() => fetchUserRole(email, retryCount + 1), 500);
                     return;
                 }
 
+                console.error('[AuthContext] Error fetching user profile:', error);
                 setUser(null);
-                setIsLoading(false);
-                return;
-            }
-
-            const data = users && users.length > 0 ? users[0] : null;
-
-            if (data) {
-                console.log('[AuthContext] Profile found for:', data.name);
-                const roles = data.roles || (data.role ? [data.role] : []);
-                const userData: User = {
-                    ...data,
-                    roles: roles,
-                    activeRole: roles.length === 1 ? roles[0] : undefined
-                };
-                setUser(userData);
             } else {
-                console.warn('[AuthContext] No profile record found for:', email);
-                setUser(null);
+                const data = users && users.length > 0 ? users[0] : null;
+                if (data) {
+                    console.log('[AuthContext] Profile found for:', data.name);
+                    const roles = data.roles || (data.role ? [data.role] : []);
+                    const userData: User = {
+                        ...data,
+                        roles: roles,
+                        activeRole: roles.length === 1 ? roles[0] : undefined
+                    };
+                    setUser(userData);
+                    lastFetchedEmail.current = email;
+                } else {
+                    console.warn('[AuthContext] No profile record found for:', email);
+                    setUser(null);
+                }
             }
         } catch (err) {
             console.error('[AuthContext] Unexpected error in fetchUserRole:', err);
             setUser(null);
         } finally {
+            isFetching.current = false;
             setIsLoading(false);
             console.log('[AuthContext] fetchUserRole finished');
         }
