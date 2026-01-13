@@ -55,18 +55,18 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
 
     return (
         <div style={{
-            padding: '3rem 2rem 10rem 2rem',
-            maxWidth: '1200px',
+            padding: '2rem 1rem 8rem 1rem',
+            maxWidth: '900px',
             margin: '0 auto',
             fontFamily: "'Poppins', sans-serif"
         }}>
             {/* Header Moderno */}
             <div style={{
                 backgroundColor: 'white',
-                borderRadius: '30px',
-                padding: '3rem',
-                marginBottom: '3rem',
-                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)',
+                borderRadius: '24px',
+                padding: '2rem',
+                marginBottom: '2rem',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)',
                 border: '1px solid #F1F5F9',
                 textAlign: 'center'
             }}>
@@ -84,27 +84,27 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
                 }}>
                     Evaluación Escrita
                 </span>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>
+                <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.25rem' }}>
                     Evaluando a: <span style={{ color: '#8B5CF6' }}>{student.name}</span>
                 </h1>
-                <p style={{ color: '#64748B', fontWeight: 600 }}>Proyecto: {project.title}</p>
+                <p style={{ color: '#64748B', fontSize: '0.9rem', fontWeight: 600 }}>Proyecto: {project.title}</p>
             </div>
 
             {/* A. CONTENIDO */}
             <div style={{
                 backgroundColor: 'white',
-                borderRadius: '30px',
-                padding: '3rem',
-                marginBottom: '2rem',
+                borderRadius: '24px',
+                padding: '2rem',
+                marginBottom: '1.5rem',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
                 border: '1px solid #F1F5F9'
             }}>
-                <div style={{ marginBottom: '3rem' }}>
-                    <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>A. Contenido (Máx 9 Puntos)</h2>
-                    <p style={{ color: '#64748B', fontWeight: 500 }}>Valore cada ítem de 0 a 10 según la calidad del trabajo. Pasa el ratón por cada ítem para ver la rúbrica.</p>
+                <div style={{ marginBottom: '1.5rem' }}>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.2rem' }}>A. Contenido (Máx 9 Puntos)</h2>
+                    <p style={{ color: '#64748B', fontSize: '0.8rem', fontWeight: 500 }}>Valore de 0 a 10. Pasa el ratón para ver la rúbrica.</p>
                 </div>
 
-                <div style={{ display: 'grid', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gap: '0.5rem' }}>
                     {rubric.contentItems.map(item => (
                         <div key={item.id}
                             onMouseEnter={() => setHoveredItem(item.id)}
@@ -112,21 +112,22 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
                             style={{
                                 display: 'grid',
                                 gridTemplateColumns: '1fr auto',
-                                gap: '2rem',
-                                padding: '1.5rem 2rem',
-                                borderRadius: '20px',
+                                gap: '1rem',
+                                padding: '1rem 1.5rem',
+                                borderRadius: '16px',
                                 backgroundColor: hoveredItem === item.id ? '#F8FAFC' : 'white',
-                                border: '2px solid',
+                                border: '1px solid',
                                 borderColor: hoveredItem === item.id ? '#E2E8F0' : '#F1F5F9',
                                 transition: 'all 0.2s',
-                                position: 'relative'
+                                position: 'relative',
+                                alignItems: 'center'
                             }}>
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                <label style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1E293B', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <label style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1E293B', marginBottom: '0.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                     {item.label}
-                                    {item.levels && <span style={{ fontSize: '1rem', cursor: 'help', opacity: 0.5 }}>ℹ️</span>}
+                                    {item.levels && <span style={{ fontSize: '0.8rem', cursor: 'help', opacity: 0.5 }}>ℹ️</span>}
                                 </label>
-                                {item.description && <p style={{ fontSize: '0.85rem', color: '#64748B' }}>{item.description}</p>}
+                                {item.description && <p style={{ fontSize: '0.75rem', color: '#64748B' }}>{item.description}</p>}
 
                                 {/* Tooltip Rubrica */}
                                 {hoveredItem === item.id && item.levels && (
@@ -138,12 +139,12 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
                                         color: 'white',
                                         padding: '1.5rem',
                                         borderRadius: '16px',
-                                        width: '400px',
+                                        width: '280px',
                                         zIndex: 100,
-                                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+                                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2)',
                                         marginBottom: '0.5rem'
                                     }}>
-                                        <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#94A3B8', marginBottom: '1rem', textTransform: 'uppercase' }}>Rúbrica: {item.label}</h4>
+                                        <h4 style={{ fontSize: '0.8rem', fontWeight: 800, color: '#94A3B8', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Rúbrica</h4>
                                         <div style={{ display: 'grid', gap: '0.75rem' }}>
                                             {item.levels.map((level, i) => (
                                                 <div key={i} style={{ display: 'grid', gridTemplateColumns: '50px 1fr', gap: '1rem', fontSize: '0.8rem' }}>
@@ -162,16 +163,16 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
                                     max="10"
                                     placeholder="0-10"
                                     style={{
-                                        width: '100px',
-                                        padding: '1rem',
-                                        borderRadius: '16px',
+                                        width: '80px',
+                                        padding: '0.75rem',
+                                        borderRadius: '12px',
                                         border: '2px solid #E2E8F0',
-                                        fontSize: '1.25rem',
+                                        fontSize: '1.1rem',
                                         fontWeight: 900,
                                         textAlign: 'center',
                                         outline: 'none',
                                         color: '#3B82F6',
-                                        backgroundColor: 'white'
+                                        backgroundColor: '#F8FAFC'
                                     }}
                                     value={contentScores[item.id] || ''}
                                     onChange={(e) => {
@@ -188,18 +189,17 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
             {/* B. FORMATO */}
             <div style={{
                 backgroundColor: 'white',
-                borderRadius: '30px',
-                padding: '3rem',
-                marginBottom: '4rem',
+                borderRadius: '24px',
+                padding: '2rem',
+                marginBottom: '3rem',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
                 border: '1px solid #F1F5F9'
             }}>
-                <div style={{ marginBottom: '2rem' }}>
-                    <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>B. Formato (Máx 1 Punto)</h2>
-                    <p style={{ color: '#64748B', fontWeight: 500 }}>Verifique el cumplimiento de normas de estilo.</p>
+                <div style={{ marginBottom: '1.5rem' }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.25rem' }}>B. Formato (Máx 1 Punto)</h2>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem' }}>
                     {rubric.formatItems.map(item => (
                         <label key={item.id} style={{
                             display: 'flex',
@@ -233,29 +233,32 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
             </div>
 
             {/* Floating Action Bar Premium */}
+            {/* Floating Action Bar - Compacto */}
             <div style={{
                 position: 'fixed',
-                bottom: '2rem',
-                left: '2rem',
-                right: '2rem',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                backdropFilter: 'blur(20px)',
-                borderRadius: '24px',
-                padding: '1.5rem 3rem',
+                bottom: '1.5rem',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 'calc(100% - 2rem)',
+                maxWidth: '900px',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                borderRadius: '20px',
+                padding: '1rem 2rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.25)',
-                border: '1px solid rgba(255, 255, 255, 0.5)',
+                boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.2)',
+                border: '1px solid rgba(226, 232, 240, 0.8)',
                 zIndex: 1000
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                     <div>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '0.2rem' }}>
+                        <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '0.1rem' }}>
                             Nota Provisional
                         </span>
                         <div style={{
-                            fontSize: '2.5rem',
+                            fontSize: '2rem',
                             fontWeight: 900,
                             background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
                             WebkitBackgroundClip: 'text',
@@ -264,24 +267,24 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
                             {calculateTotal()}
                         </div>
                     </div>
-                    <div style={{ height: '40px', width: '2px', backgroundColor: '#E2E8F0' }}></div>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#64748B' }}>
-                        Basado en Contenido (90%) <br /> y Formato (10%)
+                    <div style={{ height: '30px', width: '1px', backgroundColor: '#E2E8F0' }}></div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748B', lineHeight: 1.2 }}>
+                        Contenido (90%) <br /> Formato (10%)
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
                     <button
                         onClick={() => router.back()}
                         style={{
-                            padding: '1rem 2rem',
-                            borderRadius: '16px',
-                            border: '2px solid #E2E8F0',
+                            padding: '0.75rem 1.5rem',
+                            borderRadius: '12px',
+                            border: '1px solid #E2E8F0',
                             backgroundColor: 'white',
                             color: '#64748B',
-                            fontWeight: 800,
+                            fontWeight: 700,
                             cursor: 'pointer',
-                            fontSize: '1rem',
+                            fontSize: '0.9rem',
                             transition: 'all 0.2s'
                         }}
                     >
@@ -291,19 +294,19 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
                         onClick={handleSubmit}
                         disabled={submitting}
                         style={{
-                            padding: '1rem 2.5rem',
-                            borderRadius: '16px',
+                            padding: '0.75rem 2rem',
+                            borderRadius: '12px',
                             border: 'none',
                             background: 'linear-gradient(135deg, #0F172A 0%, #334155 100%)',
                             color: 'white',
                             fontWeight: 800,
                             cursor: 'pointer',
-                            fontSize: '1rem',
-                            boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.3)',
+                            fontSize: '0.9rem',
+                            boxShadow: '0 4px 12px rgba(15, 23, 42, 0.2)',
                             transition: 'all 0.2s',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '0.75rem'
+                            gap: '0.5rem'
                         }}
                     >
                         {submitting ? '...' : (

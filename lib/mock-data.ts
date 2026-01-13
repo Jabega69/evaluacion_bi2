@@ -37,7 +37,7 @@ export const WRITTEN_RUBRIC: WrittenRubric = {
     contentItems: [
         {
             id: 'c1',
-            label: 'Originalidad y Creatividad',
+            label: 'Creatividad y complejidad en el diseño experimental',
             maxScore: 10,
             levels: [
                 { range: '1-2', description: 'No se muestran ideas originales. El desarrollo es muy simple.' },
@@ -49,17 +49,40 @@ export const WRITTEN_RUBRIC: WrittenRubric = {
         },
         {
             id: 'c2',
-            label: 'Justificación del tema',
+            label: 'Aplicación de conocimientos teóricos en las investigaciones',
             maxScore: 10,
             levels: [
-                { range: '1-3', description: 'La justificación es pobre o inexistente.' },
-                { range: '4-6', description: 'Se justifica de forma aceptable pero sin profundidad.' },
-                { range: '7-9', description: 'Buena justificación relacionada con el contexto actual.' },
-                { range: '10', description: 'Justificación excepcional, clara y muy bien fundamentada.' }
+                { range: '1-3', description: 'La aplicación es pobre o inexistente.' },
+                { range: '4-6', description: 'Se aplican de forma aceptable pero sin profundidad.' },
+                { range: '7-9', description: 'Buena aplicación de conocimientos al contexto.' },
+                { range: '10', description: 'Aplicación excepcional y experta de la teoría.' }
             ]
         },
         {
             id: 'c3',
+            label: 'Utilización y manejo de nuevas tecnologías',
+            maxScore: 10,
+            levels: [
+                { range: '1-2', description: 'No utiliza las nuevas tecnologías en su investigación.' },
+                { range: '3-4', description: 'Usa las nuevas tecnologías de manera esporádica.' },
+                { range: '5-7', description: 'Usa las nuevas tecnologías en su investigación regularmente.' },
+                { range: '8-9', description: 'Usa las nuevas tecnologías frecuentemente.' },
+                { range: '10', description: 'Uso innovador y original de nuevas tecnologías.' }
+            ]
+        },
+        {
+            id: 'c4',
+            label: 'Manejo de las distintas técnicas de investigación',
+            maxScore: 10,
+            levels: [
+                { range: '1-3', description: 'Manejo deficiente de técnicas.' },
+                { range: '4-6', description: 'Manejo aceptable de técnicas básicas.' },
+                { range: '7-9', description: 'Buen manejo de técnicas variadas.' },
+                { range: '10', description: 'Manejo experto y avanzado de técnicas.' }
+            ]
+        },
+        {
+            id: 'c5',
             label: 'Marco Teórico',
             maxScore: 10,
             levels: [
@@ -70,19 +93,9 @@ export const WRITTEN_RUBRIC: WrittenRubric = {
                 { range: '10', description: 'Se manejan múltiples fuentes de conocimiento usadas de forma experta.' }
             ]
         },
+        { id: 'c6', label: 'Contextualización del trabajo', maxScore: 10 },
         {
-            id: 'c4',
-            label: 'Objetivos e Hipótesis',
-            maxScore: 10,
-            levels: [
-                { range: '1-3', description: 'Objetivos vagos o mal planteados.' },
-                { range: '4-6', description: 'Objetivos aceptables pero la hipótesis es poco clara.' },
-                { range: '7-9', description: 'Objetivos e hipótesis bien definidos y medibles.' },
-                { range: '10', description: 'Planteamiento impecable, escala y relevancia perfectas.' }
-            ]
-        },
-        {
-            id: 'c5',
+            id: 'c7',
             label: 'Metodología',
             maxScore: 10,
             levels: [
@@ -93,25 +106,12 @@ export const WRITTEN_RUBRIC: WrittenRubric = {
                 { range: '10', description: 'Relacionadas con todos los objetivos y fundamentales para conclusiones.' }
             ]
         },
-        { id: 'c6', label: 'Análisis de Resultados', maxScore: 10 },
-        { id: 'c7', label: 'Conclusiones', maxScore: 10 },
-        { id: 'c8', label: 'Bibliografía (Calidad)', maxScore: 10 },
-        { id: 'c9', label: 'Redacción y Ortografía', maxScore: 10 },
-        { id: 'c10', label: 'Uso de vocabulario técnico', maxScore: 10 },
-        { id: 'c11', label: 'Coherencia global', maxScore: 10 },
-        {
-            id: 'c12',
-            label: 'Dificultad del trabajo',
-            maxScore: 10,
-            levels: [
-                { range: '1-2', description: 'No utiliza las nuevas tecnologías en su investigación.' },
-                { range: '3-4', description: 'Usa las nuevas tecnologías de manera esporádica.' },
-                { range: '5-7', description: 'Usa las nuevas tecnologías en su investigación regularmente.' },
-                { range: '8-9', description: 'Usa las nuevas tecnologías frecuentemente.' },
-                { range: '10', description: 'Uso innovador y original de nuevas tecnologías.' }
-            ]
-        },
-        { id: 'c13', label: 'Aportación personal', maxScore: 10 },
+        { id: 'c8', label: 'Extracción lógica y coherente de conclusiones a partir de los datos obtenidos', maxScore: 10 },
+        { id: 'c9', label: 'Capacidad de autocrítica y reconocimiento de limitaciones', maxScore: 10 },
+        { id: 'c10', label: 'Claridad en la formulación de los objetivos y las conclusiones', maxScore: 10 },
+        { id: 'c11', label: 'Lenguaje técnico', maxScore: 10 },
+        { id: 'c12', label: 'Expresión escrita y lenguaje formal', maxScore: 10 },
+        { id: 'c13', label: 'Citas y referencias bibliográficas', maxScore: 10 },
     ],
     formatItems: [
         { id: 'f1', label: 'Márgenes correctos (2.5cm)', maxScore: 1 },
