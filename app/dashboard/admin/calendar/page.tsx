@@ -52,6 +52,7 @@ export default function CalendarPage() {
                 presentationDate: dateToSave,
                 presentationLocation: edit.location
             });
+            await loadProjects(); // Refresh summary
             // alert('Guardado con éxito');
         } catch (err: any) {
             console.error(err);
@@ -103,6 +104,64 @@ export default function CalendarPage() {
                     Planificación de defensas y tribunales
                 </p>
             </div>
+
+            {/* Resumen de Ocupación (Calendario Visual) */}
+            {!loading && projects.some(p => p.presentationDate) && (
+                <div style={{
+                    maxWidth: '1000px',
+                    margin: '0 auto 3rem auto',
+                    backgroundColor: 'white',
+                    borderRadius: '24px',
+                    padding: '2rem',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                    border: '1px solid #E2E8F0'
+                }}>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E293B', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ fontSize: '1.5rem' }}>🚩</span> Horarios Ocupados
+                    </h2>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                        {Array.from(new Set(projects
+                            .filter(p => p.presentationDate)
+                            .map(p => new Date(p.presentationDate!).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }))
+                        )).map(dateStr => (
+                            <div key={dateStr} style={{
+                                backgroundColor: '#FEF2F2', // Fondo rojo muy claro
+                                border: '1px solid #FECACA',
+                                borderRadius: '16px',
+                                padding: '1rem'
+                            }}>
+                                <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#991B1B', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                                    {dateStr}
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    {projects
+                                        .filter(p => p.presentationDate && new Date(p.presentationDate).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }) === dateStr)
+                                        .map(p => {
+                                            const time = new Date(p.presentationDate!).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                                            return (
+                                                <span key={p.id} style={{
+                                                    backgroundColor: '#EF4444', // Rojo intenso
+                                                    color: 'white',
+                                                    padding: '0.25rem 0.6rem',
+                                                    borderRadius: '8px',
+                                                    fontSize: '0.85rem',
+                                                    fontWeight: 800,
+                                                    boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)'
+                                                }}>
+                                                    {time}
+                                                </span>
+                                            );
+                                        })
+                                    }
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <p style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: '#64748B', fontStyle: 'italic', fontWeight: 500 }}>
+                        * Evita agendar nuevas defensas en los horarios marcados en rojo para prevenir conflictos.
+                    </p>
+                </div>
+            )}
 
             {/* List */}
             <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
