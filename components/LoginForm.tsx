@@ -17,23 +17,33 @@ export default function LoginForm() {
 
     // Redirect if already logged in and role is selected
     useEffect(() => {
-        if (user && !isLoading) {
-            if (user.activeRole) {
-                const role = user.activeRole;
-                if (role === 'admin') router.push('/dashboard/admin');
-                else if (role === 'tribunal') router.push('/dashboard/tribunal');
-                else if (role === 'tutor') router.push('/dashboard/tutor');
-            } else if (user.roles && user.roles.length > 1) {
-                setShowRoleSelector(true);
-                setLoading(false);
-                setIsConnecting(false);
+        const checkStatus = () => {
+            if (user && !isLoading) {
+                if (user.activeRole) {
+                    const role = user.activeRole;
+                    if (role === 'admin') router.push('/dashboard/admin');
+                    else if (role === 'tribunal') router.push('/dashboard/tribunal');
+                    else if (role === 'tutor') router.push('/dashboard/tutor');
+                } else if (user.roles && user.roles.length > 1) {
+                    setShowRoleSelector(true);
+                    setLoading(false);
+                    setIsConnecting(false);
+                }
+            } else if (!user && !isLoading && isConnecting) {
+                // Add a tiny grace period to avoid race conditions with isLoading state
+                setTimeout(() => {
+                    // Check again inside timeout
+                    // If still no user and no loading, then it's a real "no profile" error
+                    if (!user && !isLoading && isConnecting) {
+                        setError('No se pudo cargar tu perfil. Es posible que el administrador deba registrarte primero.');
+                        setLoading(false);
+                        setIsConnecting(false);
+                    }
+                }, 1000);
             }
-        } else if (!user && !isLoading && isConnecting) {
-            // Login was successful (since we set isConnecting) but no profile was found
-            setError('No se pudo cargar tu perfil. Es posible que el administrador deba registrarte primero.');
-            setLoading(false);
-            setIsConnecting(false);
-        }
+        };
+
+        checkStatus();
     }, [user, isLoading, router, isConnecting]);
 
     const handleEmailLogin = async (e: React.FormEvent) => {

@@ -22,30 +22,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
+    // Internal counters to manage overlap
+    const pendingOps = useRef(0);
+    const lastFetchedEmail = useRef<string | null>(null);
+    const isFetching = useRef<boolean>(false);
+
+    const startOp = () => {
+        pendingOps.current++;
+        setIsLoading(true);
+    };
+
+    const endOp = () => {
+        pendingOps.current--;
+        if (pendingOps.current <= 0) {
+            pendingOps.current = 0;
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
         // Check active session
         const checkSession = async () => {
+            startOp();
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session?.user?.email) {
                     await fetchUserRole(session.user.email);
                 } else {
                     setUser(null);
-                    setIsLoading(false);
                 }
             } catch (error) {
                 console.error('Session check error:', error);
-                setIsLoading(false);
+            } finally {
+                endOp();
             }
         };
 
         checkSession();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('[AuthContext] Auth state change:', event, session?.user?.email);
             if (session?.user?.email) {
-                await fetchUserRole(session.user.email);
-            } else {
+                if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+                    startOp();
+                    await fetchUserRole(session.user.email);
+                    endOp();
+                } else {
+                    // Just sync without full loading block if it's just a routine change
+                    await fetchUserRole(session.user.email);
+                }
+            } else if (event === 'SIGNED_OUT') {
                 setUser(null);
+                lastFetchedEmail.current = null;
                 setIsLoading(false);
             }
         });
@@ -53,21 +81,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return () => subscription.unsubscribe();
     }, []);
 
-    const lastFetchedEmail = useRef<string | null>(null);
-    const isFetching = useRef<boolean>(false);
-
     const fetchUserRole = async (email: string, retryCount = 0) => {
         if (!email) return;
 
-        // If we are already fetching, don't start another one
-        if (isFetching.current) {
-            console.log('[AuthContext] Already fetching profile, skipping overlapping call');
+        // Skip if already fetching THIS specific email to avoid AbortError
+        if (isFetching.current && lastFetchedEmail.current === email) {
+            console.log('[AuthContext] Already fetching profile for this email, skipping');
             return;
         }
 
         console.log(`[AuthContext] fetchUserRole starting for ${email} (attempt ${retryCount + 1})`);
         isFetching.current = true;
-        setIsLoading(true);
+        lastFetchedEmail.current = email;
 
         try {
             const { data: users, error } = await supabase
@@ -76,14 +101,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 .eq('email', email);
 
             if (error) {
-                // If it's an AbortError, retry after a short delay
                 if (error.message?.includes('AbortError') && retryCount < 3) {
-                    console.log(`[AuthContext] AbortError detected (attempt ${retryCount + 1}), retrying...`);
+                    console.log(`[AuthContext] AbortError detected, retrying...`);
                     isFetching.current = false;
-                    setTimeout(() => fetchUserRole(email, retryCount + 1), 800);
-                    return; // Return without setting isLoading(false)
+                    await new Promise(r => setTimeout(r, 800));
+                    return fetchUserRole(email, retryCount + 1);
                 }
-
                 console.error('[AuthContext] Error fetching user profile:', error);
                 setUser(null);
             } else {
@@ -91,13 +114,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (data) {
                     console.log('[AuthContext] Profile found for:', data.name);
                     const roles = data.roles || (data.role ? [data.role] : []);
-                    const userData: User = {
+                    setUser({
                         ...data,
                         roles: roles,
                         activeRole: roles.length === 1 ? roles[0] : undefined
-                    };
-                    setUser(userData);
-                    lastFetchedEmail.current = email;
+                    });
                 } else {
                     console.warn('[AuthContext] No profile record found for:', email);
                     setUser(null);
@@ -108,7 +129,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(null);
         } finally {
             isFetching.current = false;
-            setIsLoading(false);
             console.log('[AuthContext] fetchUserRole finished');
         }
     };
@@ -121,7 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const login = async (email: string, password: string) => {
         console.log('[AuthContext] login called for:', email);
-        setIsLoading(true);
+        startOp();
         try {
             console.log('[AuthContext] Attempting signInWithPassword...');
             const { data, error } = await supabase.auth.signInWithPassword({
@@ -135,41 +155,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             console.log('[AuthContext] Login successful, session created');
+            // Important: we don't endOp here, we let the onAuthStateChange + fetchUserRole handle it
+            // or we manually wait for it here. Let's wait for it.
+            await fetchUserRole(email);
             return { success: true };
         } catch (err) {
             console.error('[AuthContext] Unexpected error during login:', err);
             return { success: false, error: 'An unexpected error occurred' };
         } finally {
-            setIsLoading(false);
+            endOp();
         }
     };
 
     const loginWithGoogle = async () => {
-        setIsLoading(true);
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: `${window.location.origin}/dashboard`
-            }
-        });
-        if (error) console.error('Google Auth Error:', error);
+        startOp();
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}/dashboard`
+                }
+            });
+            if (error) console.error('Google Auth Error:', error);
+        } finally {
+            endOp();
+        }
     };
 
     const signUp = async (email: string, password: string) => {
-        setIsLoading(true);
-        const { error } = await supabase.auth.signUp({
-            email,
-            password
-        });
-        setIsLoading(false);
-        if (error) return { success: false, error: error.message };
-        return { success: true };
+        startOp();
+        try {
+            const { error } = await supabase.auth.signUp({
+                email,
+                password
+            });
+            if (error) return { success: false, error: error.message };
+            return { success: true };
+        } finally {
+            endOp();
+        }
     };
 
     const logout = async () => {
-        await supabase.auth.signOut();
-        setUser(null);
-        router.push('/');
+        startOp();
+        try {
+            await supabase.auth.signOut();
+            setUser(null);
+            lastFetchedEmail.current = null;
+            router.push('/');
+        } finally {
+            endOp();
+        }
     };
 
     return (
