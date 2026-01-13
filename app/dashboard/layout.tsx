@@ -27,8 +27,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     useEffect(() => {
         if (!isLoading && !user) {
             router.push('/');
-        } else if (user?.needs_password_reset && pathname !== '/auth/reset-password') {
-            router.push('/auth/reset-password');
         }
     }, [user, isLoading, router, pathname]);
 
