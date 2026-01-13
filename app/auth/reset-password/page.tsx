@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
@@ -12,6 +12,7 @@ export default function ResetPasswordPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleReset = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,8 +29,26 @@ export default function ResetPasswordPage() {
         setLoading(true);
         setError('');
 
+        // Safety timeout
+        timeoutRef.current = setTimeout(() => {
+            if (loading) {
+                setLoading(false);
+                setError('La operación está tardando demasiado. Comprueba tu conexión o recarga la página.');
+            }
+        }, 10000);
+
         try {
-            console.log('[ResetPassword] Attempting to update password in Auth...');
+            console.log('[ResetPassword] Checking active session...');
+            const { data: { session } } = await supabase.auth.getSession();
+            console.log('[ResetPassword] Session found:', session ? 'YES' : 'NO');
+
+            if (!session) {
+                console.error('[ResetPassword] No session! Login might have expired.');
+                setError('No hay una sesión activa. Por favor, vuelve a iniciar sesión.');
+                return;
+            }
+
+            console.log('[ResetPassword] Attempting to update password for:', session.user.email);
             // 1. Update password in Supabase Auth
             const { error: authError } = await supabase.auth.updateUser({
                 password: password
@@ -54,8 +73,6 @@ export default function ResetPasswordPage() {
                     throw dbError;
                 }
                 console.log('[ResetPassword] Public.users updated successfully');
-            } else {
-                console.warn('[ResetPassword] No user found in context, skipping DB update');
             }
 
             // 3. Success! Redirect to dashboard
@@ -67,6 +84,10 @@ export default function ResetPasswordPage() {
             setError(err.message || 'Error al actualizar la contraseña');
         } finally {
             setLoading(false);
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+            }
             console.log('[ResetPassword] handleReset finished');
         }
     };
