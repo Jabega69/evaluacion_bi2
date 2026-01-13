@@ -125,6 +125,18 @@ export const api = {
                 .eq('id', id);
             return !error;
         },
+        schedule: async (data: { projectId: string, presentationDate: string | null, presentationLocation: string }) => {
+            const response = await fetch('/api/admin/schedule-project', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al agendar el proyecto');
+            }
+            return true;
+        },
         getByGrader: async (graderId: string): Promise<Project[]> => {
             const { data: assignments, error: aError } = await supabase
                 .from('project_tribunals')

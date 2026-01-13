@@ -46,17 +46,19 @@ export default function CalendarPage() {
         // Convert local datetime to ISO for storage
         const dateToSave = edit.date ? new Date(edit.date).toISOString() : null;
 
-        const success = await api.projects.update(projectId, {
-            presentationDate: dateToSave || undefined,
-            presentationLocation: edit.location
-        });
-
-        if (success) {
-            // alert('Guardado'); // Optional feedback
-        } else {
-            alert('Error al guardar');
+        try {
+            await api.projects.schedule({
+                projectId,
+                presentationDate: dateToSave,
+                presentationLocation: edit.location
+            });
+            // alert('Guardado con éxito');
+        } catch (err: any) {
+            console.error(err);
+            alert(err.message || 'Error al guardar');
+        } finally {
+            setSubmitting(null);
         }
-        setSubmitting(null);
     }
 
     const handleChange = (projectId: string, field: 'date' | 'location', value: string) => {
