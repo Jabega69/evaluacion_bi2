@@ -16,6 +16,7 @@ export default function TutorEvalForm({ rubric, project, student, tutorId }: Pro
     const router = useRouter();
     const [scores, setScores] = useState<Record<string, number>>({});
     const [submitting, setSubmitting] = useState(false);
+    const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
     const calculateTotal = () => {
         // 5 items * 2 pts = 10 pts max
@@ -24,66 +25,180 @@ export default function TutorEvalForm({ rubric, project, student, tutorId }: Pro
 
     const handleSubmit = async () => {
         setSubmitting(true);
-        await api.submissions.submitTutor({
-            id: crypto.randomUUID(),
-            projectId: project.id,
-            tutorId: tutorId,
-            studentId: student.id,
-            scores, // We should also store which student is being evaluated, simplified here to project context
-            submittedAt: new Date().toISOString()
-        });
-        router.push('/dashboard/tutor');
+        try {
+            await api.submissions.submitTutor({
+                id: crypto.randomUUID(),
+                projectId: project.id,
+                tutorId: tutorId,
+                studentId: student.id,
+                scores,
+                submittedAt: new Date().toISOString()
+            });
+            router.push('/dashboard/tutor');
+        } catch (err) {
+            console.error(err);
+            alert('Error al guardar la evaluación');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
-        <div className="space-y-8">
-            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow border border-slate-200 dark:border-slate-700">
-                <h3 className="text-xl font-bold mb-4 border-b pb-2 dark:border-slate-600">Evaluación del Tutor (Máx 10 Puntos)</h3>
-                <p className="text-sm text-slate-500 mb-6">Valore cada ítem de 0 a 2.</p>
+        <div style={{
+            padding: '3rem 2rem 10rem 2rem',
+            maxWidth: '1000px',
+            margin: '0 auto',
+            fontFamily: "'Poppins', sans-serif"
+        }}>
+            {/* Header Moderno-Orange */}
+            <div style={{
+                backgroundColor: 'white',
+                borderRadius: '30px',
+                padding: '3rem',
+                marginBottom: '3rem',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)',
+                border: '1px solid #F1F5F9',
+                textAlign: 'center'
+            }}>
+                <span style={{
+                    backgroundColor: '#F59E0B',
+                    color: 'white',
+                    padding: '0.4rem 1rem',
+                    borderRadius: '99px',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    marginBottom: '1.5rem',
+                    display: 'inline-block'
+                }}>
+                    Panel del Tutor
+                </span>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>
+                    Evaluando a: <span style={{ color: '#F59E0B' }}>{student.name}</span>
+                </h1>
+                <p style={{ color: '#64748B', fontWeight: 600 }}>Proyecto: {project.title}</p>
+            </div>
 
-                <div className="space-y-6">
+            {/* EVALUACIÓN DEL TUTOR */}
+            <div style={{
+                backgroundColor: 'white',
+                borderRadius: '30px',
+                padding: '3rem',
+                marginBottom: '2rem',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                border: '1px solid #F1F5F9'
+            }}>
+                <div style={{ marginBottom: '3rem', textAlign: 'center' }}>
+                    <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>Seguimiento del Alumno (Máx 10 Puntos)</h2>
+                    <p style={{ color: '#64748B', fontWeight: 500 }}>Valore el desempeño continuo del estudiante durante el desarrollo del proyecto.</p>
+                </div>
+
+                <div style={{ display: 'grid', gap: '1.5rem' }}>
                     {rubric.items.map(item => (
-                        <div key={item.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center border-b border-slate-50 dark:border-slate-700 pb-4">
-                            <div className="md:col-span-2">
-                                <label className="font-medium text-slate-900 dark:text-slate-100">{item.label}</label>
+                        <div key={item.id}
+                            onMouseEnter={() => setHoveredItem(item.id)}
+                            onMouseLeave={() => setHoveredItem(null)}
+                            style={{
+                                display: 'grid',
+                                gridTemplateColumns: '1fr auto',
+                                gap: '2rem',
+                                padding: '1.5rem 2rem',
+                                borderRadius: '20px',
+                                backgroundColor: hoveredItem === item.id ? '#FFFBEB' : 'white',
+                                border: '2px solid',
+                                borderColor: hoveredItem === item.id ? '#FDE68A' : '#F1F5F9',
+                                transition: 'all 0.2s'
+                            }}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <label style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1E293B' }}>{item.label}</label>
                             </div>
-                            <div>
-                                <div className="flex gap-2">
-                                    {[0, 1, 2].map(val => (
-                                        <button
-                                            key={val}
-                                            onClick={() => setScores(prev => ({ ...prev, [item.id]: val }))}
-                                            className={`px-4 py-2 rounded-md border text-sm font-medium transition-colors ${scores[item.id] === val
-                                                ? 'bg-indigo-600 text-white border-indigo-600'
-                                                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600'
-                                                }`}
-                                        >
-                                            {val}
-                                        </button>
-                                    ))}
-                                </div>
+                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                {[0, 1, 2].map(val => (
+                                    <button
+                                        key={val}
+                                        onClick={() => setScores(prev => ({ ...prev, [item.id]: val }))}
+                                        style={{
+                                            width: '50px',
+                                            height: '50px',
+                                            borderRadius: '14px',
+                                            border: 'none',
+                                            backgroundColor: scores[item.id] === val ? '#F59E0B' : '#F1F5F9',
+                                            color: scores[item.id] === val ? 'white' : '#64748B',
+                                            fontSize: '1rem',
+                                            fontWeight: 900,
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            boxShadow: scores[item.id] === val ? '0 4px 12px rgba(245, 158, 11, 0.3)' : 'none'
+                                        }}
+                                    >
+                                        {val}
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t p-4 z-10 shadow-lg">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <div>
-                        <span className="text-sm font-medium text-slate-500 uppercase">Nota Actual</span>
-                        <div className="text-2xl font-bold text-indigo-600">{calculateTotal()} <span className="text-sm text-slate-400">/ 10</span></div>
+            {/* Floating Action Bar Orange */}
+            <div style={{
+                position: 'fixed',
+                bottom: '2rem',
+                left: '2rem',
+                right: '2rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '24px',
+                padding: '1.5rem 3rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '4rem',
+                boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.25)',
+                border: '1px solid rgba(255, 255, 255, 0.5)',
+                zIndex: 1000
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '0.2rem' }}>
+                        Calificación del Tutor
+                    </span>
+                    <div style={{
+                        fontSize: '2.5rem',
+                        fontWeight: 900,
+                        color: '#F59E0B'
+                    }}>
+                        {calculateTotal()} <span style={{ fontSize: '1rem', color: '#CBD5E1' }}>/ 10</span>
                     </div>
-                    <button
-                        onClick={handleSubmit}
-                        disabled={submitting}
-                        className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-                    >
-                        {submitting ? 'Enviando...' : 'Finalizar Tutoría'}
-                    </button>
                 </div>
+
+                <button
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                    style={{
+                        padding: '1.25rem 4rem',
+                        borderRadius: '20px',
+                        border: 'none',
+                        background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                        color: 'white',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        fontSize: '1.1rem',
+                        boxShadow: '0 10px 15px -3px rgba(245, 158, 11, 0.3)',
+                        transition: 'all 0.2s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1rem'
+                    }}
+                >
+                    {submitting ? 'Guardando...' : (
+                        <>
+                            <span>✓</span>
+                            <span>Finalizar Evaluación</span>
+                        </>
+                    )}
+                </button>
             </div>
-            <div className="h-24"></div>
         </div>
     );
 }

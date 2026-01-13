@@ -17,6 +17,7 @@ export default function OralEvalForm({ rubric, project, student, graderId }: Pro
     const [blockScores, setBlockScores] = useState<Record<string, number>>({});
     const [selectedTimeRange, setSelectedTimeRange] = useState<number>(-1);
     const [submitting, setSubmitting] = useState(false);
+    const [hoveredBlock, setHoveredBlock] = useState<string | null>(null);
 
     const calculateTotal = () => {
         const blocksSum = Object.values(blockScores).reduce((a, b) => a + b, 0);
@@ -31,53 +32,115 @@ export default function OralEvalForm({ rubric, project, student, graderId }: Pro
 
     const handleSubmit = async () => {
         setSubmitting(true);
-        await api.submissions.submitOral({
-            id: crypto.randomUUID(),
-            projectId: project.id,
-            studentId: student.id,
-            graderId: graderId,
-            blockScores,
-            timeScore: selectedTimeRange !== -1 ? rubric.timeRanges[selectedTimeRange].score : 0,
-            submittedAt: new Date().toISOString()
-        });
-        router.push('/dashboard/tribunal');
+        try {
+            await api.submissions.submitOral({
+                id: crypto.randomUUID(),
+                projectId: project.id,
+                studentId: student.id,
+                graderId: graderId,
+                blockScores,
+                timeScore: selectedTimeRange !== -1 ? rubric.timeRanges[selectedTimeRange].score : 0,
+                submittedAt: new Date().toISOString()
+            });
+            router.push('/dashboard/tribunal');
+        } catch (err) {
+            console.error(err);
+            alert('Error al guardar la evaluación');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
-        <div className="animate-in" style={{ padding: '48px 80px', maxWidth: '1400px', margin: '0 auto' }}>
-            {/* Header */}
-            <div className="card mb-8" style={{ padding: '32px' }}>
-                <div className="flex items-center gap-3 mb-3">
-                    <span className="badge badge-pink">EVALUACIÓN ORAL</span>
-                    <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
-                        {project.title}
-                    </span>
-                </div>
-                <h2 className="text-3xl font-bold" style={{ fontFamily: 'Poppins', color: 'var(--text-primary)' }}>
-                    Evaluando a: {student.name}
-                </h2>
+        <div style={{
+            padding: '3rem 2rem 10rem 2rem',
+            maxWidth: '1200px',
+            margin: '0 auto',
+            fontFamily: "'Poppins', sans-serif"
+        }}>
+            {/* Header Moderno-Pink */}
+            <div style={{
+                backgroundColor: 'white',
+                borderRadius: '30px',
+                padding: '3rem',
+                marginBottom: '3rem',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)',
+                border: '1px solid #F1F5F9',
+                textAlign: 'center'
+            }}>
+                <span style={{
+                    backgroundColor: '#EC4899',
+                    color: 'white',
+                    padding: '0.4rem 1rem',
+                    borderRadius: '99px',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    marginBottom: '1.5rem',
+                    display: 'inline-block'
+                }}>
+                    Evaluación Oral
+                </span>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>
+                    Evaluando a: <span style={{ color: '#EC4899' }}>{student.name}</span>
+                </h1>
+                <p style={{ color: '#64748B', fontWeight: 600 }}>Proyecto: {project.title}</p>
             </div>
 
-            <div className="card mb-6" style={{ padding: '32px' }}>
-                <div className="mb-6">
-                    <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Poppins' }}>Competencias Orales (Máx 9 Puntos)</h3>
+            {/* COMPETENCIAS ORALES */}
+            <div style={{
+                backgroundColor: 'white',
+                borderRadius: '30px',
+                padding: '3rem',
+                marginBottom: '2rem',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                border: '1px solid #F1F5F9'
+            }}>
+                <div style={{ marginBottom: '3rem' }}>
+                    <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>Competencias Orales (Máx 9 Puntos)</h2>
+                    <p style={{ color: '#64748B', fontWeight: 500 }}>Valore cada bloque según el desempeño del estudiante durante la exposición.</p>
                 </div>
 
-                <div className="space-y-6">
+                <div style={{ display: 'grid', gap: '1.5rem' }}>
                     {rubric.blocks.map(item => (
-                        <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center p-4 rounded-lg hover:bg-gray-50 transition-colors">
-                            <div className="md:col-span-9">
-                                <label className="font-semibold text-base block mb-1" style={{ color: 'var(--text-primary)' }}>{item.label}</label>
-                                <div className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>Máx: {item.maxScore} pts</div>
+                        <div key={item.id}
+                            onMouseEnter={() => setHoveredBlock(item.id)}
+                            onMouseLeave={() => setHoveredBlock(null)}
+                            style={{
+                                display: 'grid',
+                                gridTemplateColumns: '1fr auto',
+                                gap: '2rem',
+                                padding: '1.5rem 2rem',
+                                borderRadius: '20px',
+                                backgroundColor: hoveredBlock === item.id ? '#FFF1F2' : 'white',
+                                border: '2px solid',
+                                borderColor: hoveredBlock === item.id ? '#FECDD3' : '#F1F5F9',
+                                transition: 'all 0.2s'
+                            }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                <label style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1E293B', marginBottom: '0.25rem' }}>{item.label}</label>
+                                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#EC4899', textTransform: 'uppercase' }}>Máximo: {item.maxScore} pts</span>
                             </div>
-                            <div className="md:col-span-3">
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
                                 <input
                                     type="number"
                                     min="0"
                                     max={item.maxScore}
                                     step="0.1"
-                                    className="w-full p-3 text-center border-2 rounded-lg font-bold text-lg transition-all focus:border-pink-500 focus:ring-4 focus:ring-pink-100"
-                                    style={{ borderColor: '#E5E7EB' }}
+                                    placeholder="0-9"
+                                    style={{
+                                        width: '100px',
+                                        padding: '1rem',
+                                        borderRadius: '16px',
+                                        border: '2px solid #E2E8F0',
+                                        fontSize: '1.25rem',
+                                        fontWeight: 900,
+                                        textAlign: 'center',
+                                        outline: 'none',
+                                        color: '#D946EF',
+                                        backgroundColor: 'white'
+                                    }}
                                     value={blockScores[item.id] !== undefined ? blockScores[item.id] : ''}
                                     onChange={(e) => {
                                         const val = Math.min(item.maxScore, Math.max(0, Number(e.target.value)));
@@ -90,84 +153,123 @@ export default function OralEvalForm({ rubric, project, student, graderId }: Pro
                 </div>
             </div>
 
-            <div className="card mb-32" style={{ padding: '32px' }}>
-                <div className="mb-6">
-                    <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Poppins' }}>Adecuación al Tiempo (Máx 1 Punto)</h3>
+            {/* TIEMPO */}
+            <div style={{
+                backgroundColor: 'white',
+                borderRadius: '30px',
+                padding: '3rem',
+                marginBottom: '4rem',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                border: '1px solid #F1F5F9'
+            }}>
+                <div style={{ marginBottom: '2rem' }}>
+                    <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>Adecuación al Tiempo (Máx 1 Punto)</h2>
+                    <p style={{ color: '#64748B', fontWeight: 500 }}>Seleccione el rango de duración de la ponencia.</p>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                     {rubric.timeRanges.map((range, index) => (
-                        <label key={index} className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedTimeRange === index
-                                ? 'border-pink-500 bg-pink-50'
-                                : 'bg-white border-gray-200 hover:border-pink-300'
-                            }`}>
-                            <div className="flex justify-between items-start mb-2">
-                                <input
-                                    type="radio"
-                                    name="timeRange"
-                                    className="mt-1 h-5 w-5 text-pink-600 border-2 focus:ring-pink-500"
-                                    checked={selectedTimeRange === index}
-                                    onChange={() => setSelectedTimeRange(index)}
-                                />
-                                <span className={`text-sm font-bold px-2 py-0.5 rounded ${range.score >= 1 ? 'bg-emerald-100 text-emerald-700' :
-                                        range.score > 0 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
-                                    }`}>
-                                    {range.score} pts
-                                </span>
-                            </div>
-                            <span className="font-semibold text-sm">{range.label}</span>
-                        </label>
+                        <div key={index}
+                            onClick={() => setSelectedTimeRange(index)}
+                            style={{
+                                padding: '1.5rem',
+                                borderRadius: '20px',
+                                backgroundColor: selectedTimeRange === index ? '#1E293B' : 'white',
+                                color: selectedTimeRange === index ? 'white' : '#1E293B',
+                                border: '2px solid',
+                                borderColor: selectedTimeRange === index ? '#1E293B' : '#F1F5F9',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                textAlign: 'center',
+                                position: 'relative'
+                            }}>
+                            <div style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.5rem', opacity: selectedTimeRange === index ? 0.7 : 0.5 }}>{range.label}</div>
+                            <div style={{ fontSize: '1.25rem', fontWeight: 900 }}>{range.score} pts</div>
+                            {selectedTimeRange === index && (
+                                <div style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', color: '#EC4899', fontSize: '0.8rem' }}>✓</div>
+                            )}
+                        </div>
                     ))}
                 </div>
             </div>
 
-            {/* Floating Action Bar - Sin gris */}
-            <div className="fixed bottom-0 left-280 right-0 bg-white border-t-2 p-6 z-40" style={{ borderColor: '#E5E7EB', boxShadow: '0 -4px 20px rgba(0,0,0,0.1)' }}>
-                <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 80px' }} className="flex items-center justify-between">
+            {/* Floating Action Bar Pink-Orange */}
+            <div style={{
+                position: 'fixed',
+                bottom: '2rem',
+                left: '2rem',
+                right: '2rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '24px',
+                padding: '1.5rem 3rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.25)',
+                border: '1px solid rgba(255, 255, 255, 0.5)',
+                zIndex: 1000
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
                     <div>
-                        <span className="text-sm font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--text-secondary)' }}>Nota Provisional</span>
-                        <div className="text-5xl font-black" style={{ fontFamily: 'Poppins', background: 'linear-gradient(135deg, #EC4899 0%, #F97316 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: '0.2rem' }}>
+                            Nota Provisional
+                        </span>
+                        <div style={{
+                            fontSize: '2.5rem',
+                            fontWeight: 900,
+                            background: 'linear-gradient(135deg, #EC4899 0%, #F59E0B 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent'
+                        }}>
                             {calculateTotal()}
                         </div>
                     </div>
-                    <div className="flex gap-4">
-                        <button
-                            onClick={() => router.back()}
-                            className="px-8 py-4 text-base rounded-xl font-bold transition-all"
-                            style={{
-                                background: 'white',
-                                border: '2px solid #EC4899',
-                                color: '#EC4899'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = '#FDF2F8';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'white';
-                            }}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            onClick={handleSubmit}
-                            disabled={submitting}
-                            className="px-10 py-4 text-base rounded-xl font-bold text-white transition-all"
-                            style={{
-                                background: 'linear-gradient(135deg, #EC4899 0%, #F97316 100%)',
-                                boxShadow: '0 4px 12px rgba(236, 72, 153, 0.3)'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 8px 20px rgba(236, 72, 153, 0.4)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(236, 72, 153, 0.3)';
-                            }}
-                        >
-                            {submitting ? 'Guardando...' : '✓ Finalizar Evaluación'}
-                        </button>
-                    </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button
+                        onClick={() => router.back()}
+                        style={{
+                            padding: '1rem 2rem',
+                            borderRadius: '16px',
+                            border: '2px solid #E2E8F0',
+                            backgroundColor: 'white',
+                            color: '#64748B',
+                            fontWeight: 800,
+                            cursor: 'pointer',
+                            fontSize: '1rem',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        disabled={submitting}
+                        style={{
+                            padding: '1rem 2.5rem',
+                            borderRadius: '16px',
+                            border: 'none',
+                            background: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)',
+                            color: 'white',
+                            fontWeight: 800,
+                            cursor: 'pointer',
+                            fontSize: '1rem',
+                            boxShadow: '0 10px 15px -3px rgba(236, 72, 153, 0.3)',
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem'
+                        }}
+                    >
+                        {submitting ? '...' : (
+                            <>
+                                <span>✓</span>
+                                <span>Finalizar Evaluación</span>
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
         </div>
