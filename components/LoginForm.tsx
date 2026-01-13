@@ -31,19 +31,40 @@ export default function LoginForm() {
         setLoading(true);
         setError('');
 
-        const res = await login(email, password);
-        if (!res.success) {
-            setError(res.error || 'Error al iniciar sesión');
+        const loginPromise = login(email, password);
+        const timeoutPromise = new Promise<{ success: false, error: string }>((_, reject) =>
+            setTimeout(() => reject(new Error('TIMEOUT')), 10000)
+        );
+
+        try {
+            const result = await Promise.race([loginPromise, timeoutPromise]) as { success: boolean, error?: string };
+
+            if (result.success) {
+                // Check every 500ms if we were redirected
+                const checkRedirect = setInterval(() => {
+                    if (window.location.pathname.includes('/dashboard') || window.location.pathname.includes('/auth/reset-password')) {
+                        clearInterval(checkRedirect);
+                    }
+                }, 500);
+
+                setTimeout(() => {
+                    if (!window.location.pathname.includes('/dashboard') && !window.location.pathname.includes('/auth/reset-password')) {
+                        clearInterval(checkRedirect);
+                        setLoading(false);
+                        setError('No se pudo cargar tu perfil. Comprueba tu conexión.');
+                    }
+                }, 8000);
+            } else {
+                setLoading(false);
+                setError(result.error || 'Credenciales inválidas');
+            }
+        } catch (err: any) {
             setLoading(false);
-        } else {
-            // Wait a bit to check if redirect happens. 
-            // If it doesn't, it means we found no profile row.
-            setTimeout(() => {
-                if (!window.location.pathname.includes('/dashboard')) {
-                    setLoading(false);
-                    setError('No se pudo cargar tu perfil. Por favor, contacta con secretaría.');
-                }
-            }, 5000);
+            if (err.message === 'TIMEOUT') {
+                setError('La conexión con el servidor está tardando demasiado.');
+            } else {
+                setError('Error al iniciar sesión. Comprueba tus datos.');
+            }
         }
     };
 
