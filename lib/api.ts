@@ -163,40 +163,16 @@ export const api = {
             })) as Project[];
         },
         create: async (data: { title: string, tutorId: string, studentNames: string[], tribunalIds: string[] }) => {
-            // Filter empty student names
-            const validStudents = data.studentNames.filter(name => name.trim() !== '');
-            if (validStudents.length === 0) throw new Error('Se requiere al menos un alumno');
-
-            // 1. Crear el proyecto
-            const { data: project, error: pError } = await supabase
-                .from('projects')
-                .insert({ title: data.title, tutor_id: data.tutorId })
-                .select()
-                .single();
-
-            if (pError || !project) throw pError;
-
-            // 2. Crear los alumnos vinculados
-            const studentsToInsert = validStudents.map(name => ({
-                name,
-                project_id: project.id
-            }));
-
-            // 3. Crear los tribunales vinculados
-            const tribunalAssignments = data.tribunalIds.map(userId => ({
-                project_id: project.id,
-                user_id: userId
-            }));
-
-            const [sRes, tRes] = await Promise.all([
-                supabase.from('students').insert(studentsToInsert),
-                supabase.from('project_tribunals').insert(tribunalAssignments)
-            ]);
-
-            if (sRes.error) throw sRes.error;
-            if (tRes.error) throw tRes.error;
-
-            return project;
+            const response = await fetch('/api/admin/create-project', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al crear el proyecto');
+            }
+            return response.json();
         },
         updateFull: async (data: { projectId: string, title: string, tutorId: string, studentNames: string[], tribunalIds: string[] }) => {
             const response = await fetch('/api/admin/update-project', {
@@ -204,7 +180,11 @@ export const api = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
-            return response.ok;
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al actualizar el proyecto');
+            }
+            return true;
         },
         delete: async (id: string): Promise<boolean> => {
             try {

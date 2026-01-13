@@ -37,11 +37,12 @@ export async function POST(req: Request) {
                 project_id: projectId
             }));
 
-        const { error: sInsError } = await supabaseAdmin
-            .from('students')
-            .insert(studentsToInsert);
-
-        if (sInsError) throw sInsError;
+        if (studentsToInsert.length > 0) {
+            const { error: sInsError } = await supabaseAdmin
+                .from('students')
+                .insert(studentsToInsert);
+            if (sInsError) throw sInsError;
+        }
 
         // 3. Update tribunals (Simplest: delete all and re-insert)
         const { error: tDelError } = await supabaseAdmin
@@ -56,11 +57,12 @@ export async function POST(req: Request) {
             user_id: userId
         }));
 
-        const { error: tInsError } = await supabaseAdmin
-            .from('project_tribunals')
-            .insert(tribunalAssignments);
-
-        if (tInsError) throw tInsError;
+        if (tribunalAssignments.length > 0) {
+            const { error: tInsError } = await supabaseAdmin
+                .from('project_tribunals')
+                .insert(tribunalAssignments);
+            if (tInsError) throw tInsError;
+        }
 
         return NextResponse.json({ success: true });
     } catch (error: any) {
