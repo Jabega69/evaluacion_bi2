@@ -10,17 +10,25 @@ export async function POST(req: Request) {
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         );
 
+        console.log('[CreateProject] Starting for title:', title);
+
         // 1. Create the project
         const { data: project, error: pError } = await supabaseAdmin
             .from('projects')
-            .insert({ title, tutor_id: tutorId })
+            .insert({
+                title,
+                tutor_id: tutorId,
+                tribunal_ids: tribunalIds // Syncing with the array column if it exists
+            })
             .select()
             .single();
 
         if (pError || !project) {
-            console.error('Project Create Error:', pError);
-            throw pError;
+            console.error('[CreateProject] Project Insert Error:', pError);
+            return NextResponse.json({ error: pError?.message || 'Error creating project record' }, { status: 400 });
         }
+
+        console.log('[CreateProject] Project created with ID:', project.id);
 
         // 2. Create the students
         const validStudents = studentNames.filter((name: string) => name.trim() !== '');

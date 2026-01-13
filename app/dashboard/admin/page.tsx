@@ -77,9 +77,9 @@ export default function AdminDashboard() {
             setShowModal(false);
             resetForm();
             loadData();
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            alert('Error al guardar el proyecto');
+            alert(err.message || 'Error al guardar el proyecto');
         } finally {
             setIsSaving(false);
         }
