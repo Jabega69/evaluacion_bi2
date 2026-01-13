@@ -20,6 +20,7 @@ export default function AdminDashboard() {
     const [showModal, setShowModal] = useState(false);
 
     // Form state
+    const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [title, setTitle] = useState('');
     const [tutorId, setTutorId] = useState('');
     const [selectedTribunals, setSelectedTribunals] = useState<string[]>([]);
@@ -49,27 +50,66 @@ export default function AdminDashboard() {
 
     const handleAddProject = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title || !tutorId || selectedTribunals.length === 0) return;
+        const validStudents = studentNames.filter(name => name.trim() !== '');
+        if (!title || !tutorId || selectedTribunals.length === 0 || validStudents.length === 0) {
+            alert('Por favor, completa el título, tutor, al menos un tribunal y al menos un alumno.');
+            return;
+        }
 
         setIsSaving(true);
         try {
-            await api.projects.create({
-                title,
-                tutorId,
-                studentNames: studentNames.filter(name => name.trim() !== ''),
-                tribunalIds: selectedTribunals
-            });
+            if (editingProject) {
+                await api.projects.updateFull({
+                    projectId: editingProject.id,
+                    title,
+                    tutorId,
+                    studentNames: validStudents,
+                    tribunalIds: selectedTribunals
+                });
+            } else {
+                await api.projects.create({
+                    title,
+                    tutorId,
+                    studentNames: validStudents,
+                    tribunalIds: selectedTribunals
+                });
+            }
             setShowModal(false);
             resetForm();
             loadData();
         } catch (err) {
             console.error(err);
+            alert('Error al guardar el proyecto');
         } finally {
             setIsSaving(false);
         }
     };
 
+    const handleDeleteProject = async (id: string, title: string) => {
+        if (!confirm(`¿Seguro que quieres eliminar la investigación "${title}"? Se borrarán también todos los alumnos y evaluaciones asociados.`)) return;
+
+        try {
+            const success = await api.projects.delete(id);
+            if (success) loadData();
+            else alert('Error al eliminar');
+        } catch (err) {
+            alert('Error de conexión');
+        }
+    };
+
+    const openEditModal = (project: Project) => {
+        setEditingProject(project);
+        setTitle(project.title);
+        setTutorId(project.tutorId);
+        setSelectedTribunals(project.tribunalIds || []);
+        const names = ['', '', ''];
+        project.students.forEach((s, i) => { if (i < 3) names[i] = s.name; });
+        setStudentNames(names);
+        setShowModal(true);
+    };
+
     const resetForm = () => {
+        setEditingProject(null);
         setTitle('');
         setTutorId('');
         setSelectedTribunals([]);
@@ -98,7 +138,6 @@ export default function AdminDashboard() {
             fontFamily: "'Poppins', sans-serif"
         }}>
 
-            {/* Cabecera Principal - Estilo Garantizado */}
             <div style={{
                 maxWidth: '1400px',
                 margin: '0 auto 3rem auto',
@@ -117,9 +156,8 @@ export default function AdminDashboard() {
                     Panel de <span style={{ color: '#2563EB' }}>Investigaciones</span> 🔬
                 </h1>
 
-                {/* Botón Nueva Investigación - Estilo 3D Manual */}
                 <button
-                    onClick={() => setShowModal(true)}
+                    onClick={() => { resetForm(); setShowModal(true); }}
                     style={{
                         background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                         color: 'white',
@@ -130,7 +168,7 @@ export default function AdminDashboard() {
                         border: 'none',
                         cursor: 'pointer',
                         boxShadow: '0 10px 20px -5px rgba(37, 99, 235, 0.4)',
-                        transition: 'transform 0.2s',
+                        transition: 'all 0.2s',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.75rem'
@@ -142,7 +180,6 @@ export default function AdminDashboard() {
                 </button>
             </div>
 
-            {/* Contenido Principal */}
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                 {projects.length === 0 ? (
                     <div style={{
@@ -174,19 +211,31 @@ export default function AdminDashboard() {
                                 position: 'relative'
                             }}>
                                 <div style={{ padding: '1.5rem' }}>
-                                    <div style={{
-                                        display: 'inline-block',
-                                        padding: '0.25rem 0.75rem',
-                                        borderRadius: '99px',
-                                        backgroundColor: '#EFF6FF',
-                                        color: '#2563EB',
-                                        fontSize: '0.75rem',
-                                        fontWeight: 800,
-                                        marginBottom: '1rem',
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.05em'
-                                    }}>
-                                        Proyecto
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                        <div style={{
+                                            padding: '0.25rem 0.75rem',
+                                            borderRadius: '99px',
+                                            backgroundColor: '#EFF6FF',
+                                            color: '#2563EB',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 800,
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '0.05em'
+                                        }}>
+                                            Proyecto
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button
+                                                onClick={() => openEditModal(project)}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', padding: '0.25rem' }}
+                                                title="Editar"
+                                            >✏️</button>
+                                            <button
+                                                onClick={() => handleDeleteProject(project.id, project.title)}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', padding: '0.25rem' }}
+                                                title="Eliminar"
+                                            >🗑️</button>
+                                        </div>
                                     </div>
                                     <h3 style={{
                                         fontSize: '1.5rem',
@@ -217,7 +266,7 @@ export default function AdminDashboard() {
                                         cursor: 'pointer',
                                         textDecoration: 'none'
                                     }}>
-                                        Ver Detalles →
+                                        Ver Resultados →
                                     </Link>
                                 </div>
                             </div>
@@ -276,7 +325,7 @@ export default function AdminDashboard() {
                                 &times;
                             </button>
                             <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.25rem', fontFamily: 'Poppins' }}>
-                                Nueva <span style={{ color: '#2563EB' }}>Investigación</span> 🚀
+                                {editingProject ? 'Editar' : 'Nueva'} <span style={{ color: '#2563EB' }}>Investigación</span> 🚀
                             </h2>
                         </div>
 
@@ -309,7 +358,7 @@ export default function AdminDashboard() {
 
                                 {/* ALUMNOS - GRID DE 3 COLUMNAS REAL */}
                                 <div>
-                                    <label style={{ display: 'block', textAlign: 'center', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94A3B8', marginBottom: '1rem' }}>Equipo de Estudiantes</label>
+                                    <label style={{ display: 'block', textAlign: 'center', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94A3B8', marginBottom: '1rem' }}>Equipo de Estudiantes (Mínimo 1)</label>
                                     <div style={{
                                         display: 'grid',
                                         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -349,7 +398,6 @@ export default function AdminDashboard() {
                                                         0{i + 1}
                                                     </div>
                                                     <input
-                                                        required={i === 0}
                                                         style={{
                                                             width: '100%',
                                                             padding: '0.5rem',
@@ -475,7 +523,7 @@ export default function AdminDashboard() {
                                 {/* BOTÓN FINAL */}
                                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
                                     <button
-                                        disabled={isSaving || selectedTribunals.length === 0}
+                                        disabled={isSaving}
                                         type="submit"
                                         style={{
                                             padding: '1rem 3rem',
@@ -485,13 +533,12 @@ export default function AdminDashboard() {
                                             fontSize: '1.25rem',
                                             fontWeight: 800,
                                             border: 'none',
-                                            cursor: selectedTribunals.length === 0 ? 'not-allowed' : 'pointer',
+                                            cursor: 'pointer',
                                             boxShadow: '0 10px 20px -5px rgba(16, 185, 129, 0.4)',
-                                            fontFamily: 'Poppins',
-                                            opacity: selectedTribunals.length === 0 ? 0.5 : 1
+                                            fontFamily: 'Poppins'
                                         }}
                                     >
-                                        {isSaving ? 'PLANIFICANDO...' : '¡LANZAR INVESTIGACIÓN! 🚀'}
+                                        {isSaving ? 'GUARDANDO...' : `${editingProject ? 'ACTUALIZAR' : '¡LANZAR!'} INVESTIGACIÓN 🚀`}
                                     </button>
                                 </div>
                             </form>

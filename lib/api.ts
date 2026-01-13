@@ -163,6 +163,10 @@ export const api = {
             })) as Project[];
         },
         create: async (data: { title: string, tutorId: string, studentNames: string[], tribunalIds: string[] }) => {
+            // Filter empty student names
+            const validStudents = data.studentNames.filter(name => name.trim() !== '');
+            if (validStudents.length === 0) throw new Error('Se requiere al menos un alumno');
+
             // 1. Crear el proyecto
             const { data: project, error: pError } = await supabase
                 .from('projects')
@@ -173,7 +177,7 @@ export const api = {
             if (pError || !project) throw pError;
 
             // 2. Crear los alumnos vinculados
-            const studentsToInsert = data.studentNames.map(name => ({
+            const studentsToInsert = validStudents.map(name => ({
                 name,
                 project_id: project.id
             }));
@@ -193,6 +197,27 @@ export const api = {
             if (tRes.error) throw tRes.error;
 
             return project;
+        },
+        updateFull: async (data: { projectId: string, title: string, tutorId: string, studentNames: string[], tribunalIds: string[] }) => {
+            const response = await fetch('/api/admin/update-project', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            return response.ok;
+        },
+        delete: async (id: string): Promise<boolean> => {
+            try {
+                const response = await fetch('/api/admin/delete-project', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ projectId: id })
+                });
+                return response.ok;
+            } catch (error) {
+                console.error('Delete Project Error:', error);
+                return false;
+            }
         },
         getReport: async (projectId: string, studentId: string) => {
             const { data: evals, error } = await supabase
