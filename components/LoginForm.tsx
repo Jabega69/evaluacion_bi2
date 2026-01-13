@@ -74,7 +74,7 @@ export default function LoginForm() {
                 console.warn('[LoginForm] Login failed:', result.error);
                 setLoading(false);
                 setIsConnecting(false);
-                setError(result.error || 'Credenciales inválidas');
+                setError(result.error || 'Credenciales inválidas. Comprueba tu contraseña.');
             }
         } catch (err: any) {
             console.error('[LoginForm] Unexpected error during email login:', err);

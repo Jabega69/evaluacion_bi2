@@ -75,15 +75,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const activeFetch = useRef<Promise<void> | null>(null);
 
     const fetchUserRole = async (email: string, retryCount = 0): Promise<void> => {
-        if (!email) return;
+        if (!email) {
+            setIsLoading(false);
+            return;
+        }
 
         // Dedup: if there's an active fetch for this email, wait for it
-        if (activeFetch.current && lastFetchedEmail.current === email) {
+        // BUT don't join if it's a retry (internal call)
+        if (activeFetch.current && lastFetchedEmail.current === email && retryCount === 0) {
             console.log('[AuthContext] Joining existing fetch for:', email);
             return activeFetch.current;
         }
 
-        // Create a new fetch promise
         const fetchPromise = (async () => {
             console.log(`[AuthContext] fetchUserRole starting for ${email} (attempt ${retryCount + 1})`);
             startOp();
@@ -98,10 +101,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                 if (error) {
                     if (error.message?.includes('AbortError') && retryCount < 3) {
-                        console.log(`[AuthContext] AbortError detected, retrying...`);
+                        console.log(`[AuthContext] AbortError detected, retrying (count ${retryCount + 1})...`);
+                        // Clear active fetch before retrying to allow the new one to run
+                        activeFetch.current = null;
+                        isFetching.current = false;
                         await new Promise(r => setTimeout(r, 800));
-                        // Recursive call will also be wrapped and awaited
-                        return fetchUserRole(email, retryCount + 1);
+                        return await fetchUserRole(email, retryCount + 1);
                     }
                     console.error('[AuthContext] Error fetching user profile:', error);
                     setUser(null);
@@ -131,7 +136,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
         })();
 
-        activeFetch.current = fetchPromise;
+        // Only set activeFetch if it's the primary call
+        if (retryCount === 0) {
+            activeFetch.current = fetchPromise;
+        }
         return fetchPromise;
     };
 
