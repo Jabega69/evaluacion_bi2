@@ -13,58 +13,49 @@ export default function LoginForm() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [showRoleSelector, setShowRoleSelector] = useState(false);
+    const [isConnecting, setIsConnecting] = useState(false);
 
     // Redirect if already logged in and role is selected
     useEffect(() => {
-        if (user && !isLoading && user.activeRole) {
-            const role = user.activeRole;
-            if (role === 'admin') router.push('/dashboard/admin');
-            else if (role === 'tribunal') router.push('/dashboard/tribunal');
-            else if (role === 'tutor') router.push('/dashboard/tutor');
-        } else if (user && !isLoading && !user.activeRole && user.roles && user.roles.length > 1) {
-            setShowRoleSelector(true);
+        if (user && !isLoading) {
+            if (user.activeRole) {
+                const role = user.activeRole;
+                if (role === 'admin') router.push('/dashboard/admin');
+                else if (role === 'tribunal') router.push('/dashboard/tribunal');
+                else if (role === 'tutor') router.push('/dashboard/tutor');
+            } else if (user.roles && user.roles.length > 1) {
+                setShowRoleSelector(true);
+                setLoading(false);
+                setIsConnecting(false);
+            }
+        } else if (!user && !isLoading && isConnecting) {
+            // Login was successful (since we set isConnecting) but no profile was found
+            setError('No se pudo cargar tu perfil. Es posible que el administrador deba registrarte primero.');
+            setLoading(false);
+            setIsConnecting(false);
         }
-    }, [user, isLoading, router]);
+    }, [user, isLoading, router, isConnecting]);
 
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
-
-        const loginPromise = login(email, password);
-        const timeoutPromise = new Promise<{ success: false, error: string }>((_, reject) =>
-            setTimeout(() => reject(new Error('TIMEOUT')), 10000)
-        );
+        setIsConnecting(false);
 
         try {
-            const result = await Promise.race([loginPromise, timeoutPromise]) as { success: boolean, error?: string };
+            const result = await login(email, password);
 
             if (result.success) {
-                // Check every 500ms if we were redirected
-                const checkRedirect = setInterval(() => {
-                    if (window.location.pathname.includes('/dashboard') || window.location.pathname.includes('/auth/reset-password')) {
-                        clearInterval(checkRedirect);
-                    }
-                }, 500);
-
-                setTimeout(() => {
-                    if (!window.location.pathname.includes('/dashboard') && !window.location.pathname.includes('/auth/reset-password')) {
-                        clearInterval(checkRedirect);
-                        setLoading(false);
-                        setError('No se pudo cargar tu perfil. Comprueba tu conexión.');
-                    }
-                }, 8000);
+                // If login success, we wait for AuthProvider to fetch the profile
+                setIsConnecting(true);
+                // We don't call setLoading(false) here yet, we wait for the useEffect
             } else {
                 setLoading(false);
                 setError(result.error || 'Credenciales inválidas');
             }
         } catch (err: any) {
             setLoading(false);
-            if (err.message === 'TIMEOUT') {
-                setError('La conexión con el servidor está tardando demasiado.');
-            } else {
-                setError('Error al iniciar sesión. Comprueba tus datos.');
-            }
+            setError('Error al iniciar sesión. Comprueba tu conexión.');
         }
     };
 

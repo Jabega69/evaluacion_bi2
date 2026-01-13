@@ -53,23 +53,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return () => subscription.unsubscribe();
     }, []);
 
-    const fetchUserRole = async (email: string) => {
+    const fetchUserRole = async (email: string, retryCount = 0) => {
+        console.log(`[AuthContext] fetchUserRole starting for ${email} (attempt ${retryCount + 1})`);
         try {
-            const { data, error } = await supabase
+            const { data: users, error } = await supabase
                 .from('users')
                 .select('*')
-                .eq('email', email)
-                .single();
+                .eq('email', email);
 
             if (error) {
-                console.error('Error fetching user profile:', error);
+                console.error('[AuthContext] Error fetching user profile:', error);
+
+                // If it's an AbortError and we haven't retried too much, try again
+                if (error.message?.includes('AbortError') && retryCount < 2) {
+                    console.log('[AuthContext] AbortError detected, retrying...');
+                    setTimeout(() => fetchUserRole(email, retryCount + 1), 500);
+                    return;
+                }
+
                 setUser(null);
+                setIsLoading(false);
                 return;
             }
 
+            const data = users && users.length > 0 ? users[0] : null;
+
             if (data) {
-                // Defensive check: handle both 'roles' (new) and 'role' (old) during transition
-                // For now, ignore needs_password_reset and always allow access if data is found.
+                console.log('[AuthContext] Profile found:', data.name, 'Roles:', data.roles);
                 const roles = data.roles || (data.role ? [data.role] : []);
                 const userData: User = {
                     ...data,
@@ -78,13 +88,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 };
                 setUser(userData);
             } else {
+                console.warn('[AuthContext] No profile found in users table for email:', email);
                 setUser(null);
             }
         } catch (err) {
-            console.error('Unexpected error in fetchUserRole:', err);
+            console.error('[AuthContext] Unexpected error in fetchUserRole:', err);
             setUser(null);
         } finally {
             setIsLoading(false);
+            console.log('[AuthContext] fetchUserRole finished');
         }
     };
 
