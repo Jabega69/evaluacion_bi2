@@ -40,21 +40,22 @@ export default function LoginForm() {
         e.preventDefault();
         setLoading(true);
         setError('');
-        setIsConnecting(false);
+        setIsConnecting(true); // Set to true immediately to indicate connection attempt
 
         try {
             const result = await login(email, password);
 
             if (result.success) {
                 // If login success, we wait for AuthProvider to fetch the profile
-                setIsConnecting(true);
-                // We don't call setLoading(false) here yet, we wait for the useEffect
+                // isConnecting is already true, and useEffect will handle the rest
             } else {
                 setLoading(false);
+                setIsConnecting(false); // Reset if login failed
                 setError(result.error || 'Credenciales inválidas');
             }
         } catch (err: any) {
             setLoading(false);
+            setIsConnecting(false); // Reset if an error occurred
             setError('Error al iniciar sesión. Comprueba tu conexión.');
         }
     };

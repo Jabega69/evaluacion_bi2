@@ -78,10 +78,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (error) {
                 // If it's an AbortError, retry after a short delay
                 if (error.message?.includes('AbortError') && retryCount < 3) {
-                    console.log('[AuthContext] AbortError detected, retrying in 500ms...');
+                    console.log(`[AuthContext] AbortError detected (attempt ${retryCount + 1}), retrying...`);
                     isFetching.current = false;
-                    setTimeout(() => fetchUserRole(email, retryCount + 1), 500);
-                    return;
+                    setTimeout(() => fetchUserRole(email, retryCount + 1), 800);
+                    return; // Return without setting isLoading(false)
                 }
 
                 console.error('[AuthContext] Error fetching user profile:', error);
