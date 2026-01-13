@@ -15,6 +15,7 @@ export default function ResetPasswordPage() {
 
     const handleReset = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('[ResetPassword] handleReset started');
         if (password !== confirmPassword) {
             setError('Las contraseñas no coinciden');
             return;
@@ -28,30 +29,45 @@ export default function ResetPasswordPage() {
         setError('');
 
         try {
+            console.log('[ResetPassword] Attempting to update password in Auth...');
             // 1. Update password in Supabase Auth
             const { error: authError } = await supabase.auth.updateUser({
                 password: password
             });
 
-            if (authError) throw authError;
+            if (authError) {
+                console.error('[ResetPassword] Auth update error:', authError);
+                throw authError;
+            }
+            console.log('[ResetPassword] Auth password updated successfully');
 
             // 2. Update needs_password_reset in public.users
             if (user) {
+                console.log('[ResetPassword] Updating public.users table for user:', user.id);
                 const { error: dbError } = await supabase
                     .from('users')
                     .update({ needs_password_reset: false })
                     .eq('id', user.id);
 
-                if (dbError) throw dbError;
+                if (dbError) {
+                    console.error('[ResetPassword] DB update error:', dbError);
+                    throw dbError;
+                }
+                console.log('[ResetPassword] Public.users updated successfully');
+            } else {
+                console.warn('[ResetPassword] No user found in context, skipping DB update');
             }
 
             // 3. Success! Redirect to dashboard
+            console.log('[ResetPassword] Success! Redirecting...');
             alert('Contraseña actualizada correctamente');
-            window.location.href = '/dashboard'; // Force reload to refresh user state
+            window.location.href = '/dashboard';
         } catch (err: any) {
+            console.error('[ResetPassword] Catch error:', err);
             setError(err.message || 'Error al actualizar la contraseña');
         } finally {
             setLoading(false);
+            console.log('[ResetPassword] handleReset finished');
         }
     };
 
