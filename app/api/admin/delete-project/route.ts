@@ -14,8 +14,16 @@ export async function POST(req: Request) {
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         );
 
-        // Deleting from projects should cascade to students, project_tribunals, and evaluations 
-        // IF the foreign keys are set to ON DELETE CASCADE in the DB schema.
+        // 1. Delete evaluations
+        await supabaseAdmin.from('evaluations').delete().eq('project_id', projectId);
+
+        // 2. Delete tribunal assignments
+        await supabaseAdmin.from('project_tribunals').delete().eq('project_id', projectId);
+
+        // 3. Delete students
+        await supabaseAdmin.from('students').delete().eq('project_id', projectId);
+
+        // 4. Finally delete the project
         const { error } = await supabaseAdmin
             .from('projects')
             .delete()

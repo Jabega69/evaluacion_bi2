@@ -89,11 +89,11 @@ export default function AdminDashboard() {
         if (!confirm(`¿Seguro que quieres eliminar la investigación "${title}"? Se borrarán también todos los alumnos y evaluaciones asociados.`)) return;
 
         try {
-            const success = await api.projects.delete(id);
-            if (success) loadData();
-            else alert('Error al eliminar');
-        } catch (err) {
-            alert('Error de conexión');
+            await api.projects.delete(id);
+            loadData();
+        } catch (err: any) {
+            console.error(err);
+            alert(err.message || 'Error al eliminar el proyecto');
         }
     };
 

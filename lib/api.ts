@@ -187,17 +187,16 @@ export const api = {
             return true;
         },
         delete: async (id: string): Promise<boolean> => {
-            try {
-                const response = await fetch('/api/admin/delete-project', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ projectId: id })
-                });
-                return response.ok;
-            } catch (error) {
-                console.error('Delete Project Error:', error);
-                return false;
+            const response = await fetch('/api/admin/delete-project', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectId: id })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al eliminar el proyecto');
             }
+            return true;
         },
         getReport: async (projectId: string, studentId: string) => {
             const { data: evals, error } = await supabase
