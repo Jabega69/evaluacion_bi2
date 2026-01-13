@@ -59,10 +59,11 @@ export default function OralEvalForm({ rubric, project, student, graderId }: Pro
             fontFamily: "'Poppins', sans-serif"
         }}>
             {/* Header Moderno-Pink */}
+            {/* Header Moderno-Pink */}
             <div style={{
                 backgroundColor: 'white',
                 borderRadius: '30px',
-                padding: '3rem',
+                padding: '3rem 2rem',
                 marginBottom: '3rem',
                 boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)',
                 border: '1px solid #F1F5F9',
@@ -71,9 +72,9 @@ export default function OralEvalForm({ rubric, project, student, graderId }: Pro
                 <span style={{
                     backgroundColor: '#EC4899',
                     color: 'white',
-                    padding: '0.4rem 1rem',
+                    padding: '0.5rem 1.5rem',
                     borderRadius: '99px',
-                    fontSize: '0.75rem',
+                    fontSize: '0.9rem',
                     fontWeight: 800,
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em',
@@ -82,10 +83,10 @@ export default function OralEvalForm({ rubric, project, student, graderId }: Pro
                 }}>
                     Evaluación Oral
                 </span>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>
+                <h1 style={{ fontSize: '3.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
                     Evaluando a: <span style={{ color: '#EC4899' }}>{student.name}</span>
                 </h1>
-                <p style={{ color: '#64748B', fontWeight: 600 }}>Proyecto: {project.title}</p>
+                <p style={{ color: '#64748B', fontSize: '1.25rem', fontWeight: 600 }}>Proyecto: {project.title}</p>
             </div>
 
             {/* COMPETENCIAS ORALES */}
