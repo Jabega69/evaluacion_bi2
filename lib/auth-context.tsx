@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { User, Role } from '@/types';
 import { supabase } from './supabase';
 import { useRouter } from 'next/navigation';
@@ -53,8 +53,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return () => subscription.unsubscribe();
     }, []);
 
-    const fetchUserRole = async (email: string, retryCount = 0) => {
-        console.log(`[AuthContext] fetchUserRole starting for ${email} (attempt ${retryCount + 1})`);
+    // Use a Ref to track the last fetched email and prevent duplicate/abort errors
+    const lastFetchedEmail = useRef<string | null>(null);
+
+    const fetchUserRole = async (email: string) => {
+        // If we are already fetching or just fetched this email, skip to avoid AbortError
+        if (lastFetchedEmail.current === email && user) return;
+        lastFetchedEmail.current = email;
+
+        console.log(`[AuthContext] fetchUserRole starting for ${email}`);
+        setIsLoading(true);
+
         try {
             const { data: users, error } = await supabase
                 .from('users')
@@ -64,10 +73,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (error) {
                 console.error('[AuthContext] Error fetching user profile:', error);
 
-                // If it's an AbortError and we haven't retried too much, try again
-                if (error.message?.includes('AbortError') && retryCount < 2) {
-                    console.log('[AuthContext] AbortError detected, retrying...');
-                    setTimeout(() => fetchUserRole(email, retryCount + 1), 500);
+                // If it's an AbortError, it's likely a collision. Don't clear user yet.
+                if (error.message?.includes('AbortError')) {
+                    console.log('[AuthContext] AbortError ignored (overlap)');
                     return;
                 }
 
@@ -79,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const data = users && users.length > 0 ? users[0] : null;
 
             if (data) {
-                console.log('[AuthContext] Profile found:', data.name, 'Roles:', data.roles);
+                console.log('[AuthContext] Profile found for:', data.name);
                 const roles = data.roles || (data.role ? [data.role] : []);
                 const userData: User = {
                     ...data,
@@ -88,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 };
                 setUser(userData);
             } else {
-                console.warn('[AuthContext] No profile found in users table for email:', email);
+                console.warn('[AuthContext] No profile record found for:', email);
                 setUser(null);
             }
         } catch (err) {
