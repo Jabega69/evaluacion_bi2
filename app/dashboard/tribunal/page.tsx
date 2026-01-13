@@ -55,7 +55,7 @@ export default function TribunalDashboard() {
                 alignItems: 'center'
             }}>
                 <h1 style={{
-                    fontSize: '1.5rem',
+                    fontSize: '2.5rem',
                     fontWeight: 900,
                     color: '#0F172A',
                     marginBottom: '0.25rem',
@@ -110,7 +110,7 @@ export default function TribunalDashboard() {
                                             {idx + 1}
                                         </div>
                                         <h2 style={{
-                                            fontSize: '1.25rem',
+                                            fontSize: '2rem',
                                             fontWeight: 900,
                                             color: '#0F172A',
                                             marginBottom: '1.25rem',
@@ -131,13 +131,13 @@ export default function TribunalDashboard() {
                                                 <div key={student.id} style={{
                                                     backgroundColor: 'white',
                                                     borderRadius: '16px',
-                                                    padding: '1.25rem',
+                                                    padding: '2rem',
                                                     display: 'flex',
                                                     flexDirection: 'column',
                                                     alignItems: 'center',
                                                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
                                                     width: '100%',
-                                                    maxWidth: '240px'
+                                                    maxWidth: '500px'
                                                 }}>
                                                     <div style={{
                                                         width: '50px',
