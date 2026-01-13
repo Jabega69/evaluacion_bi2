@@ -51,8 +51,14 @@ export default function AdminDashboard() {
     const handleAddProject = async (e: React.FormEvent) => {
         e.preventDefault();
         const validStudents = studentNames.filter(name => name.trim() !== '');
-        if (!title || !tutorId || selectedTribunals.length === 0 || validStudents.length === 0) {
-            alert('Por favor, completa el título, tutor, al menos un tribunal y al menos un alumno.');
+
+        if (!title || !tutorId || selectedTribunals.length !== 3 || validStudents.length === 0) {
+            alert('Por favor, completa el título, tutor, exactamente 3 miembros de tribunal y al menos un alumno.');
+            return;
+        }
+
+        if (selectedTribunals.includes(tutorId)) {
+            alert('El tutor no puede ser miembro del tribunal del mismo proyecto.');
             return;
         }
 
@@ -117,9 +123,21 @@ export default function AdminDashboard() {
     };
 
     const toggleTribunal = (id: string) => {
-        setSelectedTribunals(prev =>
-            prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
-        );
+        if (id === tutorId) {
+            alert('El tutor asignado no puede formar parte del tribunal.');
+            return;
+        }
+
+        setSelectedTribunals(prev => {
+            if (prev.includes(id)) {
+                return prev.filter(t => t !== id);
+            }
+            if (prev.length >= 3) {
+                alert('Solo puedes seleccionar un máximo de 3 miembros para el tribunal.');
+                return prev;
+            }
+            return [...prev, id];
+        });
     };
 
     if (loading) return (
@@ -458,7 +476,12 @@ export default function AdminDashboard() {
                                                     boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.05)'
                                                 }}
                                                 value={tutorId}
-                                                onChange={(e) => setTutorId(e.target.value)}
+                                                onChange={(e) => {
+                                                    const newTutorId = e.target.value;
+                                                    setTutorId(newTutorId);
+                                                    // Si el nuevo tutor estaba en el tribunal, quitarlo
+                                                    setSelectedTribunals(prev => prev.filter(id => id !== newTutorId));
+                                                }}
                                             >
                                                 <option value="">Elegir Tutor...</option>
                                                 {tutors.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
@@ -478,15 +501,16 @@ export default function AdminDashboard() {
                                                         position: 'relative',
                                                         borderRadius: '20px',
                                                         padding: '1rem',
-                                                        cursor: 'pointer',
                                                         transition: 'all 0.2s',
                                                         display: 'flex',
                                                         flexDirection: 'column',
                                                         alignItems: 'center',
                                                         textAlign: 'center',
-                                                        backgroundColor: selectedTribunals.includes(t.id) ? '#1E293B' : 'white',
-                                                        color: selectedTribunals.includes(t.id) ? 'white' : '#334155',
+                                                        backgroundColor: selectedTribunals.includes(t.id) ? '#1E293B' : (t.id === tutorId ? '#F1F5F9' : 'white'),
+                                                        color: selectedTribunals.includes(t.id) ? 'white' : (t.id === tutorId ? '#CBD5E1' : '#334155'),
                                                         border: selectedTribunals.includes(t.id) ? 'none' : '2px solid #F1F5F9',
+                                                        opacity: t.id === tutorId ? 0.6 : 1,
+                                                        cursor: t.id === tutorId ? 'not-allowed' : 'pointer',
                                                         transform: selectedTribunals.includes(t.id) ? 'scale(1.02)' : 'scale(1)',
                                                         boxShadow: selectedTribunals.includes(t.id) ? '0 10px 20px -5px rgba(0,0,0,0.3)' : 'none'
                                                     }}
@@ -523,18 +547,18 @@ export default function AdminDashboard() {
                                 {/* BOTÓN FINAL */}
                                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
                                     <button
-                                        disabled={isSaving}
+                                        disabled={isSaving || !title || !tutorId || selectedTribunals.length !== 3 || studentNames.filter(n => n.trim() !== '').length === 0}
                                         type="submit"
                                         style={{
                                             padding: '1rem 3rem',
                                             borderRadius: '30px',
-                                            backgroundColor: '#10B981',
+                                            backgroundColor: (isSaving || !title || !tutorId || selectedTribunals.length !== 3 || studentNames.filter(n => n.trim() !== '').length === 0) ? '#D1D5DB' : '#10B981',
                                             color: 'white',
                                             fontSize: '1.25rem',
                                             fontWeight: 800,
                                             border: 'none',
-                                            cursor: 'pointer',
-                                            boxShadow: '0 10px 20px -5px rgba(16, 185, 129, 0.4)',
+                                            cursor: (isSaving || !title || !tutorId || selectedTribunals.length !== 3 || studentNames.filter(n => n.trim() !== '').length === 0) ? 'not-allowed' : 'pointer',
+                                            boxShadow: (isSaving || !title || !tutorId || selectedTribunals.length !== 3 || studentNames.filter(n => n.trim() !== '').length === 0) ? 'none' : '0 10px 20px -5px rgba(16, 185, 129, 0.4)',
                                             fontFamily: 'Poppins'
                                         }}
                                     >
