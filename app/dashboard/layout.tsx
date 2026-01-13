@@ -64,6 +64,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
 
                 <div className="p-5 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+                    {user?.needs_password_reset && (
+                        <div
+                            onClick={() => router.push('/auth/reset-password')}
+                            style={{
+                                backgroundColor: '#FEF2F2',
+                                border: '1px solid #FCA5A5',
+                                padding: '0.75rem',
+                                borderRadius: '12px',
+                                marginBottom: '1rem',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            <p style={{ color: '#991B1B', fontSize: '0.75rem', fontWeight: 800, textAlign: 'center' }}>
+                                ⚠️ ACCIÓN REQUERIDA:<br />Actualiza tu contraseña
+                            </p>
+                        </div>
+                    )}
+
                     <div className="flex items-center gap-3 mb-4">
                         <div className="avatar">
                             {user.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -73,15 +91,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <div className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{user.email}</div>
                         </div>
                     </div>
-                    <button
-                        onClick={logout}
-                        className="w-full py-2 px-4 rounded-lg text-sm font-semibold transition-all"
-                        style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                    >
-                        Cerrar Sesión
-                    </button>
+
+                    <div className="space-y-2">
+                        <button
+                            onClick={() => router.push('/auth/reset-password')}
+                            className="w-full py-2 px-4 rounded-lg text-sm font-semibold transition-all border border-slate-700 text-slate-300 hover:bg-slate-800"
+                            style={{ background: 'transparent' }}
+                        >
+                            Cambiar Contraseña
+                        </button>
+                        <button
+                            onClick={logout}
+                            className="w-full py-2 px-4 rounded-lg text-sm font-semibold transition-all"
+                            style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                        >
+                            Cerrar Sesión
+                        </button>
+                    </div>
                 </div>
             </div>
 

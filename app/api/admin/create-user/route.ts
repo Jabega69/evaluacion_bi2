@@ -33,7 +33,7 @@ export async function POST(req: Request) {
                 email,
                 name,
                 roles,
-                needs_password_reset: false
+                needs_password_reset: true
             });
 
         if (dbError) {
