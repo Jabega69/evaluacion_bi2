@@ -139,17 +139,21 @@ export default function CalendarPage() {
                                         .map(p => {
                                             const time = new Date(p.presentationDate!).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
                                             return (
-                                                <span key={p.id} style={{
-                                                    backgroundColor: '#EF4444', // Rojo intenso
+                                                <div key={p.id} style={{
+                                                    backgroundColor: '#EF4444',
                                                     color: 'white',
-                                                    padding: '0.25rem 0.6rem',
-                                                    borderRadius: '8px',
+                                                    padding: '0.4rem 0.8rem',
+                                                    borderRadius: '10px',
                                                     fontSize: '0.85rem',
                                                     fontWeight: 800,
-                                                    boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)'
+                                                    boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: '0.1rem'
                                                 }}>
-                                                    {time}
-                                                </span>
+                                                    <span style={{ fontSize: '0.75rem', opacity: 0.9 }}>{time}</span>
+                                                    <span>{p.title}</span>
+                                                </div>
                                             );
                                         })
                                     }
