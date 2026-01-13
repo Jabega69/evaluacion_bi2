@@ -75,7 +75,8 @@ export const api = {
                 .from('projects')
                 .select(`
                     *,
-                    students (*)
+                    students (*),
+                    project_tribunals (user_id)
                 `);
 
             if (error) {
@@ -87,7 +88,7 @@ export const api = {
                 title: p.title,
                 tutorId: p.tutor_id,
                 students: p.students || [],
-                tribunalIds: p.tribunal_ids || [],
+                tribunalIds: (p.project_tribunals || []).map((t: any) => t.user_id),
                 presentationDate: p.presentation_date,
                 presentationLocation: p.presentation_location
             })) as Project[];
@@ -95,7 +96,7 @@ export const api = {
         getById: async (id: string): Promise<Project | undefined> => {
             const { data: project, error: pError } = await supabase
                 .from('projects')
-                .select(`*, students (*)`)
+                .select(`*, students (*), project_tribunals (user_id)`)
                 .eq('id', id)
                 .single();
 
@@ -106,7 +107,7 @@ export const api = {
                 title: project.title,
                 tutorId: project.tutor_id,
                 students: project.students || [],
-                tribunalIds: project.tribunal_ids || [],
+                tribunalIds: ((project as any).project_tribunals || []).map((t: any) => t.user_id),
                 presentationDate: project.presentation_date,
                 presentationLocation: project.presentation_location
             } as Project;

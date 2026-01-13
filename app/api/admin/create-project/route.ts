@@ -12,13 +12,7 @@ export async function POST(req: Request) {
 
         console.log('[CreateProject] Starting for title:', title);
 
-        // DIAGNOSTIC FETCH
-        const { data: diagData } = await supabaseAdmin.from('projects').select('*').limit(1);
-        const availableKeys = diagData && diagData[0] ? Object.keys(diagData[0]).join(', ') : 'unknown';
-        console.log('[CreateProject] Available keys in projects:', availableKeys);
-
         // 1. Create the project
-        // We will try inserting WITHOUT tribunal_ids first to see if it even gets past this
         const { data: project, error: pError } = await supabaseAdmin
             .from('projects')
             .insert({
@@ -30,9 +24,7 @@ export async function POST(req: Request) {
 
         if (pError || !project) {
             console.error('[CreateProject] Project Insert Error:', pError);
-            return NextResponse.json({
-                error: (pError?.message || 'Error creating project') + ' | Available columns: ' + availableKeys
-            }, { status: 400 });
+            return NextResponse.json({ error: pError?.message || 'Error creating project record' }, { status: 400 });
         }
 
         console.log('[CreateProject] Project created with ID:', project.id);
