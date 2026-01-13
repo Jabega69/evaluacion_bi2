@@ -26,11 +26,17 @@ export interface Project {
 
 // Rubric Structures
 
+export interface RubricLevel {
+  range: string;
+  description: string;
+}
+
 export interface RubricItem {
   id: string;
   label: string;
   maxScore: number;
   description?: string;
+  levels?: RubricLevel[];
 }
 
 export interface WrittenRubric {
