@@ -69,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             if (data) {
                 // Defensive check: handle both 'roles' (new) and 'role' (old) during transition
+                // For now, ignore needs_password_reset and always allow access if data is found.
                 const roles = data.roles || (data.role ? [data.role] : []);
                 const userData: User = {
                     ...data,
