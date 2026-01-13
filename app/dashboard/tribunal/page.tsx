@@ -62,15 +62,6 @@ export default function TribunalDashboard() {
                 }}>
                     Evaluación del <span style={{ color: '#8B5CF6' }}>Tribunal</span> ⚖️
                 </h1>
-                <p style={{
-                    fontSize: '1rem',
-                    color: '#64748B',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.2em'
-                }}>
-                    Tu criterio define el futuro académico
-                </p>
             </div>
 
             {/* Lista de Proyectos */}

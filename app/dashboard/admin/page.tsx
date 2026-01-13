@@ -116,16 +116,6 @@ export default function AdminDashboard() {
                 }}>
                     Panel de <span style={{ color: '#2563EB' }}>Investigaciones</span> 🔬
                 </h1>
-                <p style={{
-                    fontSize: '1.1rem',
-                    color: '#64748B', // Slate 500
-                    fontWeight: 600,
-                    marginBottom: '2rem',
-                    letterSpacing: '0.05em',
-                    textTransform: 'uppercase'
-                }}>
-                    Gestión Académica y Control de Proyectos
-                </p>
 
                 {/* Botón Nueva Investigación - Estilo 3D Manual */}
                 <button
@@ -286,11 +276,8 @@ export default function AdminDashboard() {
                                 &times;
                             </button>
                             <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.25rem', fontFamily: 'Poppins' }}>
-                                Lanzar <span style={{ color: '#2563EB' }}>Investigación</span> 🚀
+                                Nueva <span style={{ color: '#2563EB' }}>Investigación</span> 🚀
                             </h2>
-                            <p style={{ fontSize: '0.95rem', color: '#64748B', fontWeight: 600 }}>
-                                Diseña una nueva ruta de conocimiento asignando estudiantes y expertos.
-                            </p>
                         </div>
 
                         <div style={{ padding: '2rem', overflowY: 'auto', flex: 1 }}>

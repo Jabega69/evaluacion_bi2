@@ -54,17 +54,8 @@ export default function TutorDashboard() {
                     marginBottom: '1rem',
                     lineHeight: 1.2
                 }}>
-                    Guía al <span style={{ color: '#14B8A6' }}>Éxito</span> 🌱
+                    Mis <span style={{ color: '#14B8A6' }}>Alumnos</span> 🌱
                 </h1>
-                <p style={{
-                    fontSize: '1rem',
-                    color: '#64748B',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.2em'
-                }}>
-                    Tutoría y seguimiento personalizado
-                </p>
             </div>
 
             {/* Lista de Proyectos */}

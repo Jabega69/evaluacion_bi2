@@ -95,15 +95,6 @@ export default function AdminUsersPage() {
                 }}>
                     Gestión de <span style={{ color: '#F59E0B' }}>Profesores</span> 🎓
                 </h1>
-                <p style={{
-                    fontSize: '1.1rem',
-                    color: '#64748B',
-                    fontWeight: 600,
-                    letterSpacing: '0.05em',
-                    textTransform: 'uppercase'
-                }}>
-                    Administra el claustro académico
-                </p>
                 <button
                     onClick={() => setShowModal(true)}
                     style={{
