@@ -41,20 +41,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     useEffect(() => {
-        // Check active session
         const checkSession = async () => {
-            startOp();
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session?.user?.email) {
                     await fetchUserRole(session.user.email);
-                } else {
-                    setUser(null);
                 }
             } catch (error) {
                 console.error('Session check error:', error);
             } finally {
-                endOp();
+                // Initial load finishing
+                setIsLoading(false);
             }
         };
 
@@ -63,14 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             console.log('[AuthContext] Auth state change:', event, session?.user?.email);
             if (session?.user?.email) {
-                if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-                    startOp();
-                    await fetchUserRole(session.user.email);
-                    endOp();
-                } else {
-                    // Just sync without full loading block if it's just a routine change
-                    await fetchUserRole(session.user.email);
-                }
+                await fetchUserRole(session.user.email);
             } else if (event === 'SIGNED_OUT') {
                 setUser(null);
                 lastFetchedEmail.current = null;
@@ -81,56 +71,68 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return () => subscription.unsubscribe();
     }, []);
 
-    const fetchUserRole = async (email: string, retryCount = 0) => {
+    // Promise-based deduplication
+    const activeFetch = useRef<Promise<void> | null>(null);
+
+    const fetchUserRole = async (email: string, retryCount = 0): Promise<void> => {
         if (!email) return;
 
-        // Skip if already fetching THIS specific email to avoid AbortError
-        if (isFetching.current && lastFetchedEmail.current === email) {
-            console.log('[AuthContext] Already fetching profile for this email, skipping');
-            return;
+        // Dedup: if there's an active fetch for this email, wait for it
+        if (activeFetch.current && lastFetchedEmail.current === email) {
+            console.log('[AuthContext] Joining existing fetch for:', email);
+            return activeFetch.current;
         }
 
-        console.log(`[AuthContext] fetchUserRole starting for ${email} (attempt ${retryCount + 1})`);
-        isFetching.current = true;
-        lastFetchedEmail.current = email;
+        // Create a new fetch promise
+        const fetchPromise = (async () => {
+            console.log(`[AuthContext] fetchUserRole starting for ${email} (attempt ${retryCount + 1})`);
+            startOp();
+            isFetching.current = true;
+            lastFetchedEmail.current = email;
 
-        try {
-            const { data: users, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('email', email);
+            try {
+                const { data: users, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('email', email);
 
-            if (error) {
-                if (error.message?.includes('AbortError') && retryCount < 3) {
-                    console.log(`[AuthContext] AbortError detected, retrying...`);
-                    isFetching.current = false;
-                    await new Promise(r => setTimeout(r, 800));
-                    return fetchUserRole(email, retryCount + 1);
-                }
-                console.error('[AuthContext] Error fetching user profile:', error);
-                setUser(null);
-            } else {
-                const data = users && users.length > 0 ? users[0] : null;
-                if (data) {
-                    console.log('[AuthContext] Profile found for:', data.name);
-                    const roles = data.roles || (data.role ? [data.role] : []);
-                    setUser({
-                        ...data,
-                        roles: roles,
-                        activeRole: roles.length === 1 ? roles[0] : undefined
-                    });
-                } else {
-                    console.warn('[AuthContext] No profile record found for:', email);
+                if (error) {
+                    if (error.message?.includes('AbortError') && retryCount < 3) {
+                        console.log(`[AuthContext] AbortError detected, retrying...`);
+                        await new Promise(r => setTimeout(r, 800));
+                        // Recursive call will also be wrapped and awaited
+                        return fetchUserRole(email, retryCount + 1);
+                    }
+                    console.error('[AuthContext] Error fetching user profile:', error);
                     setUser(null);
+                } else {
+                    const data = users && users.length > 0 ? users[0] : null;
+                    if (data) {
+                        console.log('[AuthContext] Profile found for:', data.name);
+                        const roles = data.roles || (data.role ? [data.role] : []);
+                        setUser({
+                            ...data,
+                            roles: roles,
+                            activeRole: roles.length === 1 ? roles[0] : undefined
+                        });
+                    } else {
+                        console.warn('[AuthContext] No profile record found for:', email);
+                        setUser(null);
+                    }
                 }
+            } catch (err) {
+                console.error('[AuthContext] Unexpected error in fetchUserRole:', err);
+                setUser(null);
+            } finally {
+                isFetching.current = false;
+                activeFetch.current = null;
+                endOp();
+                console.log('[AuthContext] fetchUserRole finished');
             }
-        } catch (err) {
-            console.error('[AuthContext] Unexpected error in fetchUserRole:', err);
-            setUser(null);
-        } finally {
-            isFetching.current = false;
-            console.log('[AuthContext] fetchUserRole finished');
-        }
+        })();
+
+        activeFetch.current = fetchPromise;
+        return fetchPromise;
     };
 
     const setActiveRole = (role: Role) => {

@@ -18,54 +18,68 @@ export default function LoginForm() {
     // Redirect if already logged in and role is selected
     useEffect(() => {
         const checkStatus = () => {
+            console.log('[LoginForm] State check:', { hasUser: !!user, isLoading, isConnecting, activeRole: user?.activeRole });
+
             if (user && !isLoading) {
                 if (user.activeRole) {
                     const role = user.activeRole;
+                    console.log('[LoginForm] Redirecting to:', role);
                     if (role === 'admin') router.push('/dashboard/admin');
                     else if (role === 'tribunal') router.push('/dashboard/tribunal');
                     else if (role === 'tutor') router.push('/dashboard/tutor');
                 } else if (user.roles && user.roles.length > 1) {
+                    console.log('[LoginForm] Showing role selector');
                     setShowRoleSelector(true);
+                    setLoading(false);
+                    setIsConnecting(false);
+                } else {
+                    console.warn('[LoginForm] User found but no activeRole and roles.length <= 1', user.roles);
+                    // Force a reset if we are stuck here
                     setLoading(false);
                     setIsConnecting(false);
                 }
             } else if (!user && !isLoading && isConnecting) {
+                console.log('[LoginForm] No user found, beginning error timeout');
                 // Add a tiny grace period to avoid race conditions with isLoading state
-                setTimeout(() => {
-                    // Check again inside timeout
-                    // If still no user and no loading, then it's a real "no profile" error
+                const timer = setTimeout(() => {
                     if (!user && !isLoading && isConnecting) {
+                        console.error('[LoginForm] Final error: profile not found after timeout');
                         setError('No se pudo cargar tu perfil. Es posible que el administrador deba registrarte primero.');
                         setLoading(false);
                         setIsConnecting(false);
                     }
-                }, 1000);
+                }, 4000);
+                return () => clearTimeout(timer);
             }
         };
 
-        checkStatus();
+        return checkStatus();
     }, [user, isLoading, router, isConnecting]);
 
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
-        setIsConnecting(true); // Set to true immediately to indicate connection attempt
+        setIsConnecting(true);
 
         try {
+            console.log('[LoginForm] Executing login for:', email);
             const result = await login(email, password);
 
             if (result.success) {
-                // If login success, we wait for AuthProvider to fetch the profile
-                // isConnecting is already true, and useEffect will handle the rest
+                console.log('[LoginForm] Login success result received');
+                // We keep loading=true to show "Entrando..." while the profile loads
+                // The useEffect will handle the redirection and reset loading
             } else {
+                console.warn('[LoginForm] Login failed:', result.error);
                 setLoading(false);
-                setIsConnecting(false); // Reset if login failed
+                setIsConnecting(false);
                 setError(result.error || 'Credenciales inválidas');
             }
         } catch (err: any) {
+            console.error('[LoginForm] Unexpected error during email login:', err);
             setLoading(false);
-            setIsConnecting(false); // Reset if an error occurred
+            setIsConnecting(false);
             setError('Error al iniciar sesión. Comprueba tu conexión.');
         }
     };
