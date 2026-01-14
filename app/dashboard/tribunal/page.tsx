@@ -39,7 +39,7 @@ export default function TribunalDashboard() {
         <div style={{
             width: '100%',
             minHeight: '100vh',
-            padding: '1.5rem',
+            padding: '3rem 1rem',
             backgroundColor: '#F9FAFB',
             fontFamily: "'Poppins', sans-serif",
             overflowX: 'hidden'
@@ -47,26 +47,27 @@ export default function TribunalDashboard() {
 
             {/* Header Centrado */}
             <div style={{
-                maxWidth: '900px',
-                margin: '0 auto 2rem auto',
+                maxWidth: '100%',
+                margin: '0 auto 3rem auto',
                 textAlign: 'center',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center'
             }}>
                 <h1 style={{
-                    fontSize: '2.5rem',
+                    fontSize: '3.5rem',
                     fontWeight: 900,
                     color: '#0F172A',
-                    marginBottom: '0.25rem',
-                    lineHeight: 1.2
+                    marginBottom: '0.5rem',
+                    lineHeight: 1.1,
+                    letterSpacing: '-0.02em'
                 }}>
                     Evaluación del <span style={{ color: '#8B5CF6' }}>Tribunal</span> ⚖️
                 </h1>
             </div>
 
             {/* Lista de Proyectos */}
-            <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <div style={{ width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
                 {projects.length === 0 ? (
                     <div style={{
                         textAlign: 'center',
