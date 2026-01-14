@@ -33,6 +33,20 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
     };
 
     const handleSubmit = async () => {
+        // Validation: Verify all content items are evaluated
+        const missingContentItems = rubric.contentItems.filter(item => contentScores[item.id] === undefined);
+        if (missingContentItems.length > 0) {
+            alert('No se puede guardar la evaluación porque faltan items por evaluar en la sección de Contenido.');
+            return;
+        }
+
+        // Warning: Verify if any format item is selected
+        const hasFormatItems = Object.values(formatScores).some(v => v);
+        if (!hasFormatItems) {
+            const confirmed = window.confirm('No has seleccionado ningún item de formato. ¿Deseas guardar la evaluación de todas formas?');
+            if (!confirmed) return;
+        }
+
         setSubmitting(true);
         try {
             await api.submissions.submitWritten({
@@ -60,7 +74,6 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
             margin: '0 auto',
             fontFamily: "'Poppins', sans-serif"
         }}>
-            {/* Header Moderno */}
             {/* Header Moderno */}
             <div style={{
                 backgroundColor: 'white',
@@ -301,14 +314,14 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
                             borderRadius: '12px',
                             border: '1px solid #E2E8F0',
                             backgroundColor: 'white',
-                            color: '#64748B',
+                            color: '#e11d48',
                             fontWeight: 700,
                             cursor: 'pointer',
                             fontSize: '0.9rem',
                             transition: 'all 0.2s'
                         }}
                     >
-                        Cancelar
+                        Salir
                     </button>
                     <button
                         onClick={handleSubmit}
@@ -340,4 +353,5 @@ export default function WrittenEvalForm({ rubric, project, student, graderId }: 
             </div>
         </div>
     );
+
 }
