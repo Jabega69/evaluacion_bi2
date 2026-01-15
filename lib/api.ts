@@ -43,17 +43,23 @@ export const api = {
             }
             return data as User;
         },
-        update: async (id: string, name: string, roles: Role[]): Promise<boolean> => {
+        update: async (id: string, name: string, roles: Role[]): Promise<{ success: boolean, error?: string }> => {
             try {
                 const response = await fetch('/api/admin/update-user', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: id, name, roles })
                 });
-                return response.ok;
-            } catch (error) {
+
+                if (response.ok) {
+                    return { success: true };
+                } else {
+                    const data = await response.json();
+                    return { success: false, error: data.error || 'Error desconocido' };
+                }
+            } catch (error: any) {
                 console.error('Update API Error:', error);
-                return false;
+                return { success: false, error: error.message };
             }
         },
         delete: async (id: string): Promise<boolean> => {

@@ -80,14 +80,14 @@ export default function AdminUsersPage() {
                     return;
                 }
 
-                const success = await api.users.update(editingUser.id, formData.name, formData.roles);
-                if (success) {
+                const result = await api.users.update(editingUser.id, formData.name, formData.roles);
+                if (result.success) {
                     setShowModal(false);
                     setEditingUser(null);
                     setFormData({ name: '', email: '', password: '', roles: ['tutor'] });
                     loadUsers();
                 } else {
-                    alert('Error al actualizar usuario');
+                    alert('Error al actualizar usuario: ' + result.error);
                 }
             } else {
                 // CREATE Logic
