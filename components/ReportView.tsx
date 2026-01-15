@@ -33,91 +33,257 @@ export default function ReportView({ project }: Props) {
 
     const handlePrint = () => window.print();
 
-    // Fallback if no report yet
     const studentName = project.students.find(s => s.id === selectedStudentId)?.name || 'Estudiante';
 
     return (
-        <div className="animate-in w-full" style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 80px' }}>
-            <div className="flex justify-end gap-3 mb-6 no-print">
+        <div className="animate-in w-full" style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
+            {/* Header Actions */}
+            <div className="flex justify-between items-center mb-10 no-print">
+                <div>
+                    <h2 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.25rem' }}>
+                        Resultados Finales
+                    </h2>
+                    <p style={{ color: '#64748B', fontWeight: 500 }}>Consulta y exportación del acta de evaluación</p>
+                </div>
                 <button
                     onClick={handlePrint}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white"
+                    className="flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-sm transition-all bg-white border-2 border-slate-100 text-slate-900 shadow-sm hover:border-indigo-600 hover:text-indigo-600 hover:shadow-md active:scale-95"
                 >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" />
                         <rect x="6" y="14" width="12" height="8" />
                     </svg>
-                    Imprimir Informe
+                    Imprimir Informe / Exportar PDF
                 </button>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-10 items-start">
+            <div className="flex flex-col lg:flex-row gap-8 items-start">
                 {/* Alumnos Sidebar */}
-                <div className="w-full lg:w-72 flex-shrink-0 space-y-4 no-print">
-                    <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ver informe de:</h3>
-                    <div className="flex flex-col gap-2">
-                        {project.students.map(s => (
-                            <button
-                                key={s.id}
-                                onClick={() => setSelectedStudentId(s.id)}
-                                className={`text-left px-6 py-4 rounded-2xl transition-all font-black ${selectedStudentId === s.id
-                                        ? 'text-white shadow-lg shadow-indigo-200'
-                                        : 'bg-white text-slate-600 border-2 border-slate-50 hover:border-indigo-100'
-                                    }`}
-                                style={selectedStudentId === s.id ? { background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)' } : {}}
-                            >
-                                {s.name}
-                            </button>
-                        ))}
+                <div className="w-full lg:w-80 flex-shrink-0 space-y-4 no-print">
+                    <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
+                        <h3 style={{ fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1rem', color: '#94A3B8', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                            Alumnos del Proyecto
+                        </h3>
+                        <div className="flex flex-col gap-2">
+                            {project.students.map(s => (
+                                <button
+                                    key={s.id}
+                                    onClick={() => setSelectedStudentId(s.id)}
+                                    style={{
+                                        textAlign: 'left',
+                                        padding: '1.25rem 1.5rem',
+                                        borderRadius: '20px',
+                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '1rem',
+                                        position: 'relative',
+                                        backgroundColor: selectedStudentId === s.id ? '#F8FAFC' : 'transparent',
+                                    }}
+                                    className={`group ${selectedStudentId === s.id ? 'active-student' : ''}`}
+                                >
+                                    <div style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '1rem',
+                                        fontWeight: 900,
+                                        backgroundColor: selectedStudentId === s.id ? '#6366F1' : '#F1F5F9',
+                                        color: selectedStudentId === s.id ? 'white' : '#64748B',
+                                        transition: 'all 0.3s'
+                                    }}>
+                                        {s.name.charAt(0)}
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{
+                                            fontWeight: 800,
+                                            fontSize: '0.95rem',
+                                            color: selectedStudentId === s.id ? '#0F172A' : '#475569',
+                                            transition: 'all 0.3s'
+                                        }}>{s.name}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#94A3B8', fontWeight: 600 }}>Ver reporte</div>
+                                    </div>
+                                    {selectedStudentId === s.id && (
+                                        <div style={{
+                                            width: '6px',
+                                            height: '24px',
+                                            backgroundColor: '#6366F1',
+                                            borderRadius: '10px',
+                                            position: 'absolute',
+                                            right: '12px'
+                                        }} />
+                                    )}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
                 {/* Main Content */}
-                <div className="flex-1 w-full">
+                <div className="flex-1 w-full pb-20">
                     {loading ? (
-                        <div className="card p-20 flex flex-col items-center justify-center bg-white rounded-[32px]">
-                            <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-                            <p className="text-indigo-600 font-bold">Calculando notas finales...</p>
+                        <div style={{
+                            backgroundColor: 'white',
+                            borderRadius: '40px',
+                            height: '500px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: '1px solid #F1F5F9'
+                        }}>
+                            <div className="w-16 h-16 border-[6px] border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-6"></div>
+                            <p style={{ color: '#0F172A', fontWeight: 800, fontSize: '1.2rem' }}>Auditando notas finales...</p>
+                            <p style={{ color: '#94A3B8', fontWeight: 500, marginTop: '0.5rem' }}>Sincronizando con actas oficiales</p>
                         </div>
                     ) : reportData ? (
-                        <div className="space-y-8">
-                            <div className="card text-white overflow-hidden p-0 border-none shadow-2xl"
-                                style={{ background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', borderRadius: '40px' }}>
-                                <div className="p-10 flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-                                    <div className="relative z-10 text-center md:text-left">
-                                        <span className="inline-block px-3 py-1 rounded-lg bg-white/10 text-white text-[10px] font-black uppercase tracking-widest mb-4">Informe Final Consolidado</span>
-                                        <h1 className="text-4xl md:text-5xl font-black mb-3" style={{ fontFamily: 'Poppins' }}>{studentName}</h1>
-                                        <p className="text-xl text-slate-300 font-medium">{project.title}</p>
+                        <div className="space-y-8 animate-in">
+                            {/* Main Score Header */}
+                            <div style={{
+                                background: 'linear-gradient(145deg, #0F172A 0%, #334155 100%)',
+                                borderRadius: '48px',
+                                padding: '4rem',
+                                color: 'white',
+                                position: 'relative',
+                                overflow: 'hidden',
+                                boxShadow: '0 30px 60px -15px rgba(15, 23, 42, 0.4)'
+                            }}>
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '-10%',
+                                    right: '-10%',
+                                    width: '400px',
+                                    height: '400px',
+                                    background: 'radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)',
+                                    borderRadius: '50%'
+                                }} />
+
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-12 relative z-10">
+                                    <div className="text-center md:text-left flex-1">
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            padding: '0.5rem 1rem',
+                                            backgroundColor: 'rgba(255,255,255,0.08)',
+                                            borderRadius: '12px',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 900,
+                                            letterSpacing: '0.15rem',
+                                            textTransform: 'uppercase',
+                                            color: '#818CF8',
+                                            marginBottom: '1.5rem'
+                                        }}>Extracto de Evaluación Académica</div>
+                                        <h1 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '0.75rem', letterSpacing: '-0.04em', lineHeight: 1 }}>
+                                            {studentName}
+                                        </h1>
+                                        <p style={{ fontSize: '1.25rem', color: '#94A3B8', fontWeight: 500, maxWidth: '600px' }}>
+                                            {project.title}
+                                        </p>
                                     </div>
-                                    <div className="relative z-10 p-8 rounded-[32px] bg-white/10 backdrop-blur-xl border border-white/20 text-center min-w-[180px]">
-                                        <div className="text-[10px] font-black uppercase tracking-widest text-indigo-300 mb-2">Puntuación Total</div>
-                                        <div className="text-7xl font-black" style={{ fontFamily: 'Poppins' }}>{reportData.total}</div>
+
+                                    <div style={{
+                                        backgroundColor: 'rgba(255,255,255,0.05)',
+                                        backdropFilter: 'blur(20px)',
+                                        borderRadius: '40px',
+                                        padding: '2.5rem',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        minWidth: '220px',
+                                        textAlign: 'center'
+                                    }}>
+                                        <div style={{ fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: '#818CF8', marginBottom: '0.5rem' }}>Puntuación Final</div>
+                                        <div style={{ fontSize: '6rem', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.05em' }}>
+                                            {reportData.total}
+                                        </div>
+                                        <div style={{ fontSize: '0.9rem', color: '#94A3B8', fontWeight: 700, marginTop: '0.5rem' }}>Baremo sobre 10.0</div>
                                     </div>
                                 </div>
                             </div>
 
+                            {/* Detail Cards */}
                             <div className="grid md:grid-cols-3 gap-6">
-                                <ScoreCard label="Escrita (50%)" score={reportData.written.score} final={reportData.written.final} color="#6366F1" />
-                                <ScoreCard label="Oral (30%)" score={reportData.oral.score} final={reportData.oral.final} color="#EC4899" />
-                                <ScoreCard label="Tutoría (20%)" score={reportData.tutor.score} final={reportData.tutor.final} color="#14B8A6" />
+                                <DetailScore
+                                    label="Evaluación Escrita"
+                                    weight="50%"
+                                    score={reportData.written.score}
+                                    totalPoints={reportData.written.final}
+                                    color="#6366F1"
+                                    emoji="📄"
+                                />
+                                <DetailScore
+                                    label="Defensa Oral"
+                                    weight="30%"
+                                    score={reportData.oral.score}
+                                    totalPoints={reportData.oral.final}
+                                    color="#F43F5E"
+                                    emoji="🎙️"
+                                />
+                                <DetailScore
+                                    label="Seguimiento Tutor"
+                                    weight="20%"
+                                    score={reportData.tutor.score}
+                                    totalPoints={reportData.tutor.final}
+                                    color="#10B981"
+                                    emoji="👥"
+                                />
                             </div>
 
-                            <div className="card p-10 bg-white rounded-[32px] shadow-xl shadow-slate-200/50 border-none">
-                                <h3 className="text-2xl font-black mb-8 flex items-center gap-3" style={{ fontFamily: 'Poppins' }}>
-                                    <span className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center">💬</span>
-                                    Feedback de Evaluación
+                            {/* Feedback Section */}
+                            <div style={{
+                                backgroundColor: 'white',
+                                borderRadius: '40px',
+                                padding: '3.5rem',
+                                border: '1px solid #F1F5F9',
+                                boxShadow: '0 20px 40px -20px rgba(0,0,0,0.05)'
+                            }}>
+                                <h3 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0F172A', marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <span style={{ fontSize: '2rem' }}>✒️</span> Observaciones del Tribunal
                                 </h3>
-                                <div className="space-y-4">
-                                    {reportData.evaluations.length === 0 ? (
-                                        <p className="text-slate-400 italic">No hay comentarios registrados todavía.</p>
+
+                                <div className="space-y-6">
+                                    {reportData.evaluations.filter((ev: any) => ev.feedback).length === 0 ? (
+                                        <div style={{
+                                            padding: '3rem',
+                                            textAlign: 'center',
+                                            backgroundColor: '#F8FAFC',
+                                            borderRadius: '32px',
+                                            border: '2px dashed #E2E8F0'
+                                        }}>
+                                            <p style={{ color: '#94A3B8', fontWeight: 700, fontSize: '1.1rem' }}>No se han registrado observaciones adicionales.</p>
+                                        </div>
                                     ) : (
                                         reportData.evaluations.map((ev: any, i: number) => ev.feedback && (
-                                            <div key={i} className="p-6 rounded-[24px] bg-slate-50 border-2 border-slate-50">
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{ev.type} evaluation</span>
+                                            <div key={i} style={{
+                                                padding: '2rem',
+                                                borderRadius: '32px',
+                                                backgroundColor: '#F8FAFC',
+                                                border: '1px solid #F1F5F9',
+                                                position: 'relative'
+                                            }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                                                    <span style={{
+                                                        padding: '0.4rem 0.8rem',
+                                                        borderRadius: '10px',
+                                                        fontSize: '0.65rem',
+                                                        fontWeight: 900,
+                                                        textTransform: 'uppercase',
+                                                        backgroundColor: ev.type === 'written' ? '#EEF2FF' : (ev.type === 'oral' ? '#FFF1F2' : '#F0FDF4'),
+                                                        color: ev.type === 'written' ? '#4F46E5' : (ev.type === 'oral' ? '#E11D48' : '#166534')
+                                                    }}>
+                                                        Comentario: {ev.type}
+                                                    </span>
                                                 </div>
-                                                <p className="text-slate-700 font-medium italic">"{ev.feedback}"</p>
+                                                <p style={{
+                                                    fontSize: '1.1rem',
+                                                    color: '#334155',
+                                                    fontWeight: 500,
+                                                    fontStyle: 'italic',
+                                                    lineHeight: 1.6
+                                                }}>"{ev.feedback}"</p>
                                             </div>
                                         ))
                                     )}
@@ -125,10 +291,16 @@ export default function ReportView({ project }: Props) {
                             </div>
                         </div>
                     ) : (
-                        <div className="card p-32 text-center bg-white rounded-[40px] border-4 border-dashed border-slate-100">
-                            <div className="text-6xl mb-8 opacity-20">📊</div>
-                            <h3 className="text-2xl font-black text-slate-400 mb-2" style={{ fontFamily: 'Poppins' }}>Faltan Calificaciones</h3>
-                            <p className="text-slate-300 font-bold">Aún no se han registrado evaluaciones para este alumno.</p>
+                        <div style={{
+                            padding: '6rem 2rem',
+                            textAlign: 'center',
+                            backgroundColor: 'white',
+                            borderRadius: '48px',
+                            border: '4px dashed #F1F5F9'
+                        }}>
+                            <div style={{ fontSize: '5rem', marginBottom: '2rem' }}>📊</div>
+                            <h3 style={{ fontSize: '2rem', fontWeight: 900, color: '#94A3B8', marginBottom: '1rem' }}>Expediente en Proceso</h3>
+                            <p style={{ color: '#CBD5E1', fontWeight: 600, fontSize: '1.2rem' }}>Las actas de este alumno aún no están cerradas.</p>
                         </div>
                     )}
                 </div>
@@ -137,16 +309,66 @@ export default function ReportView({ project }: Props) {
     );
 }
 
-function ScoreCard({ label, score, final, color }: { label: string, score: number, final: number, color: string }) {
+function DetailScore({ label, weight, score, totalPoints, color, emoji }: { label: string, weight: string, score: number, totalPoints: number, color: string, emoji: string }) {
     return (
-        <div className="card p-8 bg-white rounded-[32px] border-none shadow-xl shadow-slate-200/50 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-5 -mr-12 -mt-12 transition-transform group-hover:scale-125" style={{ background: color }}></div>
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">{label}</h3>
-            <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-5xl font-black" style={{ fontFamily: 'Poppins', color: color }}>{score}</span>
-                <span className="text-slate-400 font-black text-sm">/ 10</span>
+        <div style={{
+            backgroundColor: 'white',
+            borderRadius: '40px',
+            padding: '2.5rem',
+            border: '1px solid #F1F5F9',
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.03)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            height: '100%',
+            transition: 'transform 0.3s ease',
+            position: 'relative',
+            overflow: 'hidden'
+        }} className="hover:scale-[1.02]">
+            <div style={{
+                position: 'absolute',
+                top: -10,
+                right: -10,
+                fontSize: '4rem',
+                opacity: 0.05,
+                transform: 'rotate(15deg)'
+            }}>{emoji}</div>
+
+            <div>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '1.5rem'
+                }}>
+                    <div style={{
+                        fontSize: '0.7rem',
+                        fontWeight: 900,
+                        color: '#94A3B8',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05rem'
+                    }}>
+                        {label} <span style={{ color: color }}>({weight})</span>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '4rem', fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>{score}</span>
+                    <span style={{ color: '#CBD5E1', fontWeight: 800, fontSize: '1.2rem' }}>/10</span>
+                </div>
             </div>
-            <div className="text-sm font-bold text-slate-500">Ponderado: <span className="text-slate-900">+{final} pts</span></div>
+
+            <div style={{
+                marginTop: '1.5rem',
+                paddingTop: '1.5rem',
+                borderTop: '1px solid #F8FAFC',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+            }}>
+                <div style={{ fontSize: '0.9rem', color: '#64748B', fontWeight: 700 }}>Puntos netos:</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 900, color: color }}>+{totalPoints}</div>
+            </div>
         </div>
     );
 }
