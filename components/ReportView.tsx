@@ -51,16 +51,30 @@ export default function ReportView({ project }: Props) {
                     </h2>
                     <p style={{ color: '#64748B', fontWeight: 500, fontSize: '0.85rem' }}>Acta de evaluación oficial</p>
                 </div>
-                <button
-                    onClick={handlePrint}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs transition-all bg-white border-2 border-slate-100 text-slate-900 shadow-sm hover:border-indigo-600 hover:text-indigo-600 hover:shadow-md active:scale-95"
-                >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" />
-                        <rect x="6" y="14" width="12" height="8" />
-                    </svg>
-                    Imprimir Informe / Exportar PDF
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={handlePrint}
+                        title="Imprimir Informe"
+                        className="p-3 rounded-xl transition-all bg-white border-2 border-slate-100 text-slate-600 shadow-sm hover:border-indigo-600 hover:text-indigo-600 hover:shadow-md active:scale-95 flex items-center justify-center"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <rect x="6" y="14" width="12" height="8"></rect>
+                        </svg>
+                    </button>
+                    <button
+                        onClick={handlePrint}
+                        title="Exportar PDF"
+                        className="p-3 rounded-xl transition-all bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 hover:shadow-md active:scale-95 flex items-center justify-center border-2 border-indigo-600"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-6 items-start">
@@ -197,16 +211,16 @@ export default function ReportView({ project }: Props) {
                                         backgroundColor: 'rgba(255,255,255,0.05)',
                                         backdropFilter: 'blur(10px)',
                                         borderRadius: '24px',
-                                        padding: '1.5rem',
+                                        padding: '1.25rem',
                                         border: '1px solid rgba(255,255,255,0.1)',
-                                        minWidth: '160px',
+                                        minWidth: '130px',
                                         textAlign: 'center'
                                     }}>
-                                        <div style={{ fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', color: '#818CF8', marginBottom: '0.25rem' }}>Puntuación Final</div>
-                                        <div style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.04em' }}>
+                                        <div style={{ fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', color: '#818CF8', marginBottom: '0.1rem' }}>Puntuación</div>
+                                        <div style={{ fontSize: '3.5rem', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.04em' }}>
                                             {reportData.total}
                                         </div>
-                                        <div style={{ fontSize: '0.8rem', color: '#94A3B8', fontWeight: 700, marginTop: '0.25rem' }}>Baremo sobre 10.0</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#94A3B8', fontWeight: 700, marginTop: '0.1rem' }}>Base 10.0</div>
                                     </div>
                                 </div>
                             </div>
