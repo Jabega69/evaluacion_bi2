@@ -14,15 +14,16 @@ export async function POST(req: Request) {
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         );
 
-        // 1. Update Supabase Auth Metadata (to keep it in sync for JWT)
+        // 1. Update Supabase Auth Metadata (if user exists in Auth)
         const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
             userId,
             { user_metadata: { name, roles } }
         );
 
         if (authError) {
-            console.error('Auth Update Error:', authError);
-            return NextResponse.json({ error: authError.message }, { status: 400 });
+            console.warn('Auth Update Warning (User might not exist in Auth):', authError.message);
+            // We continue even if Auth fails, because the user might only exist in the public table
+            // or might have been created via a different method.
         }
 
         // 2. Update public.users table
@@ -33,10 +34,14 @@ export async function POST(req: Request) {
 
         if (dbError) {
             console.error('DB Update Error:', dbError);
-            return NextResponse.json({ error: dbError.message }, { status: 400 });
+            return NextResponse.json({ error: `Error en Base de Datos: ${dbError.message}` }, { status: 400 });
         }
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({
+            success: true,
+            authUpdated: !authError,
+            message: authError ? 'Actualizado en BD (Auth saltado)' : 'Actualizado completamente'
+        });
     } catch (error: any) {
         console.error('Catch Error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
