@@ -10,13 +10,13 @@ export default function AdminUsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         roles: ['tutor'] as Role[]
     });
+    const [editingUser, setEditingUser] = useState<User | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
@@ -28,6 +28,17 @@ export default function AdminUsersPage() {
         const data = await api.users.getAll();
         setUsers(data);
         setLoading(false);
+    }
+
+    function handleEdit(u: User) {
+        setEditingUser(u);
+        setFormData({
+            name: u.name,
+            email: u.email,
+            password: '', // Password not needed for edit
+            roles: u.roles || []
+        });
+        setShowModal(true);
     }
 
     async function handleDelete(id: string, name: string) {
@@ -51,20 +62,50 @@ export default function AdminUsersPage() {
         setSubmitting(true);
 
         try {
-            const response = await fetch('/api/admin/create-user', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
+            if (editingUser) {
+                // CHECK ACTIVITY before changing roles
+                const activity = await api.users.checkActivity(editingUser.id);
 
-            const result = await response.json();
+                // If removing 'tutor' and they ARE a tutor
+                if (editingUser.roles.includes('tutor') && !formData.roles.includes('tutor') && activity.isTutor) {
+                    alert('No puedes quitar el rol de Tudor a este profesor porque ya tiene proyectos asignados como tutor.');
+                    setSubmitting(false);
+                    return;
+                }
 
-            if (response.ok) {
-                setShowModal(false);
-                setFormData({ name: '', email: '', password: '', roles: ['tutor'] });
-                loadUsers();
+                // If removing 'tribunal' and they ARE in a tribunal
+                if (editingUser.roles.includes('tribunal') && !formData.roles.includes('tribunal') && activity.isTribunal) {
+                    alert('No puedes quitar el rol de Tribunal a este profesor porque ya está asignado a tribunales de evaluación.');
+                    setSubmitting(false);
+                    return;
+                }
+
+                const success = await api.users.update(editingUser.id, formData.name, formData.roles);
+                if (success) {
+                    setShowModal(false);
+                    setEditingUser(null);
+                    setFormData({ name: '', email: '', password: '', roles: ['tutor'] });
+                    loadUsers();
+                } else {
+                    alert('Error al actualizar usuario');
+                }
             } else {
-                alert(result.error || 'Error al crear usuario');
+                // CREATE Logic
+                const response = await fetch('/api/admin/create-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    setShowModal(false);
+                    setFormData({ name: '', email: '', password: '', roles: ['tutor'] });
+                    loadUsers();
+                } else {
+                    alert(result.error || 'Error al crear usuario');
+                }
             }
         } catch (err) {
             alert('Error de conexión');
@@ -96,7 +137,11 @@ export default function AdminUsersPage() {
                     Gestión de <span style={{ color: '#F59E0B' }}>Profesores</span> 🎓
                 </h1>
                 <button
-                    onClick={() => setShowModal(true)}
+                    onClick={() => {
+                        setEditingUser(null);
+                        setFormData({ name: '', email: '', password: '', roles: ['tutor'] });
+                        setShowModal(true);
+                    }}
                     style={{
                         marginTop: '2rem',
                         background: 'linear-gradient(135deg, #F59E0B 0%, #EA580C 100%)', // Orange/Amber
@@ -175,23 +220,40 @@ export default function AdminUsersPage() {
                                         </div>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() => handleDelete(u.id, u.name)}
-                                    style={{
-                                        padding: '0.75rem',
-                                        borderRadius: '12px',
-                                        color: '#EF4444',
-                                        backgroundColor: '#FEF2F2',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontWeight: 700,
-                                        fontSize: '0.9rem',
-                                        transition: 'background 0.2s'
-                                    }}
-                                    className="hover:bg-red-100"
-                                >
-                                    Dar de Baja
-                                </button>
+                                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                    <button
+                                        onClick={() => handleEdit(u)}
+                                        style={{
+                                            padding: '0.75rem 1.25rem',
+                                            borderRadius: '12px',
+                                            color: '#475569',
+                                            backgroundColor: '#F1F5F9',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            fontWeight: 700,
+                                            fontSize: '0.9rem'
+                                        }}
+                                    >
+                                        Editar
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(u.id, u.name)}
+                                        style={{
+                                            padding: '0.75rem 1.25rem',
+                                            borderRadius: '12px',
+                                            color: '#EF4444',
+                                            backgroundColor: '#FEF2F2',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            fontWeight: 700,
+                                            fontSize: '0.9rem',
+                                            transition: 'background 0.2s'
+                                        }}
+                                        className="hover:bg-red-100"
+                                    >
+                                        Dar de Baja
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -219,7 +281,7 @@ export default function AdminUsersPage() {
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
                     }}>
                         <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0F172A', marginBottom: '2rem', textAlign: 'center' }}>
-                            Nuevo Profesor
+                            {editingUser ? 'Editar Profesor' : 'Nuevo Profesor'}
                         </h2>
 
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -262,24 +324,26 @@ export default function AdminUsersPage() {
                                 />
                             </div>
 
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem' }}>Contraseña Temporal</label>
-                                <input
-                                    required
-                                    type="password"
-                                    value={formData.password}
-                                    onChange={e => setFormData({ ...formData, password: e.target.value })}
-                                    style={{
-                                        width: '100%',
-                                        padding: '1rem',
-                                        borderRadius: '12px',
-                                        border: '2px solid #E2E8F0',
-                                        fontSize: '1rem',
-                                        outline: 'none'
-                                    }}
-                                    placeholder="Clave inicial"
-                                />
-                            </div>
+                            {!!editingUser ? null : (
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem' }}>Contraseña Temporal</label>
+                                    <input
+                                        required
+                                        type="password"
+                                        value={formData.password}
+                                        onChange={e => setFormData({ ...formData, password: e.target.value })}
+                                        style={{
+                                            width: '100%',
+                                            padding: '1rem',
+                                            borderRadius: '12px',
+                                            border: '2px solid #E2E8F0',
+                                            fontSize: '1rem',
+                                            outline: 'none'
+                                        }}
+                                        placeholder="Clave inicial"
+                                    />
+                                </div>
+                            )}
 
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: '#475569', marginBottom: '0.75rem' }}>Roles Asignados</label>
@@ -331,17 +395,17 @@ export default function AdminUsersPage() {
                                     type="submit"
                                     disabled={submitting}
                                     style={{
-                                        flex: 1,
+                                        flex: 2,
                                         padding: '1rem',
                                         borderRadius: '12px',
                                         border: 'none',
-                                        background: 'linear-gradient(135deg, #0F172A 0%, #334155 100%)',
+                                        background: submitting ? '#94A3B8' : 'linear-gradient(135deg, #0F172A 0%, #334155 100%)',
                                         color: 'white',
                                         fontWeight: 700,
-                                        cursor: 'pointer'
+                                        cursor: submitting ? 'not-allowed' : 'pointer'
                                     }}
                                 >
-                                    {submitting ? 'Guardando...' : 'Guardar Profesor'}
+                                    {submitting ? 'Guardando...' : (editingUser ? 'Guardar Cambios' : 'Crear Profesor')}
                                 </button>
                             </div>
                         </form>

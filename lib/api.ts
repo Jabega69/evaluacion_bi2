@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 import { WRITTEN_RUBRIC, ORAL_RUBRIC, TUTOR_RUBRIC } from './mock-data';
-import { Project, User, WrittenEvaluation, OralEvaluation, TutorEvaluation } from '@/types';
+import { Project, User, Role, WrittenEvaluation, OralEvaluation, TutorEvaluation } from '@/types';
 
 export const api = {
     auth: {
@@ -43,16 +43,18 @@ export const api = {
             }
             return data as User;
         },
-        update: async (id: string, updates: Partial<User>): Promise<User | null> => {
-            const { data, error } = await supabase
-                .from('users')
-                .update(updates)
-                .eq('id', id)
-                .select()
-                .single();
-
-            if (error) return null;
-            return data as User;
+        update: async (id: string, name: string, roles: Role[]): Promise<boolean> => {
+            try {
+                const response = await fetch('/api/admin/update-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: id, name, roles })
+                });
+                return response.ok;
+            } catch (error) {
+                console.error('Update API Error:', error);
+                return false;
+            }
         },
         delete: async (id: string): Promise<boolean> => {
             try {
@@ -66,6 +68,22 @@ export const api = {
                 console.error('Delete API Error:', error);
                 return false;
             }
+        },
+        checkActivity: async (id: string): Promise<{ isTutor: boolean, isTribunal: boolean }> => {
+            const { count: tutorCount } = await supabase
+                .from('projects')
+                .select('*', { count: 'exact', head: true })
+                .eq('tutor_id', id);
+
+            const { count: tribunalCount } = await supabase
+                .from('project_tribunals')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', id);
+
+            return {
+                isTutor: (tutorCount || 0) > 0,
+                isTribunal: (tribunalCount || 0) > 0
+            };
         }
     },
 
