@@ -257,20 +257,68 @@ export const api = {
     },
 
     submissions: {
-        submitWritten: async (evaluation: WrittenEvaluation) => {
-            const { error } = await supabase
+        getWritten: async (projectId: string, studentId: string, graderId: string): Promise<WrittenEvaluation | null> => {
+            const { data, error } = await supabase
                 .from('evaluations')
-                .insert({
-                    project_id: evaluation.projectId,
-                    student_id: evaluation.studentId,
-                    grader_id: evaluation.graderId,
-                    type: 'written',
-                    scores: {
-                        contentScores: evaluation.contentScores,
-                        formatScores: evaluation.formatScores
-                    }
-                });
-            return { success: !error };
+                .select('*')
+                .eq('project_id', projectId)
+                .eq('student_id', studentId)
+                .eq('grader_id', graderId)
+                .eq('type', 'written')
+                .maybeSingle();
+
+            if (error || !data) return null;
+
+            return {
+                id: data.id,
+                projectId: data.project_id,
+                studentId: data.student_id,
+                graderId: data.grader_id,
+                contentScores: data.scores.contentScores,
+                formatScores: data.scores.formatScores,
+                submittedAt: data.submitted_at
+            };
+        },
+        submitWritten: async (evaluation: WrittenEvaluation) => {
+            // Check if exists
+            const { data: existing } = await supabase
+                .from('evaluations')
+                .select('id')
+                .eq('project_id', evaluation.projectId)
+                .eq('student_id', evaluation.studentId)
+                .eq('grader_id', evaluation.graderId)
+                .eq('type', 'written')
+                .maybeSingle();
+
+            if (existing) {
+                // Update
+                const { error } = await supabase
+                    .from('evaluations')
+                    .update({
+                        scores: {
+                            contentScores: evaluation.contentScores,
+                            formatScores: evaluation.formatScores
+                        },
+                        submitted_at: new Date().toISOString()
+                    })
+                    .eq('id', existing.id);
+                return { success: !error };
+            } else {
+                // Insert
+                const { error } = await supabase
+                    .from('evaluations')
+                    .insert({
+                        project_id: evaluation.projectId,
+                        student_id: evaluation.studentId,
+                        grader_id: evaluation.graderId,
+                        type: 'written',
+                        scores: {
+                            contentScores: evaluation.contentScores,
+                            formatScores: evaluation.formatScores
+                        }
+                    });
+                return { success: !error };
+            }
         },
         submitOral: async (evaluation: OralEvaluation) => {
             const { error } = await supabase

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { WrittenRubric, Project, Student } from '@/types';
+import { useState, useEffect } from 'react';
+import { WrittenRubric, Project, Student, WrittenEvaluation } from '@/types';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 
@@ -10,14 +10,22 @@ interface Props {
     project: Project;
     student: Student;
     graderId: string;
+    initialEvaluation?: WrittenEvaluation | null;
 }
 
-export default function WrittenEvalForm({ rubric, project, student, graderId }: Props) {
+export default function WrittenEvalForm({ rubric, project, student, graderId, initialEvaluation }: Props) {
     const router = useRouter();
-    const [contentScores, setContentScores] = useState<Record<string, number>>({});
-    const [formatScores, setFormatScores] = useState<Record<string, boolean>>({});
+    const [contentScores, setContentScores] = useState<Record<string, number>>(initialEvaluation?.contentScores || {});
+    const [formatScores, setFormatScores] = useState<Record<string, boolean>>(initialEvaluation?.formatScores || {});
     const [submitting, setSubmitting] = useState(false);
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (initialEvaluation) {
+            setContentScores(initialEvaluation.contentScores);
+            setFormatScores(initialEvaluation.formatScores);
+        }
+    }, [initialEvaluation]);
 
     const calculateTotal = () => {
         const contentSum = Object.values(contentScores).reduce((a, b) => a + b, 0);

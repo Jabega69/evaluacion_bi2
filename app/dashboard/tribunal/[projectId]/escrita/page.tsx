@@ -16,19 +16,25 @@ export default function WrittenEvalPage({ params }: { params: Promise<{ projectI
     const [project, setProject] = useState<Project | null>(null);
     const [rubric, setRubric] = useState<WrittenRubric | null>(null);
     const [student, setStudent] = useState<Student | undefined>(undefined);
+    const [initialEvaluation, setInitialEvaluation] = useState<any>(null);
 
     useEffect(() => {
         async function init() {
+            if (!user) return;
             const p = await api.projects.getById(projectId);
             const r = await api.rubrics.getWritten();
-            if (p) {
+            if (p && studentId) {
                 setProject(p);
                 setStudent(p.students.find(s => s.id === studentId));
+
+                // Fetch previous evaluation
+                const prevEval = await api.submissions.getWritten(projectId, studentId, user.id);
+                setInitialEvaluation(prevEval);
             }
             setRubric(r);
         }
         init();
-    }, [projectId, studentId]);
+    }, [projectId, studentId, user]);
 
     if (!project || !rubric || !user || !student) return <div className="p-8 text-center text-slate-500">Cargando evaluación...</div>;
 
@@ -38,6 +44,7 @@ export default function WrittenEvalPage({ params }: { params: Promise<{ projectI
             project={project}
             student={student}
             graderId={user.id}
+            initialEvaluation={initialEvaluation}
         />
     );
 }
