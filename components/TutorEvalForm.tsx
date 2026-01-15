@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TutorRubric, Project, Student } from '@/types';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
@@ -10,13 +10,20 @@ interface Props {
     project: Project;
     student: Student;
     tutorId: string;
+    initialScores?: Record<string, number>;
 }
 
-export default function TutorEvalForm({ rubric, project, student, tutorId }: Props) {
+export default function TutorEvalForm({ rubric, project, student, tutorId, initialScores = {} }: Props) {
     const router = useRouter();
-    const [scores, setScores] = useState<Record<string, number>>({});
+    const [scores, setScores] = useState<Record<string, number>>(initialScores);
     const [submitting, setSubmitting] = useState(false);
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (initialScores && Object.keys(initialScores).length > 0) {
+            setScores(initialScores);
+        }
+    }, [initialScores]);
 
     const calculateTotal = () => {
         // 5 items * 2 pts = 10 pts max

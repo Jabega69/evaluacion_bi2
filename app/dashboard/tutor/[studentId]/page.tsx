@@ -12,11 +12,10 @@ export default function TutorEvalPage({ params }: { params: Promise<{ studentId:
     const [project, setProject] = useState<Project | null>(null);
     const [student, setStudent] = useState<Student | null>(null);
     const [rubric, setRubric] = useState<TutorRubric | null>(null);
+    const [existingScores, setExistingScores] = useState<Record<string, number>>({});
 
     useEffect(() => {
         async function init() {
-            // Find project containing this student (inefficient for real DB, fine for mock)
-            // We need to fetch all projects or find a way. For mock, let's just get projects by tutor and find it.
             if (user?.id) {
                 const projects = await api.projects.getByTutor(user.id);
                 let foundProject: Project | undefined;
@@ -34,6 +33,12 @@ export default function TutorEvalPage({ params }: { params: Promise<{ studentId:
                 if (foundProject && foundStudent) {
                     setProject(foundProject);
                     setStudent(foundStudent);
+
+                    // Fetch existing evaluation
+                    const existingEval = await api.submissions.getTutor(foundProject.id, foundStudent.id, user.id);
+                    if (existingEval) {
+                        setExistingScores(existingEval.scores);
+                    }
                 }
             }
 
@@ -60,6 +65,7 @@ export default function TutorEvalPage({ params }: { params: Promise<{ studentId:
                 project={project}
                 student={student}
                 tutorId={user.id}
+                initialScores={existingScores}
             />
         </div>
     );

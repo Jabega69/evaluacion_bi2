@@ -320,34 +320,122 @@ export const api = {
                 return { success: !error };
             }
         },
-        submitOral: async (evaluation: OralEvaluation) => {
-            const { error } = await supabase
+        getOral: async (projectId: string, studentId: string, graderId: string): Promise<OralEvaluation | null> => {
+            const { data, error } = await supabase
                 .from('evaluations')
-                .insert({
-                    project_id: evaluation.projectId,
-                    student_id: evaluation.studentId,
-                    grader_id: evaluation.graderId,
-                    type: 'oral',
-                    scores: {
-                        blockScores: evaluation.blockScores,
-                        timeScore: evaluation.timeScore
-                    }
-                });
-            return { success: !error };
+                .select('*')
+                .eq('project_id', projectId)
+                .eq('student_id', studentId)
+                .eq('grader_id', graderId)
+                .eq('type', 'oral')
+                .maybeSingle();
+
+            if (error || !data) return null;
+
+            return {
+                id: data.id,
+                projectId: data.project_id,
+                studentId: data.student_id,
+                graderId: data.grader_id,
+                blockScores: data.scores.blockScores || {},
+                timeScore: data.scores.timeScore || 0,
+                submittedAt: data.submitted_at
+            };
+        },
+        submitOral: async (evaluation: OralEvaluation) => {
+            const { data: existing } = await supabase
+                .from('evaluations')
+                .select('id')
+                .eq('project_id', evaluation.projectId)
+                .eq('student_id', evaluation.studentId)
+                .eq('grader_id', evaluation.graderId)
+                .eq('type', 'oral')
+                .maybeSingle();
+
+            if (existing) {
+                const { error } = await supabase
+                    .from('evaluations')
+                    .update({
+                        scores: {
+                            blockScores: evaluation.blockScores,
+                            timeScore: evaluation.timeScore
+                        },
+                        submitted_at: new Date().toISOString()
+                    })
+                    .eq('id', existing.id);
+                return { success: !error };
+            } else {
+                const { error } = await supabase
+                    .from('evaluations')
+                    .insert({
+                        project_id: evaluation.projectId,
+                        student_id: evaluation.studentId,
+                        grader_id: evaluation.graderId,
+                        type: 'oral',
+                        scores: {
+                            blockScores: evaluation.blockScores,
+                            timeScore: evaluation.timeScore
+                        }
+                    });
+                return { success: !error };
+            }
+        },
+        getTutor: async (projectId: string, studentId: string, tutorId: string): Promise<TutorEvaluation | null> => {
+            const { data, error } = await supabase
+                .from('evaluations')
+                .select('*')
+                .eq('project_id', projectId)
+                .eq('student_id', studentId)
+                .eq('grader_id', tutorId)
+                .eq('type', 'tutor')
+                .maybeSingle();
+
+            if (error || !data) return null;
+
+            return {
+                id: data.id,
+                projectId: data.project_id,
+                studentId: data.student_id,
+                tutorId: data.grader_id,
+                scores: data.scores.scores || {},
+                submittedAt: data.submitted_at
+            };
         },
         submitTutor: async (evaluation: TutorEvaluation) => {
-            const { error } = await supabase
+            const { data: existing } = await supabase
                 .from('evaluations')
-                .insert({
-                    project_id: evaluation.projectId,
-                    student_id: evaluation.studentId,
-                    grader_id: evaluation.studentId,
-                    type: 'tutor',
-                    scores: {
-                        scores: evaluation.scores
-                    }
-                });
-            return { success: !error };
+                .select('id')
+                .eq('project_id', evaluation.projectId)
+                .eq('student_id', evaluation.studentId)
+                .eq('grader_id', evaluation.tutorId)
+                .eq('type', 'tutor')
+                .maybeSingle();
+
+            if (existing) {
+                const { error } = await supabase
+                    .from('evaluations')
+                    .update({
+                        scores: {
+                            scores: evaluation.scores
+                        },
+                        submitted_at: new Date().toISOString()
+                    })
+                    .eq('id', existing.id);
+                return { success: !error };
+            } else {
+                const { error } = await supabase
+                    .from('evaluations')
+                    .insert({
+                        project_id: evaluation.projectId,
+                        student_id: evaluation.studentId,
+                        grader_id: evaluation.tutorId,
+                        type: 'tutor',
+                        scores: {
+                            scores: evaluation.scores
+                        }
+                    });
+                return { success: !error };
+            }
         }
     }
 };

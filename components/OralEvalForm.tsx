@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { OralRubric, Project, Student } from '@/types';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
@@ -10,14 +10,30 @@ interface Props {
     project: Project;
     student: Student;
     graderId: string;
+    initialEvaluation?: any;
 }
 
-export default function OralEvalForm({ rubric, project, student, graderId }: Props) {
+export default function OralEvalForm({ rubric, project, student, graderId, initialEvaluation }: Props) {
     const router = useRouter();
-    const [blockScores, setBlockScores] = useState<Record<string, number>>({});
-    const [selectedTimeRange, setSelectedTimeRange] = useState<number>(-1);
+    const [blockScores, setBlockScores] = useState<Record<string, number>>(initialEvaluation?.blockScores || {});
+    const [selectedTimeRange, setSelectedTimeRange] = useState<number>(() => {
+        if (initialEvaluation?.timeScore !== undefined) {
+            return rubric.timeRanges.findIndex(r => r.score === initialEvaluation.timeScore);
+        }
+        return -1;
+    });
     const [submitting, setSubmitting] = useState(false);
     const [hoveredBlock, setHoveredBlock] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (initialEvaluation) {
+            setBlockScores(initialEvaluation.blockScores || {});
+            if (initialEvaluation.timeScore !== undefined) {
+                const rangeIndex = rubric.timeRanges.findIndex(r => r.score === initialEvaluation.timeScore);
+                setSelectedTimeRange(rangeIndex);
+            }
+        }
+    }, [initialEvaluation, rubric]);
 
     const calculateTotal = () => {
         const blocksSum = Object.values(blockScores).reduce((a, b) => a + b, 0);
