@@ -3,13 +3,19 @@
 import { Project } from '@/types';
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import { useSearchParams } from 'next/navigation';
 
 interface Props {
     project: Project;
 }
 
 export default function ReportView({ project }: Props) {
-    const [selectedStudentId, setSelectedStudentId] = useState(project.students[0]?.id || '');
+    const searchParams = useSearchParams();
+    const initialStudentId = searchParams.get('studentId');
+
+    const [selectedStudentId, setSelectedStudentId] = useState(
+        initialStudentId || (project.students[0]?.id || '')
+    );
     const [reportData, setReportData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 

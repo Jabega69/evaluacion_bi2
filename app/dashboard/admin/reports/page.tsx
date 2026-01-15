@@ -44,7 +44,7 @@ export default function AdminReportsListPage() {
                         Informes de <span style={{ color: '#6366F1' }}>Evaluación</span> 📈
                     </h1>
                     <p style={{ fontSize: '1.2rem', color: '#64748B', fontWeight: 500 }}>
-                        Selecciona una investigación para consultar las actas de resultados finales
+                        Selecciona un alumno para consultar su acta de resultados finales de forma individual
                     </p>
                 </div>
 
@@ -63,94 +63,94 @@ export default function AdminReportsListPage() {
                 ) : (
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-                        gap: '2.5rem'
+                        gap: '3rem'
                     }}>
                         {projects.map((project) => (
                             <div key={project.id} style={{
                                 backgroundColor: 'white',
-                                borderRadius: '32px',
-                                padding: '2.5rem',
-                                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
+                                borderRadius: '40px',
+                                padding: '3rem',
+                                boxShadow: '0 20px 40px -15px rgba(0,0,0,0.05)',
                                 border: '1px solid #F1F5F9',
-                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between',
-                                position: 'relative',
                                 overflow: 'hidden'
-                            }} className="hover:scale-[1.03] hover:shadow-xl group">
-                                <div style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    right: 0,
-                                    width: '120px',
-                                    height: '120px',
-                                    background: 'linear-gradient(135deg, rgba(99,102,241,0.05) 0%, transparent 70%)',
-                                    borderRadius: '0 0 0 100%'
-                                }} />
-
-                                <div>
-                                    <div style={{
-                                        display: 'inline-flex',
-                                        padding: '0.5rem 1rem',
-                                        backgroundColor: '#EEF2FF',
-                                        color: '#6366F1',
-                                        borderRadius: '12px',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 900,
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.05rem',
-                                        marginBottom: '1.5rem'
-                                    }}>Proyecto Activo</div>
-
-                                    <h3 style={{
-                                        fontSize: '1.5rem',
-                                        fontWeight: 800,
-                                        color: '#0F172A',
-                                        marginBottom: '0.75rem',
-                                        lineHeight: 1.3
-                                    }}>
-                                        {project.title}
-                                    </h3>
-
-                                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
-                                        {project.students.map(s => (
-                                            <span key={s.id} style={{
-                                                fontSize: '0.8rem',
-                                                padding: '0.3rem 0.75rem',
-                                                backgroundColor: '#F8FAFC',
-                                                color: '#64748B',
-                                                borderRadius: '8px',
-                                                fontWeight: 600,
-                                                border: '1px solid #F1F5F9'
-                                            }}>
-                                                {s.name}
-                                            </span>
-                                        ))}
+                            }}>
+                                <div style={{ marginBottom: '2.5rem', borderBottom: '2px solid #F8FAFC', paddingBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <div>
+                                        <span style={{ fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: '#6366F1', letterSpacing: '0.1rem', marginBottom: '0.5rem', display: 'block' }}>
+                                            Investigación
+                                        </span>
+                                        <h3 style={{ fontSize: '2rem', fontWeight: 900, color: '#0F172A', lineHeight: 1.2 }}>{project.title}</h3>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <span style={{ fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.1rem', marginBottom: '0.5rem', display: 'block' }}>
+                                            Total Alumnos
+                                        </span>
+                                        <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#475569' }}>{project.students.length}</div>
                                     </div>
                                 </div>
 
-                                <Link href={`/dashboard/admin/reports/${project.id}`} style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '0.75rem',
-                                    width: '100%',
-                                    padding: '1.25rem',
-                                    backgroundColor: '#0F172A',
-                                    color: 'white',
-                                    borderRadius: '20px',
-                                    fontWeight: 800,
-                                    fontSize: '0.95rem',
-                                    textDecoration: 'none',
-                                    transition: 'all 0.3s'
-                                }} className="group-hover:bg-indigo-600">
-                                    Generar Informe
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                        <path d="M5 12h14M12 5l7 7-7 7" />
-                                    </svg>
-                                </Link>
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                                    gap: '1.5rem'
+                                }}>
+                                    {project.students.map((s) => (
+                                        <Link
+                                            key={s.id}
+                                            href={`/dashboard/admin/reports/${project.id}?studentId=${s.id}`}
+                                            style={{
+                                                textDecoration: 'none',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                padding: '1.5rem 2rem',
+                                                backgroundColor: '#F8FAFC',
+                                                borderRadius: '24px',
+                                                border: '1px solid #F1F5F9',
+                                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                position: 'relative',
+                                                overflow: 'hidden'
+                                            }}
+                                            className="hover:bg-white hover:border-indigo-600 hover:shadow-xl group"
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                                                <div style={{
+                                                    width: '48px',
+                                                    height: '48px',
+                                                    borderRadius: '14px',
+                                                    backgroundColor: '#EEF2FF',
+                                                    color: '#6366F1',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '1.2rem',
+                                                    fontWeight: 900,
+                                                    transition: 'all 0.3s'
+                                                }} className="group-hover:bg-indigo-600 group-hover:text-white">
+                                                    {s.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <div style={{ fontWeight: 800, color: '#0F172A', fontSize: '1.1rem' }}>{s.name}</div>
+                                                    <div style={{ fontSize: '0.75rem', color: '#94A3B8', fontWeight: 600 }}>Generar Informe Individual</div>
+                                                </div>
+                                            </div>
+                                            <div style={{
+                                                width: '32px',
+                                                height: '32px',
+                                                borderRadius: '50%',
+                                                backgroundColor: 'white',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                color: '#6366F1',
+                                                border: '1px solid #F1F5F9',
+                                                transition: 'all 0.3s'
+                                            }} className="group-hover:translate-x-1 group-hover:bg-indigo-600 group-hover:text-white">
+                                                →
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
                         ))}
                     </div>
