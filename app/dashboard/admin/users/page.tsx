@@ -14,7 +14,7 @@ export default function AdminUsersPage() {
         name: '',
         email: '',
         password: '',
-        roles: ['tutor'] as Role[]
+        roles: [] as Role[]
     });
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [submitting, setSubmitting] = useState(false);
@@ -84,7 +84,7 @@ export default function AdminUsersPage() {
                 if (result.success) {
                     setShowModal(false);
                     setEditingUser(null);
-                    setFormData({ name: '', email: '', password: '', roles: ['tutor'] });
+                    setFormData({ name: '', email: '', password: '', roles: [] });
                     loadUsers();
                 } else {
                     alert('Error al actualizar usuario: ' + result.error);
@@ -101,7 +101,7 @@ export default function AdminUsersPage() {
 
                 if (response.ok) {
                     setShowModal(false);
-                    setFormData({ name: '', email: '', password: '', roles: ['tutor'] });
+                    setFormData({ name: '', email: '', password: '', roles: [] });
                     loadUsers();
                 } else {
                     alert(result.error || 'Error al crear usuario');
@@ -139,7 +139,7 @@ export default function AdminUsersPage() {
                 <button
                     onClick={() => {
                         setEditingUser(null);
-                        setFormData({ name: '', email: '', password: '', roles: ['tutor'] });
+                        setFormData({ name: '', email: '', password: '', roles: [] });
                         setShowModal(true);
                     }}
                     style={{
@@ -290,6 +290,7 @@ export default function AdminUsersPage() {
                                 <input
                                     required
                                     type="text"
+                                    autoComplete="off"
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                                     style={{
@@ -310,6 +311,7 @@ export default function AdminUsersPage() {
                                 <input
                                     required
                                     type="email"
+                                    autoComplete="off"
                                     value={formData.email}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                                     style={{
@@ -330,6 +332,7 @@ export default function AdminUsersPage() {
                                     <input
                                         required
                                         type="password"
+                                        autoComplete="new-password"
                                         value={formData.password}
                                         onChange={e => setFormData({ ...formData, password: e.target.value })}
                                         style={{
