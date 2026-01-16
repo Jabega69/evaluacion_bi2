@@ -69,8 +69,8 @@ export default function OralEvalForm({ rubric, project, student, graderId, initi
 
     return (
         <div style={{
-            padding: '3rem 2rem 10rem 2rem',
-            maxWidth: '1200px',
+            padding: '2rem 1rem 10rem 1rem',
+            maxWidth: '1000px',
             margin: '0 auto',
             fontFamily: "'Poppins', sans-serif"
         }}>
@@ -79,8 +79,8 @@ export default function OralEvalForm({ rubric, project, student, graderId, initi
             <div style={{
                 backgroundColor: 'white',
                 borderRadius: '30px',
-                padding: '3rem 2rem',
-                marginBottom: '3rem',
+                padding: '2rem 1.5rem',
+                marginBottom: '2rem',
                 boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)',
                 border: '1px solid #F1F5F9',
                 textAlign: 'center'
@@ -99,7 +99,7 @@ export default function OralEvalForm({ rubric, project, student, graderId, initi
                 }}>
                     Evaluación Oral
                 </span>
-                <h1 style={{ fontSize: '3.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
                     Evaluando a: <span style={{ color: '#EC4899' }}>{student.name}</span>
                 </h1>
                 <p style={{ color: '#64748B', fontSize: '1.25rem', fontWeight: 600 }}>Proyecto: {project.title}</p>
@@ -109,14 +109,14 @@ export default function OralEvalForm({ rubric, project, student, graderId, initi
             <div style={{
                 backgroundColor: 'white',
                 borderRadius: '30px',
-                padding: '3rem',
+                padding: '2rem',
                 marginBottom: '2rem',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
                 border: '1px solid #F1F5F9'
             }}>
-                <div style={{ marginBottom: '3rem' }}>
-                    <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>Competencias Orales (Máx 9 Puntos)</h2>
-                    <p style={{ color: '#64748B', fontWeight: 500 }}>Valore cada bloque según el desempeño del estudiante durante la exposición.</p>
+                <div style={{ marginBottom: '2rem' }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>Competencias Orales (Máx 9 Puntos)</h2>
+                    <p style={{ color: '#64748B', fontWeight: 500, fontSize: '0.9rem' }}>Valore cada bloque según el desempeño del estudiante durante la exposición.</p>
                 </div>
 
                 <div style={{ display: 'grid', gap: '1.5rem' }}>
@@ -125,10 +125,11 @@ export default function OralEvalForm({ rubric, project, student, graderId, initi
                             onMouseEnter={() => setHoveredBlock(item.id)}
                             onMouseLeave={() => setHoveredBlock(null)}
                             style={{
-                                display: 'grid',
-                                gridTemplateColumns: '1fr auto',
-                                gap: '2rem',
-                                padding: '1.5rem 2rem',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                gap: '1rem',
+                                padding: '1.25rem 1.5rem',
                                 borderRadius: '20px',
                                 backgroundColor: hoveredBlock === item.id ? '#FFF1F2' : 'white',
                                 border: '2px solid',
@@ -174,8 +175,8 @@ export default function OralEvalForm({ rubric, project, student, graderId, initi
             <div style={{
                 backgroundColor: 'white',
                 borderRadius: '30px',
-                padding: '3rem',
-                marginBottom: '4rem',
+                padding: '2rem',
+                marginBottom: '3rem',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
                 border: '1px solid #F1F5F9'
             }}>
@@ -210,16 +211,17 @@ export default function OralEvalForm({ rubric, project, student, graderId, initi
                 </div>
             </div>
 
-            {/* Floating Action Bar Pink-Orange */}
             <div style={{
                 position: 'fixed',
-                bottom: '2rem',
-                left: '2rem',
-                right: '2rem',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                bottom: '1.5rem',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 'calc(100% - 2rem)',
+                maxWidth: '1000px',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
                 backdropFilter: 'blur(20px)',
                 borderRadius: '24px',
-                padding: '1.5rem 3rem',
+                padding: '1rem 2rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
