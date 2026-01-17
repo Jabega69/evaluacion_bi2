@@ -84,25 +84,21 @@ export default function ReportView({ project }: Props) {
     return (
         <div className="animate-in w-full" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0.5rem 1rem' }}>
             {/* Header Actions */}
-            <div className="no-print" style={{
-                display: 'flex',
-                flexDirection: 'row',
+            <div className="no-print flex flex-col md_flex-row" style={{
                 justifyContent: 'space-between',
-                alignItems: 'center',
+                alignItems: 'stretch',
                 marginBottom: '1rem',
-                gap: '0.75rem',
+                gap: '1rem',
                 paddingBottom: '0.75rem',
                 borderBottom: '1px solid #F1F5F9',
-                flexWrap: 'wrap',
-                width: '100%',
-                overflow: 'hidden'
+                width: '100%'
             }}>
-                <div style={{ flex: '1 1 180px', minWidth: '0' }}>
-                    <h2 style={{ fontSize: 'clamp(1rem, 4vw, 1.2rem)', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Detalles Evaluación'} 📑 <span style={{ fontSize: '0.5rem', verticalAlign: 'middle', opacity: 0.3 }}>v2.8.2</span>
+                <div style={{ flex: '0 1 auto' }}>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Detalles de Evaluación'} 📑 <span style={{ fontSize: '0.5rem', verticalAlign: 'middle', opacity: 0.3 }}>v2.9.1</span>
                     </h2>
-                    <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.65rem', marginTop: '0.1rem' }}>
-                        {viewMode === 'standard' ? 'Documento oficial' : 'Desglose técnico'}
+                    <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.7rem', marginTop: '0.1rem' }}>
+                        {viewMode === 'standard' ? 'Documento oficial de evaluación' : 'Desglose detallado por evaluador'}
                     </p>
                 </div>
 
@@ -110,14 +106,15 @@ export default function ReportView({ project }: Props) {
                     display: 'flex',
                     flexWrap: 'wrap',
                     alignItems: 'center',
-                    justifyContent: 'flex-end',
+                    justifyContent: 'flex-start',
                     gap: '0.4rem',
                     backgroundColor: '#F8FAFC',
                     padding: '0.3rem',
                     borderRadius: '16px',
                     border: '1px solid #F1F5F9',
-                    maxWidth: '100%'
-                }}>
+                    maxWidth: '100%',
+                    marginTop: '0.5rem'
+                }} className="md_mt-0">
                     <button
                         onClick={() => setViewMode(viewMode === 'standard' ? 'expert' : 'standard')}
                         style={{
