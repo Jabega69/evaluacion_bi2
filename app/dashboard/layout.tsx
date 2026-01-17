@@ -12,11 +12,11 @@ const navItems = {
         { icon: '📈', label: 'Informes', path: '/dashboard/reports', color: 'pink' },
     ],
     tribunal: [
-        { icon: '📚', label: 'Mis Proyectos', path: '/dashboard/tribunal', color: 'purple' },
+        { icon: '📚', label: 'Mis proyectos', path: '/dashboard/tribunal', color: 'purple' },
         { icon: '📈', label: 'Informes', path: '/dashboard/reports', color: 'pink' },
     ],
     tutor: [
-        { icon: '👥', label: 'Mis Alumnos', path: '/dashboard/tutor', color: 'teal' },
+        { icon: '👥', label: 'Mis alumnos', path: '/dashboard/tutor', color: 'teal' },
         { icon: '📈', label: 'Informes', path: '/dashboard/reports', color: 'pink' },
     ]
 };
@@ -47,8 +47,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </div>
                         <div className="sidebar-logo">EvalResearch</div>
                     </div>
-                    <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                        {user.activeRole} Panel
+                    <p className="text-xs font-semibold tracking-wider" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                        {user.activeRole === 'admin' ? 'Admin' : (user.activeRole === 'tribunal' ? 'Tribunal' : 'Tutor')} Panel
                     </p>
                 </div>
 
@@ -100,7 +100,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             className="w-full py-2 px-4 rounded-lg text-sm font-semibold transition-all border border-slate-700 text-slate-300 hover:bg-slate-800"
                             style={{ background: 'transparent' }}
                         >
-                            Cambiar Contraseña
+                            Cambiar contraseña
                         </button>
                         <button
                             onClick={logout}
@@ -109,7 +109,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
                             onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
                         >
-                            Cerrar Sesión
+                            Cerrar sesión
                         </button>
                     </div>
                 </div>
