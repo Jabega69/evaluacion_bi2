@@ -94,11 +94,11 @@ export default function ReportView({ project }: Props) {
                 width: '100%'
             }}>
                 <div style={{ flex: '0 1 auto' }}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Detalles de Evaluación'} 📑 <span style={{ fontSize: '0.5rem', verticalAlign: 'middle', opacity: 0.3 }}>v2.9.1</span>
+                    <h2 style={{ fontSize: '1.1rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Detalles de Evaluación'} 📑 <span style={{ fontSize: '0.45rem', verticalAlign: 'middle', opacity: 0.3 }}>v3.0</span>
                     </h2>
-                    <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.7rem', marginTop: '0.1rem' }}>
-                        {viewMode === 'standard' ? 'Documento oficial de evaluación' : 'Desglose detallado por evaluador'}
+                    <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.6rem', marginTop: '0.1rem' }}>
+                        {viewMode === 'standard' ? 'Doc. oficial' : 'Desglose'}
                     </p>
                 </div>
 
@@ -217,9 +217,9 @@ export default function ReportView({ project }: Props) {
                     border: '1px solid #F1F5F9',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
                 }}>
-                    <h3 style={{ fontSize: '0.55rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06rem', color: '#94A3B8', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <h3 style={{ fontSize: '0.5rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06rem', color: '#94A3B8', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                         <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#6366F1' }}></span>
-                        Seleccionar Alumno
+                        Alumnos
                     </h3>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                         {project.students.map(s => (
@@ -228,7 +228,7 @@ export default function ReportView({ project }: Props) {
                                 onClick={() => setSelectedStudentId(s.id)}
                                 style={{
                                     textAlign: 'left',
-                                    padding: '0.5rem 0.8rem',
+                                    padding: '0.3rem 0.5rem',
                                     borderRadius: '12px',
                                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                     border: 'none',
@@ -314,8 +314,8 @@ export default function ReportView({ project }: Props) {
                                 {/* STANDARD VIEW */}
                                 <div style={{
                                     background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
-                                    borderRadius: '32px',
-                                    padding: '2.5rem',
+                                    borderRadius: '20px',
+                                    padding: '1.2rem',
                                     color: 'white',
                                     position: 'relative',
                                     overflow: 'hidden',
@@ -356,7 +356,7 @@ export default function ReportView({ project }: Props) {
                                                 color: '#818CF8',
                                                 marginBottom: '1rem'
                                             }}>Expediente de Evaluación</div>
-                                            <h1 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+                                            <h1 style={{ fontSize: '1.7rem', fontWeight: 900, marginBottom: '0.5rem', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
                                                 {studentName}
                                             </h1>
                                             <p style={{ fontSize: '1.1rem', color: '#94A3B8', fontWeight: 600, opacity: 0.8 }}>
@@ -367,14 +367,14 @@ export default function ReportView({ project }: Props) {
                                         <div style={{
                                             backgroundColor: 'rgba(255,255,255,0.07)',
                                             backdropFilter: 'blur(12px)',
-                                            borderRadius: '28px',
+                                            borderRadius: '16px',
                                             padding: '1.5rem 2rem',
                                             border: '1px solid rgba(255,255,255,0.1)',
                                             textAlign: 'center',
                                             boxShadow: 'inset 0 0 20px rgba(0,0,0,0.1)'
                                         }}>
                                             <div style={{ fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: '#818CF8', marginBottom: '0.2rem', letterSpacing: '0.05em' }}>Calificación Final</div>
-                                            <div style={{ fontSize: '4rem', fontWeight: 950, lineHeight: 1, letterSpacing: '-0.05em', color: '#FFFFFF' }}>
+                                            <div style={{ fontSize: '2.5rem', fontWeight: 950, lineHeight: 1, letterSpacing: '-0.05em', color: '#FFFFFF' }}>
                                                 {reportData.total}
                                             </div>
                                             <div style={{ fontSize: '0.85rem', color: '#6366F1', fontWeight: 800, marginTop: '0.4rem' }}>SOBRE 10.00</div>
@@ -558,8 +558,8 @@ function DetailScore({ label, weight, score, totalPoints, color, emoji }: { labe
     return (
         <div style={{
             backgroundColor: 'white',
-            borderRadius: '24px',
-            padding: '1.25rem',
+            borderRadius: '16px',
+            padding: '0.7rem',
             border: '1px solid #F1F5F9',
             boxShadow: '0 10px 20px -5px rgba(0,0,0,0.03)',
             display: 'flex',
@@ -582,7 +582,7 @@ function DetailScore({ label, weight, score, totalPoints, color, emoji }: { labe
                     {label} <span style={{ color: color }}>({weight})</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
-                    <span style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>{Number(score).toFixed(2)}</span>
+                    <span style={{ fontSize: '1.7rem', fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>{Number(score).toFixed(2)}</span>
                     <span style={{ color: '#CBD5E1', fontWeight: 800, fontSize: '0.9rem' }}>/10</span>
                 </div>
             </div>
