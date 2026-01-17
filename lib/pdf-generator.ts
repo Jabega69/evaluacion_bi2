@@ -8,35 +8,31 @@ export const generateDetailedPDF = (
     studentName: string,
     rubrics: { written: WrittenRubric | null, oral: OralRubric | null, tutor: TutorRubric | null },
     isAdmin: boolean,
-    currentUserId: string | undefined
+    currentUserId: string | undefined,
+    preview: boolean = false
 ) => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPos = 20;
 
-    // --- Header (Junta de Castilla y León Style) ---
+    // --- Header (Nuevo Logo IES PRADO) ---
     try {
-        // Logo de la Junta de Castilla y León
-        doc.addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Logo_de_la_Junta_de_Castilla_y_Le%C3%B3n.svg/512px-Logo_de_la_Junta_de_Castilla_y_Le%C3%B3n.svg.png', 'PNG', 20, 15, 30, 15);
+        // Logo del IES (ya copiado a public/logo-ies.png)
+        doc.addImage('/logo-ies.png', 'PNG', 15, 10, 180, 22);
     } catch (e) {
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
-        doc.text('Junta de Castilla y León', 20, yPos);
+        doc.text('IES PRADO', 20, yPos);
     }
 
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Junta de Castilla y León', 55, yPos);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.text('Consejería de Educación', 55, yPos + 5);
-
-    // Logo placeholder (simulated with a rectangle or line if no image)
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.5);
-    doc.line(20, yPos + 8, pageWidth - 20, yPos + 8);
-
     yPos += 20;
+
+    // Línea horizontal decorativa
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.1);
+    doc.line(15, yPos, pageWidth - 15, yPos);
+
+    yPos += 15;
 
     // --- Title ---
     doc.setFontSize(16);
@@ -150,6 +146,10 @@ export const generateDetailedPDF = (
         }
     });
 
-    // Save the PDF
-    doc.save(`Informe_${studentName.replace(/\s+/g, '_')}_${new Date().getTime()}.pdf`);
+    // Output the PDF
+    if (preview) {
+        window.open(doc.output('bloburl'), '_blank');
+    } else {
+        doc.save(`Informe_${studentName.replace(/\s+/g, '_')}_${new Date().getTime()}.pdf`);
+    }
 };

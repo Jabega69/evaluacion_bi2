@@ -62,7 +62,7 @@ export default function ReportView({ project }: Props) {
 
     const handlePrint = () => window.print();
 
-    const handleExportPDF = () => {
+    const handleExportPDF = (preview: boolean = false) => {
         if (!reportData || !project) return;
         generateDetailedPDF(
             reportData,
@@ -70,7 +70,8 @@ export default function ReportView({ project }: Props) {
             studentName,
             rubrics,
             isAdmin || false,
-            user?.id
+            user?.id,
+            preview
         );
     };
 
@@ -83,47 +84,58 @@ export default function ReportView({ project }: Props) {
     return (
         <div className="animate-in w-full" style={{ maxWidth: '1400px', margin: '0 auto', padding: '1rem 2rem' }}>
             {/* Header Actions */}
-            <div className="flex justify-between items-center mb-6 no-print">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 no-print gap-4 pb-6 border-b border-slate-100">
                 <div>
-                    <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.1rem' }}>
-                        {viewMode === 'standard' ? 'Resultados Finales' : 'Informe Detallado (Experto)'}
+                    <h2 style={{ fontSize: '1.8rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
+                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Informe Detallado'} 📑
                     </h2>
-                    <p style={{ color: '#64748B', fontWeight: 500, fontSize: '0.85rem' }}>
-                        {viewMode === 'standard' ? 'Acta de evaluación oficial' : 'Desglose de puntuaciones por ítem'}
+                    <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.9rem', marginTop: '0.2rem' }}>
+                        {viewMode === 'standard' ? 'Documento oficial de evaluación académica' : 'Análisis exhaustivo por ítem y evaluador'}
                     </p>
                 </div>
-                <div className="flex gap-2">
+
+                <div className="flex flex-wrap items-center gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-100 shadow-sm">
                     <button
                         onClick={() => setViewMode(viewMode === 'standard' ? 'expert' : 'standard')}
-                        className={`px-4 py-2 rounded-xl font-bold text-xs transition-all border-2 flex items-center gap-2 ${viewMode === 'expert'
-                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
-                            : 'bg-white border-slate-100 text-slate-600'
-                            } hover:border-indigo-400`}
+                        className={`px-4 py-2.5 rounded-xl font-black text-[0.7rem] transition-all uppercase tracking-wider flex items-center gap-2 ${viewMode === 'expert'
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                            : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-100 shadow-sm'
+                            }`}
                     >
-                        {viewMode === 'standard' ? '🔬 Vista Experto' : '📄 Vista Acta'}
+                        {viewMode === 'standard' ? '🔬 Modo Experto' : '📄 Modo Acta'}
+                    </button>
+
+                    <div className="h-6 w-[1.5px] bg-slate-200 mx-1 hidden sm:block"></div>
+
+                    <button
+                        onClick={() => handleExportPDF(true)}
+                        title="Vista Previa PDF"
+                        className="px-4 py-2.5 rounded-xl font-black text-[0.7rem] bg-white text-emerald-600 border border-emerald-100 uppercase tracking-wider hover:bg-emerald-50 transition-all flex items-center gap-2"
+                    >
+                        👁️ Ver PDF
+                    </button>
+
+                    <button
+                        onClick={() => handleExportPDF(false)}
+                        title="Descargar PDF"
+                        className="p-2.5 rounded-xl transition-all bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-600 hover:text-white flex items-center justify-center shadow-sm"
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
                     </button>
 
                     <button
                         onClick={handlePrint}
-                        title="Imprimir Informe"
-                        className="p-3 rounded-xl transition-all bg-white border-2 border-slate-100 text-slate-600 shadow-sm hover:border-indigo-600 hover:text-indigo-600 hover:shadow-md active:scale-95 flex items-center justify-center"
+                        title="Imprimir"
+                        className="p-2.5 rounded-xl transition-all bg-white text-slate-400 border border-slate-100 hover:text-slate-600 hover:border-slate-300 flex items-center justify-center"
                     >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="6 9 6 2 18 2 18 9"></polyline>
                             <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                             <rect x="6" y="14" width="12" height="8"></rect>
-                        </svg>
-                    </button>
-                    <button
-                        onClick={handleExportPDF}
-                        title="Exportar PDF"
-                        className="p-3 rounded-xl transition-all bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 hover:shadow-md active:scale-95 flex items-center justify-center border-2 border-indigo-600"
-                    >
-
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
                     </button>
                 </div>
@@ -313,38 +325,77 @@ export default function ReportView({ project }: Props) {
                                         border: '1px solid #F1F5F9',
                                         boxShadow: '0 15px 30px -15px rgba(0,0,0,0.05)'
                                     }}>
-                                        <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F172A', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                            <span style={{ fontSize: '1.5rem' }}>✒️</span> Observaciones
-                                        </h3>
+                                        <div className="flex flex-col lg:flex-row gap-8">
+                                            {/* Calificaciones por Evaluador */}
+                                            <div className="flex-1 border-b lg:border-b-0 lg:border-r border-slate-100 pb-8 lg:pb-0 lg:pr-8">
+                                                <h3 style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                    <span style={{ fontSize: '1.5rem' }}>📋</span> Calificaciones
+                                                </h3>
+                                                <div className="space-y-3">
+                                                    {reportData.evaluations.map((ev: any, i: number) => (
+                                                        <div key={i} className="flex justify-between items-center p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                                            <div className="flex items-center gap-3">
+                                                                <div style={{
+                                                                    width: '36px',
+                                                                    height: '36px',
+                                                                    borderRadius: '10px',
+                                                                    backgroundColor: ev.type === 'written' ? '#EEF2FF' : (ev.type === 'oral' ? '#FFF1F2' : '#F0FDF4'),
+                                                                    color: ev.type === 'written' ? '#4F46E5' : (ev.type === 'oral' ? '#E11D48' : '#166534'),
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    fontSize: '0.9rem',
+                                                                    fontWeight: 900
+                                                                }}>
+                                                                    {ev.type === 'written' ? 'W' : (ev.type === 'oral' ? 'O' : 'T')}
+                                                                </div>
+                                                                <div>
+                                                                    <div className="text-sm font-black text-slate-800">{ev.graderName}</div>
+                                                                    <div className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-tighter">{ev.type}</div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-lg font-black text-slate-900">
+                                                                {ev.totalScore}<span className="text-[0.8rem] text-slate-400 font-bold ml-1">/10</span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
 
-                                        <div className="space-y-4">
-                                            {reportData.evaluations.filter((ev: any) => ev.feedback).length === 0 ? (
-                                                <p style={{ color: '#94A3B8', fontWeight: 600, fontSize: '0.9rem', textAlign: 'center', padding: '1rem', backgroundColor: '#F8FAFC', borderRadius: '16px' }}>No hay observaciones registradas.</p>
-                                            ) : (
-                                                reportData.evaluations.map((ev: any, i: number) => ev.feedback && (
-                                                    <div key={i} style={{
-                                                        padding: '1.25rem',
-                                                        borderRadius: '20px',
-                                                        backgroundColor: '#F8FAFC',
-                                                        border: '1px solid #F1F5F9',
-                                                    }}>
-                                                        <span style={{
-                                                            display: 'inline-block',
-                                                            padding: '0.25rem 0.6rem',
-                                                            borderRadius: '8px',
-                                                            fontSize: '0.6rem',
-                                                            fontWeight: 900,
-                                                            textTransform: 'uppercase',
-                                                            backgroundColor: ev.type === 'written' ? '#EEF2FF' : (ev.type === 'oral' ? '#FFF1F2' : '#F0FDF4'),
-                                                            color: ev.type === 'written' ? '#4F46E5' : (ev.type === 'oral' ? '#E11D48' : '#166534'),
-                                                            marginBottom: '0.5rem'
-                                                        }}>
-                                                            {ev.graderName} ({ev.type})
-                                                        </span>
-                                                        <p style={{ fontSize: '0.95rem', color: '#334155', fontWeight: 500, fontStyle: 'italic', lineHeight: 1.5 }}>"{ev.feedback}"</p>
-                                                    </div>
-                                                ))
-                                            )}
+                                            {/* Observaciones */}
+                                            <div className="flex-1">
+                                                <h3 style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                    <span style={{ fontSize: '1.5rem' }}>✒️</span> Observaciones
+                                                </h3>
+
+                                                <div className="space-y-4">
+                                                    {reportData.evaluations.filter((ev: any) => ev.feedback).length === 0 ? (
+                                                        <p style={{ color: '#94A3B8', fontWeight: 600, fontSize: '0.9rem', textAlign: 'center', padding: '2rem', backgroundColor: '#F8FAFC', borderRadius: '24px', border: '2px dashed #F1F5F9' }}>No se han registrado observaciones todavía.</p>
+                                                    ) : (
+                                                        reportData.evaluations.map((ev: any, i: number) => ev.feedback && (
+                                                            <div key={i} style={{
+                                                                padding: '1.25rem',
+                                                                borderRadius: '20px',
+                                                                backgroundColor: '#F8FAFC',
+                                                                border: '1px solid #F1F5F9'
+                                                            }}>
+                                                                <div style={{
+                                                                    fontSize: '0.65rem',
+                                                                    fontWeight: 900,
+                                                                    color: '#94A3B8',
+                                                                    marginBottom: '0.5rem',
+                                                                    display: 'flex',
+                                                                    justifyContent: 'space-between'
+                                                                }}>
+                                                                    <span>{ev.graderName.toUpperCase()}</span>
+                                                                    <span style={{ color: ev.type === 'written' ? '#6366F1' : (ev.type === 'oral' ? '#F43F5E' : '#10B981') }}>{ev.type.toUpperCase()}</span>
+                                                                </div>
+                                                                <p style={{ fontSize: '0.9rem', color: '#475569', fontWeight: 600, fontStyle: 'italic', lineHeight: 1.6 }}>"{ev.feedback}"</p>
+                                                            </div>
+                                                        ))
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </>
