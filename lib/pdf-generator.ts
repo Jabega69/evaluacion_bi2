@@ -93,9 +93,12 @@ export const generateDetailedPDF = (
             yPos = 20;
         }
 
+        const typeNames: any = { 'written': 'ESCRITA', 'oral': 'ORAL', 'tutor': 'TUTORÍA' };
+        const typeName = typeNames[ev.type] || ev.type.toUpperCase();
+
         autoTable(doc, {
             startY: yPos,
-            head: [[{ content: `${index + 1}.- ${ev.graderName.toUpperCase()} (${ev.type.toUpperCase()})`, styles: { fillColor: [230, 230, 230] } }, { content: `Nota: ${ev.totalScore}/10`, styles: { halign: 'right', fillColor: [230, 230, 230] } }]],
+            head: [[{ content: `${index + 1}.- ${ev.graderName.toUpperCase()} (${typeName})`, styles: { fillColor: [230, 230, 230] } }, { content: `Nota: ${ev.totalScore}/10`, styles: { halign: 'right', fillColor: [230, 230, 230] } }]],
             body: [],
             theme: 'grid',
             headStyles: { textColor: [0, 0, 0], fontStyle: 'bold' },

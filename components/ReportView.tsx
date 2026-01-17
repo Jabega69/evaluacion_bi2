@@ -91,16 +91,18 @@ export default function ReportView({ project }: Props) {
                 alignItems: 'center',
                 marginBottom: '1rem',
                 gap: '0.75rem',
-                paddingBottom: '1rem',
+                paddingBottom: '0.75rem',
                 borderBottom: '1px solid #F1F5F9',
-                flexWrap: 'nowrap'
+                flexWrap: 'wrap',
+                width: '100%',
+                overflow: 'hidden'
             }}>
-                <div>
-                    <h2 style={{ fontSize: '1.4rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Informe Detallado'} 📑 <span style={{ fontSize: '0.55rem', verticalAlign: 'middle', opacity: 0.3 }}>v2.7</span>
+                <div style={{ flex: '1 1 180px', minWidth: '0' }}>
+                    <h2 style={{ fontSize: 'clamp(1rem, 4vw, 1.2rem)', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Detalles Evaluación'} 📑 <span style={{ fontSize: '0.5rem', verticalAlign: 'middle', opacity: 0.3 }}>v2.8.2</span>
                     </h2>
-                    <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.75rem', marginTop: '0.1rem' }}>
-                        {viewMode === 'standard' ? 'Documento oficial' : 'Análisis exhaustivo'}
+                    <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.65rem', marginTop: '0.1rem' }}>
+                        {viewMode === 'standard' ? 'Documento oficial' : 'Desglose técnico'}
                     </p>
                 </div>
 
@@ -108,11 +110,13 @@ export default function ReportView({ project }: Props) {
                     display: 'flex',
                     flexWrap: 'wrap',
                     alignItems: 'center',
-                    gap: '0.5rem',
+                    justifyContent: 'flex-end',
+                    gap: '0.4rem',
                     backgroundColor: '#F8FAFC',
-                    padding: '0.4rem',
-                    borderRadius: '20px',
-                    border: '1px solid #F1F5F9'
+                    padding: '0.3rem',
+                    borderRadius: '16px',
+                    border: '1px solid #F1F5F9',
+                    maxWidth: '100%'
                 }}>
                     <button
                         onClick={() => setViewMode(viewMode === 'standard' ? 'expert' : 'standard')}
@@ -453,11 +457,13 @@ export default function ReportView({ project }: Props) {
                                                                 fontSize: '1rem',
                                                                 fontWeight: 900
                                                             }}>
-                                                                {ev.type === 'written' ? 'W' : (ev.type === 'oral' ? 'O' : 'T')}
+                                                                {ev.type === 'written' ? 'E' : (ev.type === 'oral' ? 'O' : 'T')}
                                                             </div>
                                                             <div>
                                                                 <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1E293B' }}>{ev.graderName}</div>
-                                                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{ev.type}</div>
+                                                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>
+                                                                    {ev.type === 'written' ? 'ESCRITA' : (ev.type === 'oral' ? 'ORAL' : 'TUTORÍA')}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A' }}>
@@ -514,7 +520,7 @@ export default function ReportView({ project }: Props) {
                                                                     padding: '0.2rem 0.5rem',
                                                                     borderRadius: '6px',
                                                                     boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                                                                }}>{ev.type.toUpperCase()}</span>
+                                                                }}>{ev.type === 'written' ? 'ESCRITA' : (ev.type === 'oral' ? 'ORAL' : 'TUTORÍA')}</span>
                                                             </div>
                                                             <p style={{ fontSize: '1rem', color: '#334155', fontWeight: 600, fontStyle: 'italic', lineHeight: 1.6 }}>"{ev.feedback}"</p>
                                                         </div>
@@ -644,7 +650,9 @@ function ExpertView({ reportData, rubrics, isAdmin, currentUserId }: any) {
                                         textTransform: 'uppercase',
                                         backgroundColor: ev.type === 'written' ? '#EEF2FF' : (ev.type === 'oral' ? '#FFF1F2' : '#F0FDF4'),
                                         color: ev.type === 'written' ? '#4F46E5' : (ev.type === 'oral' ? '#E11D48' : '#166534'),
-                                    }}>{ev.type}</span>
+                                    }}>
+                                        {ev.type === 'written' ? 'ESCRITA' : (ev.type === 'oral' ? 'ORAL' : 'TUTORÍA')}
+                                    </span>
                                 </td>
                                 <td style={{ padding: '1rem', textAlign: 'center', fontSize: '1rem', fontWeight: 900, color: '#0F172A' }}>{ev.totalScore}</td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
@@ -680,7 +688,9 @@ function ExpertView({ reportData, rubrics, isAdmin, currentUserId }: any) {
                                         <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#6366F1' }}></span>
                                         <div style={{ fontSize: '0.7rem', fontWeight: 950, color: '#6366F1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Desglose por Ítem</div>
                                     </div>
-                                    <h5 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1E293B' }}>{ev.graderName} <span style={{ color: '#94A3B8', fontWeight: 600 }}>({ev.type})</span></h5>
+                                    <h5 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1E293B' }}>
+                                        {ev.graderName} <span style={{ color: '#94A3B8', fontWeight: 600 }}>({ev.type === 'written' ? 'ESCRITA' : (ev.type === 'oral' ? 'ORAL' : 'TUTORÍA')})</span>
+                                    </h5>
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
                                     <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Puntuación</div>
