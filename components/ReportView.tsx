@@ -82,25 +82,25 @@ export default function ReportView({ project }: Props) {
     const isAdmin = user?.roles.includes('admin');
 
     return (
-        <div className="animate-in w-full" style={{ maxWidth: '1400px', margin: '0 auto', padding: '1rem 2rem' }}>
+        <div className="animate-in w-full" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0.5rem 1rem' }}>
             {/* Header Actions */}
             <div className="no-print" style={{
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '2rem',
-                gap: '1rem',
-                paddingBottom: '1.5rem',
+                marginBottom: '1rem',
+                gap: '0.75rem',
+                paddingBottom: '1rem',
                 borderBottom: '1px solid #F1F5F9',
-                flexWrap: 'wrap'
+                flexWrap: 'nowrap'
             }}>
                 <div>
-                    <h2 style={{ fontSize: '1.8rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
-                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Informe Detallado'} 📑 <span style={{ fontSize: '0.6rem', verticalAlign: 'middle', opacity: 0.3 }}>v2.4</span>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Informe Detallado'} 📑 <span style={{ fontSize: '0.55rem', verticalAlign: 'middle', opacity: 0.3 }}>v2.7</span>
                     </h2>
-                    <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.9rem', marginTop: '0.2rem' }}>
-                        {viewMode === 'standard' ? 'Documento oficial de evaluación académica' : 'Análisis exhaustivo por ítem y evaluador'}
+                    <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.75rem', marginTop: '0.1rem' }}>
+                        {viewMode === 'standard' ? 'Documento oficial' : 'Análisis exhaustivo'}
                     </p>
                 </div>
 
@@ -117,24 +117,24 @@ export default function ReportView({ project }: Props) {
                     <button
                         onClick={() => setViewMode(viewMode === 'standard' ? 'expert' : 'standard')}
                         style={{
-                            padding: '0.6rem 1rem',
-                            borderRadius: '14px',
+                            padding: '0.4rem 0.75rem',
+                            borderRadius: '12px',
                             fontWeight: 900,
-                            fontSize: '0.7rem',
+                            fontSize: '0.65rem',
                             transition: 'all 0.2s',
                             textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
+                            letterSpacing: '0.04em',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '0.5rem',
+                            gap: '0.4rem',
                             border: 'none',
                             cursor: 'pointer',
                             backgroundColor: viewMode === 'expert' ? '#4F46E5' : 'white',
                             color: viewMode === 'expert' ? 'white' : '#64748B',
-                            boxShadow: viewMode === 'expert' ? '0 10px 15px -3px rgba(79, 70, 229, 0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
+                            boxShadow: viewMode === 'expert' ? '0 6px 10px -2px rgba(79, 70, 229, 0.25)' : '0 1px 2px rgba(0,0,0,0.08)'
                         }}
                     >
-                        {viewMode === 'standard' ? '🔬 Ver Puntuaciones' : '📄 Ver Acta'}
+                        {viewMode === 'standard' ? '🔬 Puntuaciones' : '📄 Acta'}
                     </button>
 
                     <div style={{ width: '1px', height: '20px', backgroundColor: '#E2E8F0', margin: '0 0.25rem' }}></div>
@@ -142,29 +142,29 @@ export default function ReportView({ project }: Props) {
                     <button
                         onClick={() => handleExportPDF(true)}
                         style={{
-                            padding: '0.6rem 1rem',
-                            borderRadius: '14px',
+                            padding: '0.4rem 0.75rem',
+                            borderRadius: '12px',
                             fontWeight: 900,
-                            fontSize: '0.7rem',
+                            fontSize: '0.65rem',
                             backgroundColor: 'white',
                             color: '#059669',
                             border: '1px solid #D1FAE5',
                             textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
+                            letterSpacing: '0.04em',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '0.5rem',
+                            gap: '0.4rem',
                         }}
                     >
-                        👁️ Ver PDF
+                        👁️ PDF
                     </button>
 
                     <button
                         onClick={() => handleExportPDF(false)}
                         style={{
-                            padding: '0.6rem',
-                            borderRadius: '14px',
+                            padding: '0.45rem',
+                            borderRadius: '12px',
                             backgroundColor: '#EEF2FF',
                             color: '#4F46E5',
                             border: '1px solid #E0E7FF',
@@ -175,7 +175,8 @@ export default function ReportView({ project }: Props) {
                         }}
                         title="Descargar PDF"
                     >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <canvas id="pdf-icon" style={{ display: 'none' }}></canvas>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -185,8 +186,8 @@ export default function ReportView({ project }: Props) {
                     <button
                         onClick={handlePrint}
                         style={{
-                            padding: '0.6rem',
-                            borderRadius: '14px',
+                            padding: '0.45rem',
+                            borderRadius: '12px',
                             backgroundColor: 'white',
                             color: '#94A3B8',
                             border: '1px solid #F1F5F9',
@@ -197,7 +198,7 @@ export default function ReportView({ project }: Props) {
                         }}
                         title="Imprimir"
                     >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="6 9 6 2 18 2 18 9"></polyline>
                             <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                             <rect x="6" y="14" width="12" height="8"></rect>
@@ -206,34 +207,34 @@ export default function ReportView({ project }: Props) {
                 </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'flex-start' }}>
                 <div className="no-print" style={{
                     width: '100%',
                     backgroundColor: 'white',
-                    padding: '1.5rem',
-                    borderRadius: '24px',
+                    padding: '0.75rem 1.25rem',
+                    borderRadius: '20px',
                     border: '1px solid #F1F5F9',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)'
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
                 }}>
-                    <h3 style={{ fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08rem', color: '#94A3B8', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#6366F1' }}></span>
+                    <h3 style={{ fontSize: '0.55rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06rem', color: '#94A3B8', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#6366F1' }}></span>
                         Seleccionar Alumno
                     </h3>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                         {project.students.map(s => (
                             <button
                                 key={s.id}
                                 onClick={() => setSelectedStudentId(s.id)}
                                 style={{
                                     textAlign: 'left',
-                                    padding: '0.75rem 1rem',
-                                    borderRadius: '16px',
+                                    padding: '0.5rem 0.8rem',
+                                    borderRadius: '12px',
                                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                     border: 'none',
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '0.75rem',
+                                    gap: '0.6rem',
                                     position: 'relative',
                                     backgroundColor: selectedStudentId === s.id ? '#F8FAFC' : 'transparent',
                                 }}
