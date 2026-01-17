@@ -134,7 +134,7 @@ export default function ReportView({ project }: Props) {
                             boxShadow: viewMode === 'expert' ? '0 10px 15px -3px rgba(79, 70, 229, 0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
                         }}
                     >
-                        {viewMode === 'standard' ? '🔬 Modo Experto' : '📄 Modo Acta'}
+                        {viewMode === 'standard' ? '🔬 Ver Puntuaciones' : '📄 Ver Acta'}
                     </button>
 
                     <div style={{ width: '1px', height: '20px', backgroundColor: '#E2E8F0', margin: '0 0.25rem' }}></div>
@@ -600,7 +600,7 @@ function DetailScore({ label, weight, score, totalPoints, color, emoji }: { labe
 
 function ExpertView({ reportData, rubrics, isAdmin, currentUserId }: any) {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '850px', margin: '0 auto', width: '100%' }}>
             <div style={{
                 backgroundColor: '#4F46E5',
                 borderRadius: '24px',
@@ -691,9 +691,9 @@ function ExpertView({ reportData, rubrics, isAdmin, currentUserId }: any) {
                                 {ev.type === 'written' && rubrics.written && (
                                     <>
                                         {rubrics.written.contentItems.map((item: any) => (
-                                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderRadius: '16px', backgroundColor: '#F8FAFC' }}>
-                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>{item.label}</span>
-                                                <span style={{ fontSize: '0.9rem', fontWeight: 950, color: '#4F46E5' }}>{ev.scores.contentScores?.[item.id] || 0} <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>/10</span></span>
+                                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', borderRadius: '16px', backgroundColor: '#F8FAFC', gap: '1rem' }}>
+                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569', lineHeight: 1.2 }}>{item.label}</span>
+                                                <span style={{ fontSize: '0.9rem', fontWeight: 950, color: '#4F46E5', whiteSpace: 'nowrap' }}>{ev.scores.contentScores?.[item.id] || 0} <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>/10</span></span>
                                             </div>
                                         ))}
                                         <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '2px solid #F1F5F9' }}>
@@ -712,9 +712,9 @@ function ExpertView({ reportData, rubrics, isAdmin, currentUserId }: any) {
                                 {ev.type === 'oral' && rubrics.oral && (
                                     <>
                                         {rubrics.oral.blocks.map((item: any) => (
-                                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderRadius: '16px', backgroundColor: '#F8FAFC' }}>
-                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>{item.label}</span>
-                                                <span style={{ fontSize: '0.9rem', fontWeight: 950, color: '#E11D48' }}>{ev.scores.blockScores?.[item.id] || 0} <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>/{item.maxScore}</span></span>
+                                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', borderRadius: '16px', backgroundColor: '#F8FAFC', gap: '1rem' }}>
+                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569', lineHeight: 1.2 }}>{item.label}</span>
+                                                <span style={{ fontSize: '0.9rem', fontWeight: 950, color: '#E11D48', whiteSpace: 'nowrap' }}>{ev.scores.blockScores?.[item.id] || 0} <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>/{item.maxScore}</span></span>
                                             </div>
                                         ))}
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderRadius: '16px', backgroundColor: '#FFF1F2', border: '1px solid #FFE4E6', marginTop: '1rem' }}>
@@ -726,9 +726,9 @@ function ExpertView({ reportData, rubrics, isAdmin, currentUserId }: any) {
                                 {ev.type === 'tutor' && rubrics.tutor && (
                                     <>
                                         {rubrics.tutor.items.map((item: any) => (
-                                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderRadius: '16px', backgroundColor: '#F8FAFC' }}>
-                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>{item.label}</span>
-                                                <span style={{ fontSize: '0.9rem', fontWeight: 950, color: '#059669' }}>{ev.scores.scores?.[item.id] || 0} <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>/2</span></span>
+                                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', borderRadius: '16px', backgroundColor: '#F8FAFC', gap: '1rem' }}>
+                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569', lineHeight: 1.2 }}>{item.label}</span>
+                                                <span style={{ fontSize: '0.9rem', fontWeight: 950, color: '#059669', whiteSpace: 'nowrap' }}>{ev.scores.scores?.[item.id] || 0} <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>/2</span></span>
                                             </div>
                                         ))}
                                     </>
