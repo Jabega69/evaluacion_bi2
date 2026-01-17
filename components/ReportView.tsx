@@ -84,41 +84,96 @@ export default function ReportView({ project }: Props) {
     return (
         <div className="animate-in w-full" style={{ maxWidth: '1400px', margin: '0 auto', padding: '1rem 2rem' }}>
             {/* Header Actions */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 no-print gap-4 pb-6 border-b border-slate-100">
+            <div className="no-print" style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '2rem',
+                gap: '1rem',
+                paddingBottom: '1.5rem',
+                borderBottom: '1px solid #F1F5F9',
+                flexWrap: 'wrap'
+            }}>
                 <div>
                     <h2 style={{ fontSize: '1.8rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
-                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Informe Detallado'} 📑 <span style={{ fontSize: '0.6rem', verticalAlign: 'middle', opacity: 0.3 }}>v2.2</span>
+                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Informe Detallado'} 📑 <span style={{ fontSize: '0.6rem', verticalAlign: 'middle', opacity: 0.3 }}>v2.4</span>
                     </h2>
                     <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.9rem', marginTop: '0.2rem' }}>
                         {viewMode === 'standard' ? 'Documento oficial de evaluación académica' : 'Análisis exhaustivo por ítem y evaluador'}
                     </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-100 shadow-sm">
+                <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    backgroundColor: '#F8FAFC',
+                    padding: '0.4rem',
+                    borderRadius: '20px',
+                    border: '1px solid #F1F5F9'
+                }}>
                     <button
                         onClick={() => setViewMode(viewMode === 'standard' ? 'expert' : 'standard')}
-                        className={`px-4 py-2.5 rounded-xl font-black text-[0.7rem] transition-all uppercase tracking-wider flex items-center gap-2 ${viewMode === 'expert'
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                            : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-100 shadow-sm'
-                            }`}
+                        style={{
+                            padding: '0.6rem 1rem',
+                            borderRadius: '14px',
+                            fontWeight: 900,
+                            fontSize: '0.7rem',
+                            transition: 'all 0.2s',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            border: 'none',
+                            cursor: 'pointer',
+                            backgroundColor: viewMode === 'expert' ? '#4F46E5' : 'white',
+                            color: viewMode === 'expert' ? 'white' : '#64748B',
+                            boxShadow: viewMode === 'expert' ? '0 10px 15px -3px rgba(79, 70, 229, 0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
+                        }}
                     >
                         {viewMode === 'standard' ? '🔬 Modo Experto' : '📄 Modo Acta'}
                     </button>
 
-                    <div className="h-6 w-[1.5px] bg-slate-200 mx-1 hidden sm:block"></div>
+                    <div style={{ width: '1px', height: '20px', backgroundColor: '#E2E8F0', margin: '0 0.25rem' }}></div>
 
                     <button
                         onClick={() => handleExportPDF(true)}
-                        title="Vista Previa PDF"
-                        className="px-4 py-2.5 rounded-xl font-black text-[0.7rem] bg-white text-emerald-600 border border-emerald-100 uppercase tracking-wider hover:bg-emerald-50 transition-all flex items-center gap-2"
+                        style={{
+                            padding: '0.6rem 1rem',
+                            borderRadius: '14px',
+                            fontWeight: 900,
+                            fontSize: '0.7rem',
+                            backgroundColor: 'white',
+                            color: '#059669',
+                            border: '1px solid #D1FAE5',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                        }}
                     >
                         👁️ Ver PDF
                     </button>
 
                     <button
                         onClick={() => handleExportPDF(false)}
+                        style={{
+                            padding: '0.6rem',
+                            borderRadius: '14px',
+                            backgroundColor: '#EEF2FF',
+                            color: '#4F46E5',
+                            border: '1px solid #E0E7FF',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
                         title="Descargar PDF"
-                        className="p-2.5 rounded-xl transition-all bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-600 hover:text-white flex items-center justify-center shadow-sm"
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -129,8 +184,18 @@ export default function ReportView({ project }: Props) {
 
                     <button
                         onClick={handlePrint}
+                        style={{
+                            padding: '0.6rem',
+                            borderRadius: '14px',
+                            backgroundColor: 'white',
+                            color: '#94A3B8',
+                            border: '1px solid #F1F5F9',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
                         title="Imprimir"
-                        className="p-2.5 rounded-xl transition-all bg-white text-slate-400 border border-slate-100 hover:text-slate-600 hover:border-slate-300 flex items-center justify-center"
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="6 9 6 2 18 2 18 9"></polyline>
@@ -141,286 +206,345 @@ export default function ReportView({ project }: Props) {
                 </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-6 items-start">
-                {/* Alumnos Sidebar */}
-                <div className="w-full lg:w-72 flex-shrink-0 space-y-4 no-print">
-                    <div className="bg-white p-4 rounded-[24px] border border-slate-100 shadow-sm">
-                        <h3 style={{ fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08rem', color: '#94A3B8', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                            Alumnos del Proyecto
-                        </h3>
-                        <div className="flex flex-col gap-1.5">
-                            {project.students.map(s => (
-                                <button
-                                    key={s.id}
-                                    onClick={() => setSelectedStudentId(s.id)}
-                                    style={{
-                                        textAlign: 'left',
-                                        padding: '0.75rem 1rem',
-                                        borderRadius: '16px',
-                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.75rem',
-                                        position: 'relative',
-                                        backgroundColor: selectedStudentId === s.id ? '#F8FAFC' : 'transparent',
-                                    }}
-                                    className={`group ${selectedStudentId === s.id ? 'active-student' : ''}`}
-                                >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'flex-start' }}>
+                <div className="no-print" style={{
+                    width: '100%',
+                    backgroundColor: 'white',
+                    padding: '1.5rem',
+                    borderRadius: '24px',
+                    border: '1px solid #F1F5F9',
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)'
+                }}>
+                    <h3 style={{ fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08rem', color: '#94A3B8', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#6366F1' }}></span>
+                        Seleccionar Alumno
+                    </h3>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                        {project.students.map(s => (
+                            <button
+                                key={s.id}
+                                onClick={() => setSelectedStudentId(s.id)}
+                                style={{
+                                    textAlign: 'left',
+                                    padding: '0.75rem 1rem',
+                                    borderRadius: '16px',
+                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.75rem',
+                                    position: 'relative',
+                                    backgroundColor: selectedStudentId === s.id ? '#F8FAFC' : 'transparent',
+                                }}
+                                className={`group ${selectedStudentId === s.id ? 'active-student' : ''}`}
+                            >
+                                <div style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '10px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '0.85rem',
+                                    fontWeight: 900,
+                                    backgroundColor: selectedStudentId === s.id ? '#6366F1' : '#F1F5F9',
+                                    color: selectedStudentId === s.id ? 'white' : '#64748B',
+                                    transition: 'all 0.3s'
+                                }}>
+                                    {s.name.charAt(0)}
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        borderRadius: '10px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
+                                        fontWeight: 800,
                                         fontSize: '0.85rem',
-                                        fontWeight: 900,
-                                        backgroundColor: selectedStudentId === s.id ? '#6366F1' : '#F1F5F9',
-                                        color: selectedStudentId === s.id ? 'white' : '#64748B',
-                                        transition: 'all 0.3s'
-                                    }}>
-                                        {s.name.charAt(0)}
-                                    </div>
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                        <div style={{
-                                            fontWeight: 800,
-                                            fontSize: '0.85rem',
-                                            color: selectedStudentId === s.id ? '#0F172A' : '#475569',
-                                            transition: 'all 0.3s',
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis'
-                                        }}>{s.name}</div>
-                                    </div>
-                                    {selectedStudentId === s.id && (
-                                        <div style={{
-                                            width: '4px',
-                                            height: '16px',
-                                            backgroundColor: '#6366F1',
-                                            borderRadius: '10px',
-                                            position: 'absolute',
-                                            right: '8px'
-                                        }} />
-                                    )}
-                                </button>
-                            ))}
-                        </div>
+                                        color: selectedStudentId === s.id ? '#0F172A' : '#475569',
+                                        transition: 'all 0.3s',
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis'
+                                    }}>{s.name}</div>
+                                </div>
+                                {selectedStudentId === s.id && (
+                                    <div style={{
+                                        width: '4px',
+                                        height: '16px',
+                                        backgroundColor: '#6366F1',
+                                        borderRadius: '10px',
+                                        position: 'absolute',
+                                        right: '8px'
+                                    }} />
+                                )}
+                            </button>
+                        ))}
                     </div>
                 </div>
+            </div>
 
-                {/* Main Content */}
-                <div className="flex-1 w-full pb-10">
-                    {loading ? (
+            <div className="flex-1" style={{ width: '100%', paddingBottom: '2.5rem' }}>
+                {loading ? (
+                    <div style={{
+                        backgroundColor: 'white',
+                        borderRadius: '32px',
+                        height: '400px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '1px solid #F1F5F9',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+                    }}>
                         <div style={{
-                            backgroundColor: 'white',
-                            borderRadius: '32px',
-                            height: '400px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            border: '1px solid #F1F5F9'
-                        }}>
-                            <div className="w-12 h-12 border-[5px] border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-                            <p style={{ color: '#0F172A', fontWeight: 800, fontSize: '1rem' }}>Generando informe detallado...</p>
-                        </div>
-                    ) : reportData ? (
-                        <div className="space-y-6 animate-in">
-                            {viewMode === 'standard' ? (
-                                <>
-                                    {/* STANDARD VIEW */}
+                            width: '48px',
+                            height: '48px',
+                            border: '5px solid #EEF2FF',
+                            borderTop: '5px solid #4F46E5',
+                            borderRadius: '50%',
+                            animation: 'spin 1s linear infinite',
+                            marginBottom: '1rem'
+                        }}></div>
+                        <p style={{ color: '#0F172A', fontWeight: 800, fontSize: '1rem' }}>Generando informe detallado...</p>
+                    </div>
+                ) : reportData ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }} className="animate-in">
+                        {viewMode === 'standard' ? (
+                            <>
+                                {/* STANDARD VIEW */}
+                                <div style={{
+                                    background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+                                    borderRadius: '32px',
+                                    padding: '2.5rem',
+                                    color: 'white',
+                                    position: 'relative',
+                                    overflow: 'hidden',
+                                    boxShadow: '0 20px 40px -15px rgba(15, 23, 42, 0.4)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '2rem'
+                                }}>
                                     <div style={{
-                                        background: 'linear-gradient(145deg, #0F172A 0%, #334155 100%)',
-                                        borderRadius: '32px',
-                                        padding: '2rem 3rem',
-                                        color: 'white',
+                                        position: 'absolute',
+                                        top: '-20%',
+                                        right: '-10%',
+                                        width: '300px',
+                                        height: '300px',
+                                        background: 'radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)',
+                                        borderRadius: '50%'
+                                    }} />
+
+                                    <div style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        gap: '2rem',
                                         position: 'relative',
-                                        overflow: 'hidden',
-                                        boxShadow: '0 20px 40px -15px rgba(15, 23, 42, 0.3)'
+                                        zIndex: 10
                                     }}>
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: '-20%',
-                                            right: '-10%',
-                                            width: '300px',
-                                            height: '300px',
-                                            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%)',
-                                            borderRadius: '50%'
-                                        }} />
-
-                                        <div className="flex flex-col md:flex-row justify-between items-center gap-8 relative z-10">
-                                            <div className="text-center md:text-left flex-1">
-                                                <div style={{
-                                                    display: 'inline-flex',
-                                                    padding: '0.35rem 0.75rem',
-                                                    backgroundColor: 'rgba(255,255,255,0.08)',
-                                                    borderRadius: '8px',
-                                                    fontSize: '0.6rem',
-                                                    fontWeight: 900,
-                                                    letterSpacing: '0.1rem',
-                                                    textTransform: 'uppercase',
-                                                    color: '#818CF8',
-                                                    marginBottom: '1rem'
-                                                }}>Extracto de Evaluación Académica</div>
-                                                <h1 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.4rem', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
-                                                    {studentName}
-                                                </h1>
-                                                <p style={{ fontSize: '1rem', color: '#94A3B8', fontWeight: 500 }}>
-                                                    {project.title}
-                                                </p>
-                                            </div>
-
+                                        <div style={{ textAlign: 'center' }}>
                                             <div style={{
-                                                backgroundColor: 'rgba(255,255,255,0.05)',
-                                                backdropFilter: 'blur(10px)',
-                                                borderRadius: '24px',
-                                                padding: '1.25rem',
-                                                border: '1px solid rgba(255,255,255,0.1)',
-                                                minWidth: '130px',
-                                                textAlign: 'center'
-                                            }}>
-                                                <div style={{ fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', color: '#818CF8', marginBottom: '0.1rem' }}>Puntuación</div>
-                                                <div style={{ fontSize: '3.5rem', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.04em' }}>
-                                                    {reportData.total}
-                                                </div>
-                                                <div style={{ fontSize: '0.75rem', color: '#94A3B8', fontWeight: 700, marginTop: '0.1rem' }}>Base 10.0</div>
+                                                display: 'inline-flex',
+                                                padding: '0.4rem 0.8rem',
+                                                backgroundColor: 'rgba(255,255,255,0.1)',
+                                                borderRadius: '10px',
+                                                fontSize: '0.65rem',
+                                                fontWeight: 900,
+                                                letterSpacing: '0.12em',
+                                                textTransform: 'uppercase',
+                                                color: '#818CF8',
+                                                marginBottom: '1rem'
+                                            }}>Expediente de Evaluación</div>
+                                            <h1 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+                                                {studentName}
+                                            </h1>
+                                            <p style={{ fontSize: '1.1rem', color: '#94A3B8', fontWeight: 600, opacity: 0.8 }}>
+                                                {project.title}
+                                            </p>
+                                        </div>
+
+                                        <div style={{
+                                            backgroundColor: 'rgba(255,255,255,0.07)',
+                                            backdropFilter: 'blur(12px)',
+                                            borderRadius: '28px',
+                                            padding: '1.5rem 2rem',
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            textAlign: 'center',
+                                            boxShadow: 'inset 0 0 20px rgba(0,0,0,0.1)'
+                                        }}>
+                                            <div style={{ fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: '#818CF8', marginBottom: '0.2rem', letterSpacing: '0.05em' }}>Calificación Final</div>
+                                            <div style={{ fontSize: '4rem', fontWeight: 950, lineHeight: 1, letterSpacing: '-0.05em', color: '#FFFFFF' }}>
+                                                {reportData.total}
                                             </div>
+                                            <div style={{ fontSize: '0.85rem', color: '#6366F1', fontWeight: 800, marginTop: '0.4rem' }}>SOBRE 10.00</div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div className="grid md:grid-cols-3 gap-4">
-                                        <DetailScore
-                                            label="Escrita"
-                                            weight="50%"
-                                            score={reportData.written.score}
-                                            totalPoints={reportData.written.final}
-                                            color="#6366F1"
-                                            emoji="📄"
-                                        />
-                                        <DetailScore
-                                            label="Oral"
-                                            weight="30%"
-                                            score={reportData.oral.score}
-                                            totalPoints={reportData.oral.final}
-                                            color="#F43F5E"
-                                            emoji="🎙️"
-                                        />
-                                        <DetailScore
-                                            label="Tutoría"
-                                            weight="20%"
-                                            score={reportData.tutor.score}
-                                            totalPoints={reportData.tutor.final}
-                                            color="#10B981"
-                                            emoji="👥"
-                                        />
-                                    </div>
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                                    gap: '1.25rem'
+                                }}>
+                                    <DetailScore
+                                        label="Escrita"
+                                        weight="50%"
+                                        score={reportData.written.score}
+                                        totalPoints={reportData.written.final}
+                                        color="#6366F1"
+                                        emoji="📄"
+                                    />
+                                    <DetailScore
+                                        label="Oral"
+                                        weight="30%"
+                                        score={reportData.oral.score}
+                                        totalPoints={reportData.oral.final}
+                                        color="#F43F5E"
+                                        emoji="🎙️"
+                                    />
+                                    <DetailScore
+                                        label="Tutoría"
+                                        weight="20%"
+                                        score={reportData.tutor.score}
+                                        totalPoints={reportData.tutor.final}
+                                        color="#10B981"
+                                        emoji="👥"
+                                    />
+                                </div>
 
-                                    <div style={{
-                                        backgroundColor: 'white',
-                                        borderRadius: '32px',
-                                        padding: '2rem',
-                                        border: '1px solid #F1F5F9',
-                                        boxShadow: '0 15px 30px -15px rgba(0,0,0,0.05)'
-                                    }}>
-                                        <div className="flex flex-col lg:flex-row gap-8">
-                                            {/* Calificaciones por Evaluador */}
-                                            <div className="flex-1 border-b lg:border-b-0 lg:border-r border-slate-100 pb-8 lg:pb-0 lg:pr-8">
-                                                <h3 style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                    <span style={{ fontSize: '1.5rem' }}>📋</span> Calificaciones
-                                                </h3>
-                                                <div className="space-y-3">
-                                                    {reportData.evaluations.map((ev: any, i: number) => (
-                                                        <div key={i} className="flex justify-between items-center p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                                                            <div className="flex items-center gap-3">
-                                                                <div style={{
-                                                                    width: '36px',
-                                                                    height: '36px',
-                                                                    borderRadius: '10px',
-                                                                    backgroundColor: ev.type === 'written' ? '#EEF2FF' : (ev.type === 'oral' ? '#FFF1F2' : '#F0FDF4'),
-                                                                    color: ev.type === 'written' ? '#4F46E5' : (ev.type === 'oral' ? '#E11D48' : '#166534'),
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'center',
-                                                                    fontSize: '0.9rem',
-                                                                    fontWeight: 900
-                                                                }}>
-                                                                    {ev.type === 'written' ? 'W' : (ev.type === 'oral' ? 'O' : 'T')}
-                                                                </div>
-                                                                <div>
-                                                                    <div className="text-sm font-black text-slate-800">{ev.graderName}</div>
-                                                                    <div className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-tighter">{ev.type}</div>
-                                                                </div>
+                                <div style={{
+                                    backgroundColor: 'white',
+                                    borderRadius: '32px',
+                                    padding: '2rem',
+                                    border: '1px solid #F1F5F9',
+                                    boxShadow: '0 15px 30px -15px rgba(0,0,0,0.05)'
+                                }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                                        {/* Calificaciones por Evaluador */}
+                                        <div>
+                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <span style={{ fontSize: '1.5rem' }}>📋</span> Calificaciones de los Evaluadores
+                                            </h3>
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                                                gap: '1rem'
+                                            }}>
+                                                {reportData.evaluations.map((ev: any, i: number) => (
+                                                    <div key={i} style={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center',
+                                                        padding: '1.25rem',
+                                                        borderRadius: '20px',
+                                                        backgroundColor: '#F8FAFC',
+                                                        border: '1px solid #F1F5F9'
+                                                    }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                            <div style={{
+                                                                width: '40px',
+                                                                height: '40px',
+                                                                borderRadius: '12px',
+                                                                backgroundColor: ev.type === 'written' ? '#EEF2FF' : (ev.type === 'oral' ? '#FFF1F2' : '#F0FDF4'),
+                                                                color: ev.type === 'written' ? '#4F46E5' : (ev.type === 'oral' ? '#E11D48' : '#166534'),
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: '1rem',
+                                                                fontWeight: 900
+                                                            }}>
+                                                                {ev.type === 'written' ? 'W' : (ev.type === 'oral' ? 'O' : 'T')}
                                                             </div>
-                                                            <div className="text-lg font-black text-slate-900">
-                                                                {ev.totalScore}<span className="text-[0.8rem] text-slate-400 font-bold ml-1">/10</span>
+                                                            <div>
+                                                                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1E293B' }}>{ev.graderName}</div>
+                                                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{ev.type}</div>
                                                             </div>
                                                         </div>
-                                                    ))}
-                                                </div>
+                                                        <div style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A' }}>
+                                                            {ev.totalScore}<span style={{ fontSize: '0.8rem', color: '#94A3B8', fontWeight: 800, marginLeft: '0.2rem' }}>/10</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
+                                        </div>
 
-                                            {/* Observaciones */}
-                                            <div className="flex-1">
-                                                <h3 style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                    <span style={{ fontSize: '1.5rem' }}>✒️</span> Observaciones
-                                                </h3>
+                                        {/* Line Separator */}
+                                        <div style={{ width: '100%', height: '1px', backgroundColor: '#F1F5F9' }}></div>
 
-                                                <div className="space-y-4">
-                                                    {reportData.evaluations.filter((ev: any) => ev.feedback).length === 0 ? (
-                                                        <p style={{ color: '#94A3B8', fontWeight: 600, fontSize: '0.9rem', textAlign: 'center', padding: '2rem', backgroundColor: '#F8FAFC', borderRadius: '24px', border: '2px dashed #F1F5F9' }}>No se han registrado observaciones todavía.</p>
-                                                    ) : (
-                                                        reportData.evaluations.map((ev: any, i: number) => ev.feedback && (
-                                                            <div key={i} style={{
-                                                                padding: '1.25rem',
-                                                                borderRadius: '20px',
-                                                                backgroundColor: '#F8FAFC',
-                                                                border: '1px solid #F1F5F9'
+                                        {/* Observaciones */}
+                                        <div>
+                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <span style={{ fontSize: '1.5rem' }}>✒️</span> Observaciones del Tribunal
+                                            </h3>
+
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                                {reportData.evaluations.filter((ev: any) => ev.feedback).length === 0 ? (
+                                                    <div style={{
+                                                        padding: '3rem 2rem',
+                                                        textAlign: 'center',
+                                                        backgroundColor: '#F8FAFC',
+                                                        borderRadius: '24px',
+                                                        border: '2px dashed #E2E8F0',
+                                                        color: '#94A3B8'
+                                                    }}>
+                                                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>😴</div>
+                                                        <p style={{ fontWeight: 700, fontSize: '0.9rem' }}>No se han registrado observaciones todavía.</p>
+                                                    </div>
+                                                ) : (
+                                                    reportData.evaluations.map((ev: any, i: number) => ev.feedback && (
+                                                        <div key={i} style={{
+                                                            padding: '1.5rem',
+                                                            borderRadius: '24px',
+                                                            backgroundColor: '#F8FAFC',
+                                                            border: '1px solid #F1F5F9'
+                                                        }}>
+                                                            <div style={{
+                                                                fontSize: '0.7rem',
+                                                                fontWeight: 900,
+                                                                color: '#94A3B8',
+                                                                marginBottom: '0.75rem',
+                                                                display: 'flex',
+                                                                justifyContent: 'space-between',
+                                                                letterSpacing: '0.05em'
                                                             }}>
-                                                                <div style={{
-                                                                    fontSize: '0.65rem',
-                                                                    fontWeight: 900,
-                                                                    color: '#94A3B8',
-                                                                    marginBottom: '0.5rem',
-                                                                    display: 'flex',
-                                                                    justifyContent: 'space-between'
-                                                                }}>
-                                                                    <span>{ev.graderName.toUpperCase()}</span>
-                                                                    <span style={{ color: ev.type === 'written' ? '#6366F1' : (ev.type === 'oral' ? '#F43F5E' : '#10B981') }}>{ev.type.toUpperCase()}</span>
-                                                                </div>
-                                                                <p style={{ fontSize: '0.9rem', color: '#475569', fontWeight: 600, fontStyle: 'italic', lineHeight: 1.6 }}>"{ev.feedback}"</p>
+                                                                <span>{ev.graderName.toUpperCase()}</span>
+                                                                <span style={{
+                                                                    color: ev.type === 'written' ? '#6366F1' : (ev.type === 'oral' ? '#F43F5E' : '#10B981'),
+                                                                    backgroundColor: 'white',
+                                                                    padding: '0.2rem 0.5rem',
+                                                                    borderRadius: '6px',
+                                                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                                                                }}>{ev.type.toUpperCase()}</span>
                                                             </div>
-                                                        ))
-                                                    )}
-                                                </div>
+                                                            <p style={{ fontSize: '1rem', color: '#334155', fontWeight: 600, fontStyle: 'italic', lineHeight: 1.6 }}>"{ev.feedback}"</p>
+                                                        </div>
+                                                    ))
+                                                )}
                                             </div>
                                         </div>
                                     </div>
-                                </>
-                            ) : (
-                                <ExpertView
-                                    reportData={reportData}
-                                    rubrics={rubrics}
-                                    isAdmin={isAdmin}
-                                    currentUserId={user?.id}
-                                />
-                            )}
-                        </div>
-                    ) : (
-                        <div style={{
-                            padding: '4rem 2rem',
-                            textAlign: 'center',
-                            backgroundColor: 'white',
-                            borderRadius: '32px',
-                            border: '3px dashed #F1F5F9'
-                        }}>
-                            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📊</div>
-                            <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#94A3B8' }}>Expediente en Proceso</h3>
-                        </div>
-                    )}
-                </div>
+                                </div>
+                            </>
+                        ) : (
+                            <ExpertView
+                                reportData={reportData}
+                                rubrics={rubrics}
+                                isAdmin={isAdmin}
+                                currentUserId={user?.id}
+                            />
+                        )}
+                    </div>
+                ) : (
+                    <div style={{
+                        padding: '4rem 2rem',
+                        textAlign: 'center',
+                        backgroundColor: 'white',
+                        borderRadius: '32px',
+                        border: '3px dashed #F1F5F9'
+                    }}>
+                        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📊</div>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#94A3B8' }}>Expediente en Proceso</h3>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -475,50 +599,58 @@ function DetailScore({ label, weight, score, totalPoints, color, emoji }: { labe
 }
 
 function ExpertView({ reportData, rubrics, isAdmin, currentUserId }: any) {
-    // Agrupar evaluaciones por evaluador
-    const graders = Array.from(new Set(reportData.evaluations.map((e: any) => e.grader_id)));
-
     return (
-        <div className="space-y-6">
-            <div className="bg-indigo-600 rounded-3xl p-6 text-white shadow-xl">
-                <h3 className="text-xl font-black mb-2">Auditoría de Puntuaciones</h3>
-                <p className="text-indigo-100 text-sm font-medium">Desglose técnico de cada componente de la rúbrica.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{
+                backgroundColor: '#4F46E5',
+                borderRadius: '24px',
+                padding: '2rem',
+                color: 'white',
+                boxShadow: '0 10px 25px rgba(79, 70, 229, 0.3)'
+            }}>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>Auditoría de Puntuaciones</h3>
+                <p style={{ color: '#E0E7FF', fontSize: '0.9rem', fontWeight: 600 }}>Desglose técnico de cada componente de la rúbrica.</p>
             </div>
 
             {/* Resumen de evaluadores */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+            <div style={{
+                backgroundColor: 'white',
+                borderRadius: '24px',
+                padding: '1.5rem',
+                border: '1px solid #F1F5F9',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.02)',
+                overflowX: 'auto'
+            }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
-                        <tr>
-                            <th className="pb-4 text-[0.65rem] font-black uppercase text-slate-400">Evaluador</th>
-                            <th className="pb-4 text-[0.65rem] font-black uppercase text-slate-400">Tipo</th>
-                            <th className="pb-4 text-[0.65rem] font-black uppercase text-slate-400 text-center">Nota (Base 10)</th>
-                            <th className="pb-4 text-[0.65rem] font-black uppercase text-slate-400 text-right">Acción</th>
+                        <tr style={{ borderBottom: '2px solid #F8FAFC' }}>
+                            <th style={{ padding: '1rem', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: '#94A3B8' }}>Evaluador</th>
+                            <th style={{ padding: '1rem', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: '#94A3B8' }}>Tipo</th>
+                            <th style={{ padding: '1rem', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: '#94A3B8', textAlign: 'center' }}>Nota Base 10</th>
+                            <th style={{ padding: '1rem', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: '#94A3B8', textAlign: 'right' }}>Estado</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-50">
+                    <tbody style={{ color: '#475569' }}>
                         {reportData.evaluations.map((ev: any, i: number) => (
-                            <tr key={i} className="group">
-                                <td className="py-4 font-bold text-slate-700 text-sm">{ev.graderName}</td>
-                                <td className="py-4">
+                            <tr key={i} style={{ borderBottom: '1px solid #F8FAFC' }}>
+                                <td style={{ padding: '1rem', fontSize: '0.9rem', fontWeight: 800 }}>{ev.graderName}</td>
+                                <td style={{ padding: '1rem' }}>
                                     <span style={{
-                                        padding: '0.2rem 0.5rem',
-                                        borderRadius: '6px',
-                                        fontSize: '0.6rem',
+                                        padding: '0.25rem 0.6rem',
+                                        borderRadius: '8px',
+                                        fontSize: '0.65rem',
                                         fontWeight: 900,
                                         textTransform: 'uppercase',
                                         backgroundColor: ev.type === 'written' ? '#EEF2FF' : (ev.type === 'oral' ? '#FFF1F2' : '#F0FDF4'),
                                         color: ev.type === 'written' ? '#4F46E5' : (ev.type === 'oral' ? '#E11D48' : '#166534'),
-                                    }}>
-                                        {ev.type}
-                                    </span>
+                                    }}>{ev.type}</span>
                                 </td>
-                                <td className="py-4 text-center font-black text-slate-900">{ev.totalScore}</td>
-                                <td className="py-4 text-right">
+                                <td style={{ padding: '1rem', textAlign: 'center', fontSize: '1rem', fontWeight: 900, color: '#0F172A' }}>{ev.totalScore}</td>
+                                <td style={{ padding: '1rem', textAlign: 'right' }}>
                                     {(isAdmin || ev.grader_id === currentUserId) ? (
-                                        <span className="text-[0.6rem] font-black text-indigo-600 uppercase bg-indigo-50 px-2 py-1 rounded">Detalle Visible</span>
+                                        <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#6366F1', backgroundColor: '#EEF2FF', padding: '0.3rem 0.6rem', borderRadius: '6px' }}>DETALLE VISIBLE</span>
                                     ) : (
-                                        <span className="text-[0.6rem] font-black text-slate-400 uppercase">Solo Total</span>
+                                        <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#94A3B8', backgroundColor: '#F1F5F9', padding: '0.3rem 0.6rem', borderRadius: '6px' }}>SOLO TOTAL</span>
                                     )}
                                 </td>
                             </tr>
@@ -527,46 +659,50 @@ function ExpertView({ reportData, rubrics, isAdmin, currentUserId }: any) {
                 </table>
             </div>
 
-            {/* Desglose de Items (Solo lo que el usuario puede ver) */}
-            <div className="space-y-6">
+            {/* Desglose de Items */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {reportData.evaluations.map((ev: any, i: number) => {
                     const canViewDetails = isAdmin || ev.grader_id === currentUserId;
                     if (!canViewDetails) return null;
 
                     return (
-                        <div key={i} className="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm animate-in">
-                            <div className="flex justify-between items-end mb-6">
+                        <div key={i} style={{
+                            backgroundColor: 'white',
+                            borderRadius: '32px',
+                            padding: '2rem',
+                            border: '1px solid #F1F5F9',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.03)'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
                                 <div>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                                        <h4 className="text-xs font-black uppercase text-indigo-600 tracking-wider">Evaluación Detallada</h4>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#6366F1' }}></span>
+                                        <div style={{ fontSize: '0.7rem', fontWeight: 950, color: '#6366F1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Desglose por Ítem</div>
                                     </div>
-                                    <h5 className="text-lg font-black text-slate-900">{ev.graderName} <span className="text-slate-400 font-medium">({ev.type})</span></h5>
+                                    <h5 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1E293B' }}>{ev.graderName} <span style={{ color: '#94A3B8', fontWeight: 600 }}>({ev.type})</span></h5>
                                 </div>
-                                <div className="text-right">
-                                    <div className="text-[0.6rem] font-black text-slate-400 uppercase mb-1">Puntuación Parcial</div>
-                                    <div className="text-3xl font-black text-slate-900">{ev.totalScore}<span className="text-sm font-medium text-slate-400 mx-1">/10</span></div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Puntuación</div>
+                                    <div style={{ fontSize: '2rem', fontWeight: 950, color: '#0F172A' }}>{ev.totalScore}<span style={{ fontSize: '1rem', color: '#94A3B8', fontWeight: 700 }}>/10</span></div>
                                 </div>
                             </div>
 
-                            <div className="grid gap-2">
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                 {ev.type === 'written' && rubrics.written && (
                                     <>
                                         {rubrics.written.contentItems.map((item: any) => (
-                                            <div key={item.id} className="flex justify-between items-center p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
-                                                <span className="text-xs font-bold text-slate-600">{item.label}</span>
-                                                <span className="text-sm font-black text-indigo-600 whitespace-nowrap">{ev.scores.contentScores?.[item.id] || 0} <span className="text-[0.6rem] text-slate-400">/10</span></span>
+                                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderRadius: '16px', backgroundColor: '#F8FAFC' }}>
+                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>{item.label}</span>
+                                                <span style={{ fontSize: '0.9rem', fontWeight: 950, color: '#4F46E5' }}>{ev.scores.contentScores?.[item.id] || 0} <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>/10</span></span>
                                             </div>
                                         ))}
-                                        <div className="mt-4 pt-4 border-t border-slate-100">
-                                            <h6 className="text-[0.65rem] font-black text-slate-400 uppercase mb-3">Formato y Estilo</h6>
-                                            <div className="grid grid-cols-2 gap-2">
+                                        <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '2px solid #F1F5F9' }}>
+                                            <h6 style={{ fontSize: '0.75rem', fontWeight: 950, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '1rem' }}>Formato y Estilo</h6>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
                                                 {rubrics.written.formatItems.map((item: any) => (
-                                                    <div key={item.id} className="flex justify-between items-center px-3 py-2 rounded-lg bg-white border border-slate-100">
-                                                        <span className="text-[0.65rem] font-bold text-slate-500">{item.label}</span>
-                                                        <span className={ev.scores.formatScores?.[item.id] ? "text-emerald-500" : "text-rose-400"}>
-                                                            {ev.scores.formatScores?.[item.id] ? "✅" : "❌"}
-                                                        </span>
+                                                    <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', borderRadius: '14px', backgroundColor: 'white', border: '1px solid #F1F5F9' }}>
+                                                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748B' }}>{item.label}</span>
+                                                        <span>{ev.scores.formatScores?.[item.id] ? "✅" : "❌"}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -576,24 +712,23 @@ function ExpertView({ reportData, rubrics, isAdmin, currentUserId }: any) {
                                 {ev.type === 'oral' && rubrics.oral && (
                                     <>
                                         {rubrics.oral.blocks.map((item: any) => (
-                                            <div key={item.id} className="flex justify-between items-center p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
-                                                <span className="text-xs font-bold text-slate-600">{item.label}</span>
-                                                <span className="text-sm font-black text-indigo-600 whitespace-nowrap">{ev.scores.blockScores?.[item.id] || 0} <span className="text-[0.6rem] text-slate-400">/{item.maxScore}</span></span>
+                                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderRadius: '16px', backgroundColor: '#F8FAFC' }}>
+                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>{item.label}</span>
+                                                <span style={{ fontSize: '0.9rem', fontWeight: 950, color: '#E11D48' }}>{ev.scores.blockScores?.[item.id] || 0} <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>/{item.maxScore}</span></span>
                                             </div>
                                         ))}
-                                        {/* Puntos de tiempo */}
-                                        <div className="flex justify-between items-center p-3 rounded-xl bg-indigo-50 border border-indigo-100">
-                                            <span className="text-xs font-bold text-indigo-700">Puntuación por Tiempo</span>
-                                            <span className="text-sm font-black text-indigo-700">+{ev.scores.timeScore || 0} <span className="text-[0.6rem] text-indigo-400">/1.0</span></span>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderRadius: '16px', backgroundColor: '#FFF1F2', border: '1px solid #FFE4E6', marginTop: '1rem' }}>
+                                            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#BE123C' }}>Puntuación por Tiempo</span>
+                                            <span style={{ fontSize: '1rem', fontWeight: 950, color: '#BE123C' }}>+{ev.scores.timeScore || 0} <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>/1.0</span></span>
                                         </div>
                                     </>
                                 )}
                                 {ev.type === 'tutor' && rubrics.tutor && (
                                     <>
                                         {rubrics.tutor.items.map((item: any) => (
-                                            <div key={item.id} className="flex justify-between items-center p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
-                                                <span className="text-xs font-bold text-slate-600">{item.label}</span>
-                                                <span className="text-sm font-black text-indigo-600 whitespace-nowrap">{ev.scores.scores?.[item.id] || 0} <span className="text-[0.6rem] text-slate-400">/2</span></span>
+                                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderRadius: '16px', backgroundColor: '#F8FAFC' }}>
+                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>{item.label}</span>
+                                                <span style={{ fontSize: '0.9rem', fontWeight: 950, color: '#059669' }}>{ev.scores.scores?.[item.id] || 0} <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>/2</span></span>
                                             </div>
                                         ))}
                                     </>
