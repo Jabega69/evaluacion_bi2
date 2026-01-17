@@ -95,7 +95,7 @@ export default function ReportView({ project }: Props) {
             }}>
                 <div style={{ flex: '0 1 auto' }}>
                     <h2 style={{ fontSize: '1.1rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                        {viewMode === 'standard' ? 'Acta de resultados' : 'Detalles de evaluación'} 📑 <span style={{ fontSize: '0.45rem', verticalAlign: 'middle', opacity: 0.3 }}>V3.7 - SIN LOGO</span>
+                        {viewMode === 'standard' ? 'Acta de resultados' : 'Detalles de evaluación'} 📑 <span style={{ fontSize: '0.45rem', verticalAlign: 'middle', opacity: 0.3 }}>v3.8</span>
                     </h2>
                     <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.6rem', marginTop: '0.1rem' }}>
                         {viewMode === 'standard' ? 'Documento oficial' : 'Desglose técnico'}
@@ -510,14 +510,14 @@ export default function ReportView({ project }: Props) {
                                                                 justifyContent: 'space-between',
                                                                 letterSpacing: '0.05em'
                                                             }}>
-                                                                <span>{ev.graderName.}</span>
+                                                                <span>{ev.graderName}</span>
                                                                 <span style={{
                                                                     color: ev.type === 'written' ? '#6366F1' : (ev.type === 'oral' ? '#F43F5E' : '#10B981'),
                                                                     backgroundColor: 'white',
                                                                     padding: '0.2rem 0.5rem',
                                                                     borderRadius: '6px',
                                                                     boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                                                                }}>{ev.type === 'written' ? 'ESCRITA' : (ev.type === 'oral' ? 'ORAL' : 'TUTORÍA')}</span>
+                                                                }}>{ev.type === 'written' ? 'Escrita' : (ev.type === 'oral' ? 'Oral' : 'Tutoría')}</span>
                                                             </div>
                                                             <p style={{ fontSize: '1rem', color: '#334155', fontWeight: 600, fontStyle: 'italic', lineHeight: 1.6 }}>"{ev.feedback}"</p>
                                                         </div>
