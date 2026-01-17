@@ -3,20 +3,29 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Project } from '@/types';
+import { useAuth } from '@/lib/auth-context';
 import Link from 'next/link';
 
-export default function AdminReportsListPage() {
+export default function ReportsListPage() {
+    const { user } = useAuth();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        loadData();
-    }, []);
+        if (user) loadData();
+    }, [user]);
 
     const loadData = async () => {
         setLoading(true);
         try {
-            const data = await api.projects.getAll();
+            let data: Project[] = [];
+            if (user?.roles.includes('admin')) {
+                data = await api.projects.getAll();
+            } else if (user?.roles.includes('tribunal')) {
+                data = await api.projects.getByGrader(user.id);
+            } else if (user?.roles.includes('tutor')) {
+                data = await api.projects.getByTutor(user.id);
+            }
             setProjects(data);
         } finally {
             setLoading(false);
@@ -97,7 +106,7 @@ export default function AdminReportsListPage() {
                                     {project.students.map((s) => (
                                         <Link
                                             key={s.id}
-                                            href={`/dashboard/admin/reports/${project.id}?studentId=${s.id}`}
+                                            href={`/dashboard/reports/${project.id}?studentId=${s.id}`}
                                             style={{
                                                 textDecoration: 'none',
                                                 display: 'flex',

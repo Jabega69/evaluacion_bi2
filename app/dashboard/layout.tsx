@@ -9,13 +9,15 @@ const navItems = {
         { icon: '📊', label: 'Proyectos', path: '/dashboard/admin', color: 'purple' },
         { icon: '👥', label: 'Profesores', path: '/dashboard/admin/users', color: 'orange' },
         { icon: '🗓️', label: 'Calendario', path: '/dashboard/admin/calendar', color: 'blue' },
-        { icon: '📈', label: 'Informes', path: '/dashboard/admin/reports', color: 'pink' },
+        { icon: '📈', label: 'Informes', path: '/dashboard/reports', color: 'pink' },
     ],
     tribunal: [
         { icon: '📚', label: 'Mis Proyectos', path: '/dashboard/tribunal', color: 'purple' },
+        { icon: '📈', label: 'Informes', path: '/dashboard/reports', color: 'pink' },
     ],
     tutor: [
         { icon: '👥', label: 'Mis Alumnos', path: '/dashboard/tutor', color: 'teal' },
+        { icon: '📈', label: 'Informes', path: '/dashboard/reports', color: 'pink' },
     ]
 };
 

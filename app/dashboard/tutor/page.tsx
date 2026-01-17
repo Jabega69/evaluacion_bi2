@@ -163,7 +163,16 @@ export default function TutorDashboard() {
                                                     }}>
                                                         {student.name.charAt(0)}
                                                     </div>
-                                                    <span style={{ fontWeight: 700, fontSize: '1rem' }}>{student.name}</span>
+                                                    <div>
+                                                        <span style={{ fontWeight: 700, fontSize: '1rem', display: 'block' }}>{student.name}</span>
+                                                        <Link
+                                                            href={`/dashboard/reports/${project.id}?studentId=${student.id}`}
+                                                            style={{ fontSize: '0.65rem', fontWeight: 800, color: '#0D9488', textDecoration: 'underline' }}
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        >
+                                                            Ver Informe Final
+                                                        </Link>
+                                                    </div>
                                                 </div>
                                                 <span style={{ color: '#0D9488', fontWeight: 900 }}>➜</span>
                                             </Link>

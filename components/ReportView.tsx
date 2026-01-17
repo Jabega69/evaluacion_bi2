@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { generateDetailedPDF } from '@/lib/pdf-generator';
+
 
 interface Props {
     project: Project;
@@ -60,6 +62,19 @@ export default function ReportView({ project }: Props) {
 
     const handlePrint = () => window.print();
 
+    const handleExportPDF = () => {
+        if (!reportData || !project) return;
+        generateDetailedPDF(
+            reportData,
+            project,
+            studentName,
+            rubrics,
+            isAdmin || false,
+            user?.id
+        );
+    };
+
+
     const studentName = project.students.find(s => s.id === selectedStudentId)?.name || 'Estudiante';
 
     // Determinar qué puede ver cada uno
@@ -81,8 +96,8 @@ export default function ReportView({ project }: Props) {
                     <button
                         onClick={() => setViewMode(viewMode === 'standard' ? 'expert' : 'standard')}
                         className={`px-4 py-2 rounded-xl font-bold text-xs transition-all border-2 flex items-center gap-2 ${viewMode === 'expert'
-                                ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
-                                : 'bg-white border-slate-100 text-slate-600'
+                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
+                            : 'bg-white border-slate-100 text-slate-600'
                             } hover:border-indigo-400`}
                     >
                         {viewMode === 'standard' ? '🔬 Vista Experto' : '📄 Vista Acta'}
@@ -100,10 +115,11 @@ export default function ReportView({ project }: Props) {
                         </svg>
                     </button>
                     <button
-                        onClick={handlePrint}
+                        onClick={handleExportPDF}
                         title="Exportar PDF"
                         className="p-3 rounded-xl transition-all bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 hover:shadow-md active:scale-95 flex items-center justify-center border-2 border-indigo-600"
                     >
+
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>

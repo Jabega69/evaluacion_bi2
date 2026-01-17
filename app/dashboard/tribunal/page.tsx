@@ -198,6 +198,28 @@ export default function TribunalDashboard() {
                                                         >
                                                             <span style={{ fontSize: '1rem' }}>🎤</span> Oral
                                                         </Link>
+                                                        <Link
+                                                            href={`/dashboard/reports/${project.id}?studentId=${student.id}`}
+                                                            style={{
+                                                                padding: '0.5rem',
+                                                                borderRadius: '10px',
+                                                                backgroundColor: '#F1F5F9',
+                                                                color: '#475569',
+                                                                textAlign: 'center',
+                                                                fontWeight: 800,
+                                                                fontSize: '0.75rem',
+                                                                textDecoration: 'none',
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                alignItems: 'center',
+                                                                gap: '0.2rem',
+                                                                gridColumn: 'span 2',
+                                                                marginTop: '0.5rem',
+                                                                border: '1px solid #E2E8F0'
+                                                            }}
+                                                        >
+                                                            <span style={{ fontSize: '1rem' }}>📈</span> Acta de Evaluación
+                                                        </Link>
                                                     </div>
                                                 </div>
                                             ))}
@@ -209,6 +231,6 @@ export default function TribunalDashboard() {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }
