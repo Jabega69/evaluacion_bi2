@@ -18,7 +18,7 @@ export const generateDetailedPDF = (
     // --- Title ---
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('INFORME DE EVALUACIÓN DETALLADA', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('V3.7 - NO LOGO TEST - V3.7', pageWidth / 2, yPos, { align: 'center' });
     yPos += 15;
 
     // --- Section 1: Identification Data ---
