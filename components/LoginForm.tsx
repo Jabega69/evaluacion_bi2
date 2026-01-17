@@ -40,15 +40,15 @@ export default function LoginForm() {
                 }
             } else if (!user && !isLoading && isConnecting) {
                 console.log('[LoginForm] No user found, beginning error timeout');
-                // Add a tiny grace period to avoid race conditions with isLoading state
+                // Aumentamos a 15 segundos para dar tiempo a los reintentos de red
                 const timer = setTimeout(() => {
                     if (!user && !isLoading && isConnecting) {
                         console.error('[LoginForm] Final error: profile not found after timeout');
-                        setError('No se pudo cargar tu perfil. Es posible que el administrador deba registrarte primero.');
+                        setError('No se pudo cargar tu perfil. Es posible que el administrador deba registrarte primero o tengas una conexión lenta.');
                         setLoading(false);
                         setIsConnecting(false);
                     }
-                }, 4000);
+                }, 15000);
                 return () => clearTimeout(timer);
             }
         };

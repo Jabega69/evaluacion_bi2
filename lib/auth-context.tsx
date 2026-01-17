@@ -24,76 +24,80 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const lastFetchedEmail = useRef<string | null>(null);
     const activeFetch = useRef<Promise<void> | null>(null);
-    const fetchUserRole = async (email: string, retryCount = 0): Promise<void> => {
+    const fetchUserRole = async (email: string): Promise<void> => {
         if (!email) {
             setIsLoading(false);
             return;
         }
 
         // Simple guard to prevent multiple concurrent profile fetches
-        if (activeFetch.current && lastFetchedEmail.current === email && retryCount === 0) {
+        if (activeFetch.current && lastFetchedEmail.current === email) {
             console.log('[AuthContext] Profile fetch already in progress for:', email);
             return activeFetch.current;
         }
 
-        console.log(`[AuthContext] fetchUserRole starting for ${email} (attempt ${retryCount + 1})`);
-        setIsLoading(true);
-        lastFetchedEmail.current = email;
-
         const performFetch = async () => {
-            try {
-                // Add a 25s timeout to the database query
-                const fetchPromise = supabase.from('users').select('*').eq('email', email);
-                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Fetch timeout')), 25000));
+            console.log(`[AuthContext] fetchUserRole process starting for ${email}`);
+            setIsLoading(true);
+            lastFetchedEmail.current = email;
 
-                const result = await Promise.race([fetchPromise, timeoutPromise]);
-                const { data: users, error } = result as any;
+            let retryCount = 0;
+            const maxRetries = 3;
+            let finished = false;
 
-                if (error) {
-                    throw error;
-                }
+            while (retryCount <= maxRetries && !finished) {
+                try {
+                    console.log(`[AuthContext] Profile fetch attempt ${retryCount + 1} for ${email}`);
 
-                if (users && users.length > 0) {
-                    const data = users[0];
-                    console.log('[AuthContext] Profile loaded:', data.name);
-                    const roles = data.roles || (data.role ? [data.role] : []);
-                    setUser({
-                        ...data,
-                        roles,
-                        activeRole: roles.length === 1 ? roles[0] : undefined
-                    });
-                } else {
-                    console.warn('[AuthContext] No profile for:', email);
-                    setUser(null);
-                }
-            } catch (err: any) {
-                console.error(`[AuthContext] Profile fetch error (attempt ${retryCount + 1}):`, err);
+                    const fetchPromise = supabase.from('users').select('*').eq('email', email);
+                    const timeoutPromise = new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error('Fetch timeout')), 30000)
+                    );
 
-                // Retry logic for timeouts or network errors
-                const isRetryable = err.message?.includes('timeout') ||
-                    err.message?.includes('Fetch') ||
-                    err.name === 'AbortError' ||
-                    !window.navigator.onLine;
+                    const result = await Promise.race([fetchPromise, timeoutPromise]);
+                    const { data: users, error } = result as any;
 
-                if (isRetryable && retryCount < 3) {
-                    const delay = Math.pow(2, retryCount) * 1000;
-                    console.log(`[AuthContext] Retrying profile fetch in ${delay}ms...`);
-                    await new Promise(r => setTimeout(r, delay));
-                    activeFetch.current = null;
-                    return fetchUserRole(email, retryCount + 1);
-                }
+                    if (error) throw error;
 
-                // If we reach here, we've exhausted retries or it's a non-retryable error
-                if (retryCount >= 3 || !isRetryable) {
-                    setUser(null);
-                }
-            } finally {
-                if (retryCount >= 0) { // Only finish loading if it's the last attempt or success
-                    activeFetch.current = null;
-                    setIsLoading(false);
-                    console.log('[AuthContext] fetchUserRole finished');
+                    if (users && users.length > 0) {
+                        const data = users[0];
+                        console.log('[AuthContext] Profile charged successfully:', data.name);
+                        const roles = data.roles || (data.role ? [data.role] : []);
+                        setUser({
+                            ...data,
+                            roles,
+                            activeRole: roles.length === 1 ? roles[0] : undefined
+                        });
+                        finished = true;
+                    } else {
+                        console.warn('[AuthContext] No profile found for:', email);
+                        setUser(null);
+                        finished = true;
+                    }
+                } catch (err: any) {
+                    console.error(`[AuthContext] Attempt ${retryCount + 1} error:`, err.message || err);
+
+                    const isRetryable = err.message?.includes('timeout') ||
+                        err.message?.includes('Fetch') ||
+                        err.name === 'AbortError' ||
+                        !window.navigator.onLine;
+
+                    if (isRetryable && retryCount < maxRetries) {
+                        retryCount++;
+                        const delay = retryCount * 2000;
+                        console.log(`[AuthContext] Retrying in ${delay}ms...`);
+                        await new Promise(r => setTimeout(r, delay));
+                    } else {
+                        console.error('[AuthContext] Max retries exhausted or fatal error.');
+                        setUser(null);
+                        finished = true;
+                    }
                 }
             }
+
+            activeFetch.current = null;
+            setIsLoading(false);
+            console.log('[AuthContext] fetchUserRole process finished');
         };
 
         activeFetch.current = performFetch();
