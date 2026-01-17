@@ -95,10 +95,10 @@ export default function ReportView({ project }: Props) {
             }}>
                 <div style={{ flex: '0 1 auto' }}>
                     <h2 style={{ fontSize: '1.1rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Detalles de Evaluación'} 📑 <span style={{ fontSize: '0.45rem', verticalAlign: 'middle', opacity: 0.3 }}>v3.0</span>
+                        {viewMode === 'standard' ? 'Acta de resultados' : 'Detalles de evaluación'} 📑 <span style={{ fontSize: '0.45rem', verticalAlign: 'middle', opacity: 0.3 }}>v3.1</span>
                     </h2>
                     <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.6rem', marginTop: '0.1rem' }}>
-                        {viewMode === 'standard' ? 'Doc. oficial' : 'Desglose'}
+                        {viewMode === 'standard' ? 'Documento oficial' : 'Desglose técnico'}
                     </p>
                 </div>
 
@@ -217,9 +217,9 @@ export default function ReportView({ project }: Props) {
                     border: '1px solid #F1F5F9',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
                 }}>
-                    <h3 style={{ fontSize: '0.5rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06rem', color: '#94A3B8', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <h3 style={{ fontSize: '0.5rem', fontWeight: 900, letterSpacing: '0.06rem', color: '#94A3B8', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                         <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#6366F1' }}></span>
-                        Alumnos
+                        Seleccionar alumno
                     </h3>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                         {project.students.map(s => (
@@ -322,7 +322,7 @@ export default function ReportView({ project }: Props) {
                                     boxShadow: '0 20px 40px -15px rgba(15, 23, 42, 0.4)',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    gap: '2rem'
+                                    gap: "2rem", maxWidth: "650px", margin: "0 auto", width: "100%"
                                 }}>
                                     <div style={{
                                         position: 'absolute',
@@ -355,7 +355,7 @@ export default function ReportView({ project }: Props) {
                                                 textTransform: 'uppercase',
                                                 color: '#818CF8',
                                                 marginBottom: '1rem'
-                                            }}>Expediente de Evaluación</div>
+                                            }}>Expediente de evaluación</div>
                                             <h1 style={{ fontSize: '1.7rem', fontWeight: 900, marginBottom: '0.5rem', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
                                                 {studentName}
                                             </h1>
@@ -373,11 +373,11 @@ export default function ReportView({ project }: Props) {
                                             textAlign: 'center',
                                             boxShadow: 'inset 0 0 20px rgba(0,0,0,0.1)'
                                         }}>
-                                            <div style={{ fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: '#818CF8', marginBottom: '0.2rem', letterSpacing: '0.05em' }}>Calificación Final</div>
+                                            <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#818CF8', marginBottom: '0.2rem', letterSpacing: '0.05em' }}>Calificación final</div>
                                             <div style={{ fontSize: '2.5rem', fontWeight: 950, lineHeight: 1, letterSpacing: '-0.05em', color: '#FFFFFF' }}>
                                                 {reportData.total}
                                             </div>
-                                            <div style={{ fontSize: '0.85rem', color: '#6366F1', fontWeight: 800, marginTop: '0.4rem' }}>SOBRE 10.00</div>
+                                            <div style={{ fontSize: '0.85rem', color: '#6366F1', fontWeight: 800, marginTop: '0.4rem' }}>sobre 10,00</div>
                                         </div>
                                     </div>
                                 </div>
@@ -424,11 +424,11 @@ export default function ReportView({ project }: Props) {
                                         {/* Calificaciones por Evaluador */}
                                         <div>
                                             <h3 style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                <span style={{ fontSize: '1.5rem' }}>📋</span> Calificaciones de los Evaluadores
+                                                <span style={{ fontSize: '1.5rem' }}>📋</span> Calificaciones de los evaluadores
                                             </h3>
                                             <div style={{
                                                 display: 'grid',
-                                                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                                                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
                                                 gap: '1rem'
                                             }}>
                                                 {reportData.evaluations.map((ev: any, i: number) => (
@@ -458,8 +458,8 @@ export default function ReportView({ project }: Props) {
                                                             </div>
                                                             <div>
                                                                 <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1E293B' }}>{ev.graderName}</div>
-                                                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>
-                                                                    {ev.type === 'written' ? 'ESCRITA' : (ev.type === 'oral' ? 'ORAL' : 'TUTORÍA')}
+                                                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94A3B8',  }}>
+                                                                    {ev.type === "written" ? "Escrita" : (ev.type === "oral" ? "Oral" : "Tutoría")}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -510,7 +510,7 @@ export default function ReportView({ project }: Props) {
                                                                 justifyContent: 'space-between',
                                                                 letterSpacing: '0.05em'
                                                             }}>
-                                                                <span>{ev.graderName.toUpperCase()}</span>
+                                                                <span>{ev.graderName.}</span>
                                                                 <span style={{
                                                                     color: ev.type === 'written' ? '#6366F1' : (ev.type === 'oral' ? '#F43F5E' : '#10B981'),
                                                                     backgroundColor: 'white',
@@ -578,7 +578,7 @@ function DetailScore({ label, weight, score, totalPoints, color, emoji }: { labe
             }}>{emoji}</div>
 
             <div>
-                <div style={{ fontSize: '0.6rem', fontWeight: 900, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                <div style={{ fontSize: '0.6rem', fontWeight: 900, color: '#94A3B8', marginBottom: '0.5rem' }}>
                     {label} <span style={{ color: color }}>({weight})</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
