@@ -48,7 +48,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <div className="sidebar-logo">EvalResearch</div>
                     </div>
                     <p className="text-xs font-semibold tracking-wider" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                        {user.activeRole === 'admin' ? 'Admin' : (user.activeRole === 'tribunal' ? 'Tribunal' : 'Tutor')} Panel
+                        <span style={{ textTransform: "capitalize" }}>{user.activeRole}</span> Panel
                     </p>
                 </div>
 

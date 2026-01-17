@@ -19,19 +19,19 @@ export const generateDetailedPDF = (
     try {
         // Logo del IES (ya copiado a public/logo-ies.png)
         // Ajustamos dimensiones (190x28) para que se vea más grande y menos distorsionado
-        doc.addImage('/logo-ies.png', 'PNG', 10, 10, 190, 28, undefined, 'FAST');
+        doc.addImage('/logo-ies.png', 'PNG', 12.5, 10, 185, 21, undefined, 'FAST');
     } catch (e) {
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
         doc.text('IES PRADO', 20, yPos);
     }
 
-    yPos += 22;
+    yPos += 20;
 
     // Línea horizontal decorativa
     doc.setDrawColor(200, 200, 200);
     doc.setLineWidth(0.1);
-    doc.line(10, yPos, pageWidth - 10, yPos);
+    doc.line(12.5, yPos, pageWidth - 10, yPos);
 
     yPos += 15;
 
