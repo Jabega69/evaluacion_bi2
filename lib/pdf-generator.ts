@@ -13,12 +13,33 @@ export const generateDetailedPDF = (
 ) => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
-    let yPos = 30;
+    let yPos = 20;
+
+    // --- Header (Logo IES PRADO) ---
+    try {
+        // Logo del IES (actualizado con nueva imagen de 798x192, ratio 4.15)
+        // 180mm de ancho -> 43.3mm de alto
+        doc.addImage('/logo-ies.png', 'JPEG', 15, 10, 180, 43.3);
+    } catch (e) {
+        // Fallback si falla la imagen
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('IES PRADO MAYOR', 15, 20);
+    }
+
+    yPos += 40;
+
+    // Línea horizontal decorativa
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.1);
+    doc.line(15, yPos, pageWidth - 15, yPos);
+
+    yPos += 15;
 
     // --- Title ---
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('V3.7 - INFORME DE EVALUACIÓN DETALLADA', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('INFORME DE EVALUACIÓN DETALLADA', pageWidth / 2, yPos, { align: 'center' });
     yPos += 15;
 
     // --- Section 1: Identification Data ---
