@@ -87,7 +87,7 @@ export default function ReportView({ project }: Props) {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 no-print gap-4 pb-6 border-b border-slate-100">
                 <div>
                     <h2 style={{ fontSize: '1.8rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
-                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Informe Detallado'} 📑
+                        {viewMode === 'standard' ? 'Acta de Resultados' : 'Informe Detallado'} 📑 <span style={{ fontSize: '0.6rem', verticalAlign: 'middle', opacity: 0.3 }}>v2.2</span>
                     </h2>
                     <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.9rem', marginTop: '0.2rem' }}>
                         {viewMode === 'standard' ? 'Documento oficial de evaluación académica' : 'Análisis exhaustivo por ítem y evaluador'}
