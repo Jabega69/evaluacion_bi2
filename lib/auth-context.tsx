@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const lastFetchedEmail = useRef<string | null>(null);
     const activeFetch = useRef<Promise<void> | null>(null);
-    const fetchUserRole = async (email: string): Promise<void> => {
+    const fetchUserRole = async (email: string, sessionUser?: any): Promise<void> => {
         if (!email) {
             setIsLoading(false);
             return;
@@ -37,67 +37,62 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         const performFetch = async () => {
-            console.log(`[AuthContext] fetchUserRole process starting for ${email}`);
+            console.log(`[AuthContext] fetchUserRole starting (DB + Metadata fallback) for ${email}`);
             setIsLoading(true);
             lastFetchedEmail.current = email;
 
-            let retryCount = 0;
-            const maxRetries = 3;
-            let finished = false;
+            let success = false;
+            try {
+                // Intento 1: Base de datos con timeout de 10s
+                const fetchPromise = supabase.from('users').select('*').eq('email', email);
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('db_timeout')), 10000));
 
-            while (retryCount <= maxRetries && !finished) {
-                try {
-                    console.log(`[AuthContext] Profile fetch attempt ${retryCount + 1} for ${email}`);
+                const result = await Promise.race([fetchPromise, timeoutPromise]);
+                const { data: users, error } = result as any;
 
-                    const fetchPromise = supabase.from('users').select('*').eq('email', email);
-                    const timeoutPromise = new Promise((_, reject) =>
-                        setTimeout(() => reject(new Error('Fetch timeout')), 30000)
-                    );
+                if (error) throw error;
 
-                    const result = await Promise.race([fetchPromise, timeoutPromise]);
-                    const { data: users, error } = result as any;
-
-                    if (error) throw error;
-
-                    if (users && users.length > 0) {
-                        const data = users[0];
-                        console.log('[AuthContext] Profile charged successfully:', data.name);
-                        const roles = data.roles || (data.role ? [data.role] : []);
-                        setUser({
-                            ...data,
-                            roles,
-                            activeRole: roles.length === 1 ? roles[0] : undefined
-                        });
-                        finished = true;
-                    } else {
-                        console.warn('[AuthContext] No profile found for:', email);
-                        setUser(null);
-                        finished = true;
-                    }
-                } catch (err: any) {
-                    console.error(`[AuthContext] Attempt ${retryCount + 1} error:`, err.message || err);
-
-                    const isRetryable = err.message?.includes('timeout') ||
-                        err.message?.includes('Fetch') ||
-                        err.name === 'AbortError' ||
-                        !window.navigator.onLine;
-
-                    if (isRetryable && retryCount < maxRetries) {
-                        retryCount++;
-                        const delay = retryCount * 2000;
-                        console.log(`[AuthContext] Retrying in ${delay}ms...`);
-                        await new Promise(r => setTimeout(r, delay));
-                    } else {
-                        console.error('[AuthContext] Max retries exhausted or fatal error.');
-                        setUser(null);
-                        finished = true;
-                    }
+                if (users && users.length > 0) {
+                    const data = users[0];
+                    console.log('[AuthContext] Profile loaded from DB:', data.name);
+                    const roles = data.roles || (data.role ? [data.role] : []);
+                    setUser({
+                        ...data,
+                        roles,
+                        activeRole: roles.length === 1 ? roles[0] : undefined
+                    });
+                    success = true;
                 }
+            } catch (err: any) {
+                console.error('[AuthContext] DB fetch failed, checking metadata...', err.message || err);
+            }
+
+            // Fallback: Si la DB falla, usamos los metadatos del usuario de Auth
+            if (!success && sessionUser) {
+                const meta = sessionUser.user_metadata || {};
+                if (meta.roles || meta.role || meta.name) {
+                    console.log('[AuthContext] Using fallback metadata for:', meta.name);
+                    const roles = meta.roles || (meta.role ? [meta.role] : []);
+                    setUser({
+                        id: sessionUser.id,
+                        email: sessionUser.email,
+                        name: meta.name || 'Usuario',
+                        roles: roles,
+                        activeRole: roles.length === 1 ? roles[0] : undefined,
+                        is_fallback: true
+                    } as any);
+                    success = true;
+                }
+            }
+
+            if (!success) {
+                console.error('[AuthContext] All profile load attempts failed.');
+                setUser(null);
             }
 
             activeFetch.current = null;
             setIsLoading(false);
-            console.log('[AuthContext] fetchUserRole process finished');
+            console.log('[AuthContext] fetchUserRole finished');
         };
 
         activeFetch.current = performFetch();
@@ -109,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session?.user?.email) {
-                    await fetchUserRole(session.user.email);
+                    await fetchUserRole(session.user.email, session.user);
                 } else {
                     setIsLoading(false);
                 }
@@ -124,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             console.log('[AuthContext] Auth session change:', event, session?.user?.email);
             if (session?.user?.email) {
-                await fetchUserRole(session.user.email);
+                await fetchUserRole(session.user.email, session.user);
             } else {
                 setUser(null);
                 lastFetchedEmail.current = null;
@@ -156,9 +151,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 return { success: false, error: error.message };
             }
 
-            // We wait for the profile to be fetched (onAuthStateChange will also trigger it, 
-            // but calling it here ensures we wait for success before returning)
-            await fetchUserRole(email);
+            // We wait for the profile to be fetched
+            const { data: { session } } = await supabase.auth.getSession();
+            await fetchUserRole(email, session?.user);
             return { success: true };
         } catch (err) {
             setIsLoading(false);
