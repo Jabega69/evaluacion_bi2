@@ -9,10 +9,11 @@ export default function DistributionPage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState<Record<string, 'idle' | 'sending' | 'success' | 'error'>>({});
+    const [selectedFile, setSelectedFile] = useState<{ id: string, name: string } | null>(null);
+    const [confirmingProject, setConfirmingProject] = useState<Project | null>(null);
 
     useEffect(() => {
         loadProjects();
-        // Load Google Identity Services script
         const script = document.createElement('script');
         script.src = 'https://accounts.google.com/gsi/client';
         script.async = true;
@@ -25,7 +26,15 @@ export default function DistributionPage() {
         setLoading(false);
     }
 
-    const handleDistribute = async (projectId: string, file: { id: string, name: string }) => {
+    const handleDistribute = async () => {
+        if (!confirmingProject || !selectedFile) return;
+
+        const projectId = confirmingProject.id;
+        const file = selectedFile;
+
+        setConfirmingProject(null);
+        setSelectedFile(null);
+
         setStatus(prev => ({ ...prev, [projectId]: 'sending' }));
         try {
             const response = await fetch('/api/admin/distribute', {
@@ -38,14 +47,18 @@ export default function DistributionPage() {
                 })
             });
 
-            if (!response.ok) throw new Error('Error al enviar');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al enviar');
+            }
 
             setStatus(prev => ({ ...prev, [projectId]: 'success' }));
             setTimeout(() => {
                 setStatus(prev => ({ ...prev, [projectId]: 'idle' }));
-            }, 3000);
-        } catch (error) {
+            }, 5000);
+        } catch (error: any) {
             console.error(error);
+            alert(`Error en el envío: ${error.message}`);
             setStatus(prev => ({ ...prev, [projectId]: 'error' }));
         }
     };
@@ -79,7 +92,7 @@ export default function DistributionPage() {
                             Envíos <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 underline decoration-blue-200 decoration-8 underline-offset-8">Inteligentes</span>
                         </h1>
                         <p className="text-slate-400 text-xl font-medium max-w-2xl leading-relaxed">
-                            Automatiza la entrega de documentación a los tribunales vinculando tu cuenta de Google Drive.
+                            Automatiza la entrega de documentación vinculando tu cuenta de Google Drive para bajar el archivo y Gmail para enviarlo.
                         </p>
                     </div>
 
@@ -90,7 +103,7 @@ export default function DistributionPage() {
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <span className="relative flex items-center gap-3">
                             <span className="text-3xl transition-transform group-hover:rotate-12 group-hover:scale-125">🔑</span>
-                            VINCULAR DRIVE
+                            VINCULAR GOOGLE
                         </span>
                     </a>
                 </header>
@@ -128,23 +141,22 @@ export default function DistributionPage() {
                                         </div>
                                     </div>
 
-                                    <div className="pt-6 border-t border-slate-50 flex items-center gap-4">
-                                        <div className="flex -space-x-3">
-                                            {[1, 2, 3].map(i => (
-                                                <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-indigo-50 flex items-center justify-center text-[10px] font-black text-indigo-400">
-                                                    P{i}
+                                    <div className="pt-6 border-t border-slate-50 space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Destinatarios:</p>
+                                        <div className="space-y-2">
+                                            {project.tribunalEmails?.map((email, i) => (
+                                                <div key={i} className="flex items-center gap-2">
+                                                    <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[8px] font-black text-blue-600">P{i + 1}</div>
+                                                    <span className="text-[11px] font-bold text-slate-600 truncate">{email}</span>
                                                 </div>
                                             ))}
-                                        </div>
-                                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                            Tribunal Asignado
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="mt-10 relative">
                                     {status[project.id] === 'success' ? (
-                                        <div className="flex items-center justify-center gap-3 py-5 bg-green-500 text-white rounded-[2rem] font-black text-sm shadow-xl shadow-green-100">
+                                        <div className="flex items-center justify-center gap-3 py-5 bg-green-500 text-white rounded-[2rem] font-black text-sm shadow-xl shadow-green-100 animate-in zoom-in">
                                             ✅ ENVIADO CORRECTAMENTE
                                         </div>
                                     ) : status[project.id] === 'error' ? (
@@ -168,7 +180,10 @@ export default function DistributionPage() {
                                         <GooglePicker
                                             clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}
                                             developerKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY || ''}
-                                            onFileSelected={(file) => handleDistribute(project.id, file)}
+                                            onFileSelected={(file) => {
+                                                setSelectedFile(file);
+                                                setConfirmingProject(project);
+                                            }}
                                         />
                                     )}
                                 </div>
@@ -177,6 +192,50 @@ export default function DistributionPage() {
                     )}
                 </div>
             </div>
+
+            {/* Confirmation Modal */}
+            {confirmingProject && selectedFile && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-xl animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[3rem] p-12 max-w-xl w-full shadow-2xl space-y-10 animate-in slide-in-from-bottom-10">
+                        <div className="space-y-4 text-center">
+                            <span className="text-6xl">📨</span>
+                            <h2 className="text-3xl font-black text-slate-900">Confirmar Envío</h2>
+                            <p className="text-slate-500 font-medium">Vas a enviar la memoria a los miembros del tribunal.</p>
+                        </div>
+
+                        <div className="bg-slate-50 rounded-3xl p-8 space-y-6">
+                            <div>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Archivo Seleccionado:</p>
+                                <p className="text-lg font-black text-blue-600 truncate">📄 {selectedFile.name}</p>
+                            </div>
+
+                            <div>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Destinatarios ({confirmingProject.tribunalEmails?.length}):</p>
+                                <div className="space-y-2">
+                                    {confirmingProject.tribunalEmails?.map((email, i) => (
+                                        <p key={i} className="text-sm font-bold text-slate-700">{email}</p>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => { setConfirmingProject(null); setSelectedFile(null); }}
+                                className="flex-1 py-5 bg-slate-100 text-slate-400 rounded-3xl font-black hover:bg-slate-200 transition-colors"
+                            >
+                                CANCELAR
+                            </button>
+                            <button
+                                onClick={handleDistribute}
+                                className="flex-2 py-5 bg-blue-600 text-white rounded-3xl font-black hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all hover:scale-105"
+                            >
+                                SÍ, ENVIAR AHORA
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

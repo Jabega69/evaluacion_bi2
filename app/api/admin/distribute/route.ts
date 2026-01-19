@@ -43,10 +43,16 @@ export async function POST(req: Request) {
 
         if (pError || !project) throw new Error('Proyecto no encontrado');
 
-        const emails = project.project_tribunals.map((t: any) => t.user.email).filter(Boolean);
-        if (emails.length === 0) throw new Error('No hay evaluadores asignados con email');
+        const emails = project.project_tribunals.map((t: any) => t.user?.email).filter(Boolean);
+        console.log('Sending to emails:', emails);
+
+        if (emails.length === 0) {
+            console.error('No emails found for project:', projectId);
+            throw new Error('No hay evaluadores asignados con email');
+        }
 
         // 4. Descargar el archivo de Drive para adjuntarlo
+        console.log('Downloading file:', fileId);
         const drive = getDriveClient(googleAuthClient.credentials.access_token!);
         const fileResponse = await drive.files.get({
             fileId: fileId,
@@ -54,6 +60,7 @@ export async function POST(req: Request) {
         }, { responseType: 'arraybuffer' });
 
         const fileBuffer = Buffer.from(fileResponse.data as ArrayBuffer);
+        console.log('File downloaded, size:', fileBuffer.length);
 
         // 5. Preparar el correo
         const gmail = getGmailClient(googleAuthClient.credentials.access_token!);
@@ -113,6 +120,8 @@ ${admin.name}
             .replace(/\//g, '_')
             .replace(/=+$/, '');
 
+        console.log('Final message length:', encodedMessage.length);
+
         await gmail.users.messages.send({
             userId: 'me',
             requestBody: {
@@ -120,12 +129,18 @@ ${admin.name}
             }
         });
 
+        console.log('Email sent successfully');
+
         // 6. Marcar como enviado (opcional, podríamos añadir una columna a projects)
         await supabase.from('projects').update({ distributed_at: new Date().toISOString() }).eq('id', projectId);
 
         return NextResponse.json({ success: true });
     } catch (error: any) {
-        console.error('Distribution Error:', error);
+        console.error('Distribution Error Details:', {
+            message: error.message,
+            stack: error.stack,
+            projectId: error.projectId
+        });
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

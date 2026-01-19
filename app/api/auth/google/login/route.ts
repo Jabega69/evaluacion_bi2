@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
     const scopes = [
         'https://www.googleapis.com/auth/gmail.send',
-        'https://www.googleapis.com/auth/drive.metadata.readonly'
+        'https://www.googleapis.com/auth/drive.readonly'
     ];
 
     const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';

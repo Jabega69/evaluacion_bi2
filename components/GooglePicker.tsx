@@ -46,17 +46,24 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
         try {
             const tokenClient = window.google.accounts.oauth2.initTokenClient({
                 client_id: clientId,
-                scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
+                scope: 'https://www.googleapis.com/auth/drive.readonly',
                 callback: (response: any) => {
                     if (response.error !== undefined) {
                         console.error('OAuth Error:', response);
                         return;
                     }
 
+                    const view = new window.google.picker.DocsView(window.google.picker.ViewId.PDFs)
+                        .setMode(window.google.picker.DocsViewMode.LIST)
+                        .setIncludeFolders(true)
+                        .setEnableDrives(true);
+
                     const picker = new window.google.picker.PickerBuilder()
-                        .addView(window.google.picker.ViewId.DOCS)
+                        .addView(view)
                         .setOAuthToken(response.access_token)
                         .setDeveloperKey(developerKey)
+                        .enableFeature(window.google.picker.Feature.SUPPORT_DRIVES)
+                        .enableFeature(window.google.picker.Feature.SUPPORT_TEAM_DRIVES)
                         .setCallback((data: any) => {
                             if (data.action === window.google.picker.Action.PICKED) {
                                 const file = data.docs[0];
@@ -87,8 +94,8 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
             onClick={(e) => { e.preventDefault(); createPicker(); }}
             disabled={!pickerApiLoaded}
             className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-black text-sm transition-all shadow-lg ${pickerApiLoaded
-                    ? 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-[1.02] active:scale-95'
-                    : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                ? 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-[1.02] active:scale-95'
+                : 'bg-slate-100 text-slate-400 cursor-not-allowed'
                 }`}
         >
             <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg" className="w-5 h-5" alt="Drive" />

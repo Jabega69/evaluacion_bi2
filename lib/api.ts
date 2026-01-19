@@ -100,10 +100,10 @@ export const api = {
                 .select(`
                     *,
                     students (*),
-                    tutor:users!tutor_id(name),
+                    tutor:users!tutor_id(name, email),
                     project_tribunals (
                         user_id,
-                        user:users(name)
+                        user:users(name, email)
                     )
                 `);
 
@@ -116,9 +116,11 @@ export const api = {
                 title: p.title,
                 tutorId: p.tutor_id,
                 tutorName: p.tutor?.name,
+                tutorEmail: p.tutor?.email,
                 students: p.students || [],
                 tribunalIds: (p.project_tribunals || []).map((t: any) => t.user_id),
                 tribunalNames: (p.project_tribunals || []).map((t: any) => t.user?.name).filter(Boolean),
+                tribunalEmails: (p.project_tribunals || []).map((t: any) => t.user?.email).filter(Boolean),
                 presentationDate: p.presentation_date,
                 presentationLocation: p.presentation_location
             })) as Project[];
