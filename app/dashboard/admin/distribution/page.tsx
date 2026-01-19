@@ -63,116 +63,178 @@ export default function DistributionPage() {
         }
     };
 
-    if (loading) return <div className="p-8 text-center text-slate-500 font-medium">Cargando proyectos...</div>;
+    if (loading) return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] animate-pulse">
+            <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4" />
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Cargando Distribución...</p>
+        </div>
+    );
 
     return (
-        <div className="p-8 max-w-6xl mx-auto font-sans">
-            <div className="flex justify-between items-center mb-12 bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 mb-2">Centro de Distribución</h1>
-                    <p className="text-slate-500 font-medium">Envía la documentación a los tribunales vinculando tu cuenta de Google.</p>
-                </div>
-                <a
-                    href="/api/auth/google/login"
-                    className="px-6 py-4 bg-blue-600 text-white rounded-xl text-lg font-black flex items-center gap-3 hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
-                >
-                    🔑 Vincular Google
-                </a>
-            </div>
+        <div className="min-h-screen bg-slate-50/50 p-6 md:p-12 font-sans">
+            <div className="max-w-6xl mx-auto space-y-12">
 
-            <div className="space-y-6">
-                {projects.map(project => (
-                    <div key={project.id} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all hover:border-blue-200">
-                        <div className="flex-1 min-w-0">
-                            <h3 className="font-black text-slate-900 text-xl mb-3 truncate">{project.title}</h3>
-                            <div className="flex flex-wrap gap-4 text-sm">
-                                <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-lg font-bold">
-                                    👥 {project.students.map(s => s.name).join(', ')}
-                                </span>
-                                <div className="flex flex-wrap gap-2 text-slate-500 bg-blue-50/50 px-3 py-1 rounded-lg">
-                                    <span className="font-black text-blue-600 pr-2 border-r border-blue-100">📧 ENVÍO A:</span>
-                                    {project.tribunalEmails?.length ? (
-                                        project.tribunalEmails.map((email, i) => (
-                                            <span key={i} className="font-bold">{email}{i < project.tribunalEmails!.length - 1 ? ',' : ''}</span>
-                                        ))
+                {/* Header Section */}
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -mr-32 -mt-32" />
+                    <div className="relative z-10 space-y-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-wider">
+                            <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse" />
+                            Admin Console
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+                            Centro de <span className="text-blue-600">Distribución</span>
+                        </h1>
+                        <p className="text-slate-500 font-medium max-w-md">
+                            Gestiona el envío automático de reportes finales a los tribunales asignados.
+                        </p>
+                    </div>
+
+                    <a
+                        href="/api/auth/google/login"
+                        className="relative z-10 group flex items-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold transition-all hover:bg-black hover:scale-[1.02] active:scale-95 shadow-xl shadow-slate-200 text-center"
+                    >
+                        <span className="text-xl">🔑</span>
+                        VINCULAR GOOGLE DRIVE
+                    </a>
+                </header>
+
+                {/* Projects Grid/List */}
+                <div className="grid grid-cols-1 gap-6">
+                    {projects.length === 0 ? (
+                        <div className="bg-white rounded-[2.5rem] p-32 text-center border-4 border-dashed border-slate-100">
+                            <span className="text-6xl block mb-4">empty</span>
+                            <h3 className="text-xl font-bold text-slate-300 uppercase tracking-widest">No hay proyectos activos</h3>
+                        </div>
+                    ) : (
+                        projects.map(project => (
+                            <div key={project.id} className="group bg-white rounded-[2rem] p-8 border border-slate-200 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-500/5 hover:border-blue-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+
+                                <div className="flex-1 space-y-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                            📄
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-black text-slate-900 group-hover:text-blue-600 transition-colors leading-tight">
+                                                {project.title}
+                                            </h3>
+                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                {project.students.map(s => (
+                                                    <span key={s.id} className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md">
+                                                        {s.name}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-3 items-center pt-2">
+                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50/50 rounded-xl border border-blue-100/50">
+                                            <span className="text-xs font-black text-blue-600 uppercase tracking-tighter">Tribunales:</span>
+                                            <div className="flex gap-2">
+                                                {project.tribunalEmails?.map((email, i) => (
+                                                    <div key={i} className="group/email relative">
+                                                        <div className="w-8 h-8 rounded-full bg-white border border-blue-100 flex items-center justify-center text-[10px] font-black text-blue-600 cursor-help">
+                                                            {email.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900 text-white text-[10px] rounded opacity-0 group-hover/email:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20">
+                                                            {email}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase italic">
+                                            {project.tribunalEmails?.length || 0} destinatarios configurados
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="w-full lg:w-auto shrink-0">
+                                    {status[project.id] === 'success' ? (
+                                        <div className="flex items-center justify-center gap-3 px-10 py-5 bg-green-500 text-white font-black rounded-2xl shadow-lg shadow-green-100 animate-in zoom-in">
+                                            <span>✅</span> ENTREGADO
+                                        </div>
+                                    ) : status[project.id] === 'error' ? (
+                                        <div className="space-y-2">
+                                            <div className="px-10 py-5 bg-red-500 text-white font-black rounded-2xl text-center shadow-lg shadow-red-100">
+                                                ❌ FALLÓ
+                                            </div>
+                                            <button
+                                                onClick={() => setStatus(prev => ({ ...prev, [project.id]: 'idle' }))}
+                                                className="w-full text-[10px] font-black underline uppercase text-slate-400 hover:text-slate-900 transition-colors text-center"
+                                            >
+                                                Reintentar envío
+                                            </button>
+                                        </div>
+                                    ) : status[project.id] === 'sending' ? (
+                                        <div className="flex items-center justify-center gap-4 px-10 py-5 bg-slate-900 text-white font-black rounded-2xl animate-pulse">
+                                            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                            ENVIANDO...
+                                        </div>
                                     ) : (
-                                        <span className="text-red-400">Sin emails configurados</span>
+                                        <div className="w-full lg:w-auto flex justify-center">
+                                            <GooglePicker
+                                                clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}
+                                                developerKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY || ''}
+                                                onFileSelected={(file) => {
+                                                    setSelectedFile(file);
+                                                    setConfirmingProject(project);
+                                                }}
+                                            />
+                                        </div>
                                     )}
                                 </div>
                             </div>
-                        </div>
-
-                        <div className="flex items-center gap-3 w-full md:w-auto">
-                            {status[project.id] === 'success' ? (
-                                <span className="w-full md:w-auto text-center bg-green-500 text-white px-6 py-4 rounded-xl font-black text-sm">
-                                    ✅ ENVIADO
-                                </span>
-                            ) : status[project.id] === 'error' ? (
-                                <div className="flex flex-col gap-2 w-full">
-                                    <span className="bg-red-500 text-white px-6 py-4 rounded-xl font-black text-sm text-center">❌ FALLÓ</span>
-                                    <button
-                                        onClick={() => setStatus(prev => ({ ...prev, [project.id]: 'idle' }))}
-                                        className="text-[10px] font-black underline uppercase text-slate-400"
-                                    >Reintentar</button>
-                                </div>
-                            ) : status[project.id] === 'sending' ? (
-                                <div className="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-slate-100 text-slate-400 rounded-xl font-black text-sm animate-pulse">
-                                    <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
-                                    PROCESANDO...
-                                </div>
-                            ) : (
-                                <div className="w-full md:w-auto">
-                                    <GooglePicker
-                                        clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}
-                                        developerKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY || ''}
-                                        onFileSelected={(file) => {
-                                            setSelectedFile(file);
-                                            setConfirmingProject(project);
-                                        }}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                ))}
+                        ))
+                    )}
+                </div>
             </div>
 
-            {/* Simple Confirmation Modal */}
+            {/* Premium Confirmation Modal */}
             {confirmingProject && selectedFile && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl p-10 max-w-lg w-full shadow-2xl space-y-8 animate-in zoom-in duration-200">
-                        <div className="text-center">
-                            <h2 className="text-2xl font-black text-slate-900 mb-2">Confirmar Envío</h2>
-                            <p className="text-slate-500 font-medium">Vas a enviar el reporte a los emails asignados.</p>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[3rem] p-10 max-w-xl w-full shadow-2xl space-y-8 animate-in zoom-in slide-in-from-bottom-4 duration-500">
+                        <div className="text-center space-y-2">
+                            <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto text-4xl mb-4 text-blue-600">
+                                📧
+                            </div>
+                            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Confirmar Distribución</h2>
+                            <p className="text-slate-500 font-medium">Estás a punto de enviar la memoria de investigación.</p>
                         </div>
 
-                        <div className="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                            <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Archivo:</p>
-                                <p className="font-bold text-slate-700 truncate">{selectedFile.name}</p>
+                        <div className="space-y-6 bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
+                            <div className="space-y-1 text-center sm:text-left">
+                                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Archivo seleccionado:</p>
+                                <p className="font-bold text-slate-700 text-lg truncate flex items-center justify-center sm:justify-start gap-2">
+                                    <span className="text-xl">📄</span> {selectedFile.name}
+                                </p>
                             </div>
-                            <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Destinatarios:</p>
-                                <div className="flex flex-col gap-1">
+                            <div className="space-y-3">
+                                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] text-center sm:text-left">Se enviará a:</p>
+                                <div className="space-y-1">
                                     {confirmingProject.tribunalEmails?.map((email, i) => (
-                                        <p key={i} className="font-bold text-blue-600 text-sm">{email}</p>
+                                        <div key={i} className="flex items-center gap-2 text-sm font-bold text-slate-500 bg-white px-3 py-2 rounded-xl border border-slate-100 overflow-hidden">
+                                            <span className="text-blue-400 shrink-0">@</span> <span className="truncate">{email}</span>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 pt-4">
                             <button
                                 onClick={() => { setConfirmingProject(null); setSelectedFile(null); }}
-                                className="flex-1 py-4 bg-slate-200 text-slate-600 rounded-xl font-black hover:bg-slate-300 transition-colors"
+                                className="flex-1 py-5 bg-slate-100 text-slate-400 rounded-2xl font-black transition-all hover:bg-slate-200 hover:text-slate-600"
                             >
                                 CANCELAR
                             </button>
                             <button
                                 onClick={handleDistribute}
-                                className="flex-1 py-4 bg-blue-600 text-white rounded-xl font-black hover:bg-blue-700 transition-all font-sans"
+                                className="flex-1 py-5 bg-blue-600 text-white rounded-2xl font-black transition-all hover:bg-blue-700 hover:scale-[1.02] active:scale-95 shadow-xl shadow-blue-100"
                             >
-                                SÍ, ENVIAR
+                                SÍ, ENVIAR AHORA
                             </button>
                         </div>
                     </div>

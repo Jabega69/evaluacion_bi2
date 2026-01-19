@@ -1,24 +1,23 @@
-import { googleAuthClient } from '@/lib/google-api';
+import { googleAuthClient, getRedirectUri } from '@/lib/google-api';
 import { supabase } from '@/lib/supabase';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const code = searchParams.get('code');
-    const state = searchParams.get('state'); // Podríamos usar esto para seguridad adicional
+    const host = req.headers.get('host') || 'localhost:3000';
+    const REDIRECT_URI = getRedirectUri(host);
 
     if (!code) {
         return NextResponse.json({ error: 'No code provided' }, { status: 400 });
     }
 
     try {
-        const { tokens } = await googleAuthClient.getToken(code);
+        const { tokens } = await googleAuthClient.getToken({
+            code,
+            redirect_uri: REDIRECT_URI
+        });
 
-        // Guardamos los tokens en el usuario administrador actual
-        // Para simplificar, asumimos que el admin que hace esto es el único que distribuye
-        // En una app multi-admin, guardaríamos esto por userId.
-
-        // Obtenemos el usuario de la sesión (aquí simplificado, en producción usaríamos auth de supabase)
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
@@ -30,11 +29,9 @@ export async function GET(req: Request) {
             if (error) throw error;
         }
 
-        const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-        return NextResponse.redirect(`${APP_URL}/dashboard/admin?google=success`);
+        return NextResponse.redirect(new URL('/dashboard/admin/distribution?google=success', req.url));
     } catch (error: any) {
-        const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
         console.error('Google Auth Error:', error);
-        return NextResponse.redirect(`${APP_URL}/dashboard/admin?google=error`);
+        return NextResponse.redirect(new URL('/dashboard/admin/distribution?google=error', req.url));
     }
 }

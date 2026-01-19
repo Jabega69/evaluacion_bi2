@@ -2,14 +2,14 @@ import { google } from 'googleapis';
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-const cleanAppUrl = APP_URL.replace(/\/$/, '');
-const REDIRECT_URI = `${cleanAppUrl}/api/auth/google/callback`;
+export const getRedirectUri = (host: string) => {
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    return `${protocol}://${host}/api/auth/google/callback`;
+};
 
 export const googleAuthClient = new google.auth.OAuth2(
     CLIENT_ID,
-    CLIENT_SECRET,
-    REDIRECT_URI
+    CLIENT_SECRET
 );
 
 export const getGmailClient = (accessToken: string) => {

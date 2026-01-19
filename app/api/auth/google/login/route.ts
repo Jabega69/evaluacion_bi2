@@ -1,18 +1,16 @@
-import { googleAuthClient } from '@/lib/google-api';
-import { NextResponse } from 'next/server';
+import { googleAuthClient, getRedirectUri } from '@/lib/google-api';
+import { NextResponse, NextRequest } from 'next/server';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     const scopes = [
         'https://www.googleapis.com/auth/gmail.send',
         'https://www.googleapis.com/auth/drive.readonly'
     ];
 
-    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    // Asegurarse de quitar '/' al final si existe
-    const cleanAppUrl = APP_URL.replace(/\/$/, '');
-    const REDIRECT_URI = `${cleanAppUrl}/api/auth/google/callback`;
+    const host = req.headers.get('host') || 'localhost:3000';
+    const REDIRECT_URI = getRedirectUri(host);
 
-    console.log('Initiating OAuth with REDIRECT_URI:', REDIRECT_URI);
+    console.log('Initiating OAuth with Dynamic REDIRECT_URI:', REDIRECT_URI);
 
     const authorizationUrl = googleAuthClient.generateAuthUrl({
         access_type: 'offline',

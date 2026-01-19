@@ -7,14 +7,20 @@ export async function POST(req: Request) {
         const { projectId, fileId, fileName } = await req.json();
 
         // 1. Obtener los tokens del administrador (asumimos el primer admin con tokens por ahora)
-        const { data: admin, error: adminError } = await supabase
+        const { data: admins, error: adminError } = await supabase
             .from('users')
             .select('*')
-            .eq('role', 'admin')
-            .not('google_tokens', 'is', null)
-            .single();
+            .not('google_tokens', 'is', null);
 
-        if (adminError || !admin) {
+        if (adminError || !admins) {
+            return NextResponse.json({ error: 'Administradores no encontrados' }, { status: 400 });
+        }
+
+        const admin = admins.find(u =>
+            u.role === 'admin' || (u.roles && u.roles.includes('admin'))
+        );
+
+        if (!admin) {
             return NextResponse.json({ error: 'Administrador no vinculado con Google' }, { status: 400 });
         }
 
