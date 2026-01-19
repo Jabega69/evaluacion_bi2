@@ -48,17 +48,22 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
                     return;
                 }
 
-                const view = new window.google.picker.DocsView(window.google.picker.ViewId.PDFs)
+                // Vista de Mi Unidad
+                const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
+                    .setMimeTypes('application/pdf')
                     .setMode(window.google.picker.DocsViewMode.LIST)
                     .setIncludeFolders(true)
-                    .setEnableDrives(true);
+                    .setEnableDrives(true)
+                    .setLabel('Mi Unidad');
 
                 // Vista de compartidos con el usuario
-                const sharedView = new window.google.picker.DocsView(window.google.picker.ViewId.PDFs)
+                const sharedView = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
+                    .setMimeTypes('application/pdf')
                     .setOwnedByMe(false)
                     .setMode(window.google.picker.DocsViewMode.LIST)
                     .setIncludeFolders(true)
-                    .setEnableDrives(true);
+                    .setEnableDrives(true)
+                    .setLabel('Compartido conmigo');
 
                 const picker = new window.google.picker.PickerBuilder()
                     .addView(view)
