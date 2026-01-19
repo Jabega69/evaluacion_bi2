@@ -203,16 +203,16 @@ export const generateProjectListPDF = (projects: Project[]) => {
             const locationStr = p.presentationLocation ? `\n(${p.presentationLocation})` : '';
 
             return [
-                p.title + '\n(' + studentNames + ')',
+                p.title + '\n' + studentNames,
                 tribunalNames,
                 p.tutorName || 'Sin asignar',
                 dateStr + locationStr
             ];
         }),
         theme: 'grid',
-        headStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold', lineColor: [200, 200, 200], lineWidth: 0.1 },
-        styles: { fontSize: 10, cellPadding: 4, valign: 'middle', lineColor: [200, 200, 200], lineWidth: 0.1, textColor: [51, 65, 85] },
-        alternateRowStyles: { fillColor: [255, 255, 255] },
+        headStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold', lineColor: [51, 65, 85], lineWidth: 0.5 },
+        styles: { fontSize: 10, cellPadding: 6, valign: 'middle', lineColor: [71, 85, 105], lineWidth: 0.4, textColor: [15, 23, 42] },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
         columnStyles: {
             0: { cellWidth: 70, fontStyle: 'bold' },
             1: { cellWidth: 50 },
