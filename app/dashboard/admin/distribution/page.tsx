@@ -194,45 +194,49 @@ export default function DistributionPage() {
 
             {/* Premium Confirmation Modal */}
             {confirmingProject && selectedFile && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[3rem] p-10 max-w-xl w-full shadow-2xl space-y-8 animate-in zoom-in slide-in-from-bottom-4 duration-500">
-                        <div className="text-center space-y-2">
-                            <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto text-4xl mb-4 text-blue-600">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[2.5rem] p-6 md:p-10 max-w-lg w-full shadow-2xl space-y-6 animate-in zoom-in slide-in-from-bottom-4 duration-400">
+
+                        <div className="flex flex-col items-center text-center">
+                            <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl mb-4 text-blue-600 rotate-3">
                                 📧
                             </div>
-                            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Confirmar Distribución</h2>
-                            <p className="text-slate-500 font-medium">Estás a punto de enviar la memoria de investigación.</p>
+                            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Confirmar Distribución</h2>
+                            <p className="text-slate-500 text-sm font-medium">Vas a enviar el reporte oficial a los tribunales.</p>
                         </div>
 
-                        <div className="space-y-6 bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
-                            <div className="space-y-1 text-center sm:text-left">
-                                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Archivo seleccionado:</p>
-                                <p className="font-bold text-slate-700 text-lg truncate flex items-center justify-center sm:justify-start gap-2">
-                                    <span className="text-xl">📄</span> {selectedFile.name}
-                                </p>
+                        <div className="space-y-4 bg-slate-50 p-6 rounded-[2rem] border border-slate-100">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] block ml-1">Archivo seleccionado</label>
+                                <div className="flex items-center gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                                    <span className="text-2xl">📄</span>
+                                    <span className="font-bold text-slate-700 text-sm truncate">{selectedFile.name}</span>
+                                </div>
                             </div>
-                            <div className="space-y-3">
-                                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] text-center sm:text-left">Se enviará a:</p>
-                                <div className="space-y-1">
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] block ml-1">Tribunal de evaluación</label>
+                                <div className="space-y-1.5">
                                     {confirmingProject.tribunalEmails?.map((email, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-sm font-bold text-slate-500 bg-white px-3 py-2 rounded-xl border border-slate-100 overflow-hidden">
-                                            <span className="text-blue-400 shrink-0">@</span> <span className="truncate">{email}</span>
+                                        <div key={i} className="flex items-center gap-2 text-xs font-bold text-slate-600 bg-white px-4 py-3 rounded-xl border border-slate-200">
+                                            <span className="text-blue-500 shrink-0">@</span>
+                                            <span className="truncate">{email}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex gap-4 pt-4">
+                        <div className="flex flex-col sm:flex-row gap-3 pt-2">
                             <button
                                 onClick={() => { setConfirmingProject(null); setSelectedFile(null); }}
-                                className="flex-1 py-5 bg-slate-100 text-slate-400 rounded-2xl font-black transition-all hover:bg-slate-200 hover:text-slate-600"
+                                className="flex-1 order-2 sm:order-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black transition-all hover:bg-slate-200 hover:text-slate-700 text-xs"
                             >
                                 CANCELAR
                             </button>
                             <button
                                 onClick={handleDistribute}
-                                className="flex-1 py-5 bg-blue-600 text-white rounded-2xl font-black transition-all hover:bg-blue-700 hover:scale-[1.02] active:scale-95 shadow-xl shadow-blue-100"
+                                className="flex-1 order-1 sm:order-2 py-4 bg-blue-600 text-white rounded-2xl font-black transition-all hover:bg-blue-700 hover:scale-[1.02] active:scale-95 shadow-lg shadow-blue-200 text-xs"
                             >
                                 SÍ, ENVIAR AHORA
                             </button>
