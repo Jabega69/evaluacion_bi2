@@ -59,19 +59,32 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
                         return;
                     }
 
-                    // Vista principal de archivos (PDF)
-                    const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
+                    // Vista 1: Mi Unidad (Propios)
+                    const myDriveView = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
                         .setMimeTypes('application/pdf')
                         .setMode(window.google.picker.DocsViewMode.LIST)
                         .setIncludeFolders(true)
-                        .setEnableDrives(true);
+                        .setEnableDrives(true)
+                        .setLabel('MI UNIDAD');
+
+                    // Vista 2: Compartido conmigo
+                    const sharedWithMeView = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
+                        .setMimeTypes('application/pdf')
+                        .setOwnedByMe(false)
+                        .setMode(window.google.picker.DocsViewMode.LIST)
+                        .setIncludeFolders(true)
+                        .setEnableDrives(true)
+                        .setLabel('COMPARTIDO CONMIGO');
 
                     const picker = new window.google.picker.PickerBuilder()
-                        .addView(view)
+                        .addView(myDriveView)
+                        .addView(sharedWithMeView)
+                        .addView(window.google.picker.ViewId.RECENTLY_PICKED)
                         .setOAuthToken(response.access_token)
                         .setDeveloperKey(developerKey)
                         .enableFeature(window.google.picker.Feature.SUPPORT_DRIVES)
                         .enableFeature(window.google.picker.Feature.SUPPORT_TEAM_DRIVES)
+                        .enableFeature(window.google.picker.Feature.MULTISELECT_ENABLED)
                         .setCallback((data: any) => {
                             if (data.action === window.google.picker.Action.PICKED) {
                                 const file = data.docs[0];
