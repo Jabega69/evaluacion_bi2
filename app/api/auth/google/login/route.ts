@@ -8,7 +8,11 @@ export async function GET() {
     ];
 
     const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const REDIRECT_URI = `${APP_URL}/api/auth/google/callback`;
+    // Asegurarse de quitar '/' al final si existe
+    const cleanAppUrl = APP_URL.replace(/\/$/, '');
+    const REDIRECT_URI = `${cleanAppUrl}/api/auth/google/callback`;
+
+    console.log('Initiating OAuth with REDIRECT_URI:', REDIRECT_URI);
 
     const authorizationUrl = googleAuthClient.generateAuthUrl({
         access_type: 'offline',
