@@ -75,26 +75,27 @@ export default function DistributionPage() {
             <div className="max-w-6xl mx-auto space-y-12">
 
                 {/* Header Section */}
-                <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -mr-32 -mt-32" />
-                    <div className="relative z-10 space-y-2">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-wider">
+                <header className="flex flex-col items-center text-center gap-8 bg-white p-10 md:p-16 rounded-[2.5rem] shadow-sm border border-slate-100 relative overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -mt-48" />
+
+                    <div className="relative z-10 space-y-4 max-w-2xl">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-wider mx-auto">
                             <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse" />
                             Admin Console
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+                        <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-tight">
                             Centro de <span className="text-blue-600">Distribución</span>
                         </h1>
-                        <p className="text-slate-500 font-medium max-w-md">
+                        <p className="text-slate-500 font-medium text-lg leading-relaxed">
                             Gestiona el envío automático de reportes finales a los tribunales asignados.
                         </p>
                     </div>
 
                     <a
                         href="/api/auth/google/login"
-                        className="relative z-10 group flex items-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold transition-all hover:bg-black hover:scale-[1.02] active:scale-95 shadow-xl shadow-slate-200 text-center whitespace-nowrap"
+                        className="relative z-10 group flex items-center gap-4 px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black transition-all hover:bg-black hover:scale-[1.05] active:scale-95 shadow-2xl shadow-slate-200 whitespace-nowrap text-sm tracking-widest"
                     >
-                        <span className="text-xl">🔑</span>
+                        <span className="text-2xl group-hover:rotate-12 transition-transform">🔑</span>
                         VINCULAR GOOGLE DRIVE
                     </a>
                 </header>
