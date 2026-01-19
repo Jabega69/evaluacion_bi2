@@ -48,31 +48,28 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
                     return;
                 }
 
-                // Vista de Mi Unidad
+                // Vista de Mi Unidad y archivos
                 const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
                     .setMimeTypes('application/pdf')
                     .setMode(window.google.picker.DocsViewMode.LIST)
                     .setIncludeFolders(true)
-                    .setEnableDrives(true)
-                    .setLabel('Mi Unidad');
+                    .setEnableDrives(true);
 
-                // Vista de compartidos con el usuario
-                const sharedView = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
-                    .setMimeTypes('application/pdf')
-                    .setOwnedByMe(false)
-                    .setMode(window.google.picker.DocsViewMode.LIST)
+                // Vista de carpetas para facilitar la navegación
+                const folderView = new window.google.picker.DocsView(window.google.picker.ViewId.FOLDERS)
+                    .setSelectableMimeTypes('application/vnd.google-apps.folder')
                     .setIncludeFolders(true)
-                    .setEnableDrives(true)
-                    .setLabel('Compartido conmigo');
+                    .setEnableDrives(true);
 
                 const picker = new window.google.picker.PickerBuilder()
                     .addView(view)
-                    .addView(sharedView)
+                    .addView(folderView)
                     .addView(window.google.picker.ViewId.RECENTLY_PICKED)
                     .setOAuthToken(response.access_token)
                     .setDeveloperKey(developerKey)
                     .enableFeature(window.google.picker.Feature.SUPPORT_DRIVES)
                     .enableFeature(window.google.picker.Feature.SUPPORT_TEAM_DRIVES)
+                    .enableFeature(window.google.picker.Feature.NAV_HIDDEN) // Para forzar un diseño más estándar
                     .setCallback((data: any) => {
                         if (data.action === window.google.picker.Action.PICKED) {
                             const file = data.docs[0];
