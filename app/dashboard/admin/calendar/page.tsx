@@ -29,8 +29,20 @@ export default function CalendarPage() {
         // Init edits state
         const initialEdits: any = {};
         data.forEach(p => {
+            let localDateStr = '';
+            if (p.presentationDate) {
+                const date = new Date(p.presentationDate);
+                // Convertir a formato local YYYY-MM-DDTHH:mm manualmente para evitar desfases de UTC
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                localDateStr = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
             initialEdits[p.id] = {
-                date: p.presentationDate ? new Date(p.presentationDate).toISOString().slice(0, 16) : '', // format for datetime-local
+                date: localDateStr,
                 location: p.presentationLocation || ''
             };
         });
@@ -43,7 +55,7 @@ export default function CalendarPage() {
         setSubmitting(projectId);
         const edit = edits[projectId];
 
-        // Convert local datetime to ISO for storage
+        // Guardar la fecha tal cual se ha introducido en el input local
         const dateToSave = edit.date ? new Date(edit.date).toISOString() : null;
 
         try {
