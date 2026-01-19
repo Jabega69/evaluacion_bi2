@@ -71,24 +71,30 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey, i
                         return;
                     }
 
-                    // Usamos una vista única pero con el panel de navegación habilitado
-                    // Esto permite al usuario ver "Mi Unidad", "Compartido conmigo" y "Unidades compartidas"
-                    // en el menú de la izquierda, igual que en Drive.
-                    const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
+                    // Vista 1: Mi Unidad y Archivos Propios
+                    const myDriveView = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
                         .setMimeTypes('application/pdf')
-                        .setMode(window.google.picker.DocsViewMode.LIST)
                         .setIncludeFolders(true)
-                        .setEnableDrives(true);
+                        .setMode(window.google.picker.DocsViewMode.LIST)
+                        .setLabel('MI UNIDAD');
+
+                    // Vista 2: Compartido conmigo (Crucial para lo que pide el usuario)
+                    const sharedView = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
+                        .setMimeTypes('application/pdf')
+                        .setOwnedByMe(false)
+                        .setIncludeFolders(true)
+                        .setMode(window.google.picker.DocsViewMode.LIST)
+                        .setLabel('COMPARTIDO CONMIGO');
 
                     const picker = new window.google.picker.PickerBuilder()
-                        .addView(view)
+                        .addView(myDriveView)
+                        .addView(sharedView)
                         .addView(window.google.picker.ViewId.RECENTLY_PICKED)
                         .setOAuthToken(response.access_token)
                         .setDeveloperKey(developerKey)
                         .enableFeature(window.google.picker.Feature.SUPPORT_DRIVES)
                         .enableFeature(window.google.picker.Feature.SUPPORT_TEAM_DRIVES)
-                        // IMPORTANTE: NO añadir NAV_HIDDEN para que se vea el menú lateral
-                        .setSize(1050, 600) // Hacemos la ventana más grande para que quepa el menú
+                        .setSize(1050, 700)
                         .setCallback((data: any) => {
                             if (data.action === window.google.picker.Action.PICKED) {
                                 const file = data.docs[0];
