@@ -11,6 +11,7 @@ const navItems = {
         { icon: '🗓️', label: 'Calendario', path: '/dashboard/admin/calendar', color: 'blue' },
         { icon: '📈', label: 'Informes', path: '/dashboard/reports', color: 'pink' },
         { icon: '📑', label: 'Listado Proyectos', path: '/dashboard/admin/project-list', color: 'indigo' },
+        { icon: '✉️', label: 'Distribución', path: '/dashboard/admin/distribution', color: 'rose' },
     ],
     tribunal: [
         { icon: '📚', label: 'Mis proyectos', path: '/dashboard/tribunal', color: 'purple' },
