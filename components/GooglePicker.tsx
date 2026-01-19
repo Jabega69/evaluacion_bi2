@@ -20,7 +20,14 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
 
     useEffect(() => {
         const loadScript = () => {
+            if (document.getElementById('google-picker-sdk')) {
+                if (window.gapi) {
+                    window.gapi.load('picker', { callback: () => setPickerApiLoaded(true) });
+                }
+                return;
+            }
             const script = document.createElement('script');
+            script.id = 'google-picker-sdk';
             script.src = 'https://apis.google.com/js/api.js';
             script.onload = () => {
                 window.gapi.load('picker', { callback: () => setPickerApiLoaded(true) });
@@ -31,56 +38,55 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
     }, []);
 
     const createPicker = async () => {
-        if (!pickerApiLoaded) return;
+        if (!pickerApiLoaded) {
+            console.error('Picker API not loaded yet');
+            return;
+        }
 
-        // Nota: Google Picker requiere un token de acceso fresco.
-        // En una implementación real, dispararíamos el flujo de OAuth aquí o usaríamos uno ya obtenido.
-        // Para simplificar esta demo, asumimos que el administrador se ha logueado recientemente
-        // y usaremos el flujo de la ventana emergente de Google para obtener un token de sesión rápido
-        // solo para el picker.
+        if (!clientId || !developerKey) {
+            alert('Error: Datos de configuración de Google incompletos (Client ID o API Key)');
+            return;
+        }
 
-        const tokenClient = window.google.accounts.oauth2.initTokenClient({
-            client_id: clientId,
-            scope: 'https://www.googleapis.com/auth/drive.readonly',
-            callback: (response: any) => {
-                if (response.error !== undefined) {
-                    console.error('OAuth Error:', response);
-                    return;
-                }
+        try {
+            const tokenClient = window.google.accounts.oauth2.initTokenClient({
+                client_id: clientId,
+                scope: 'https://www.googleapis.com/auth/drive.readonly',
+                callback: (response: any) => {
+                    if (response.error !== undefined) {
+                        console.error('OAuth Error:', response);
+                        alert(`Error de autenticación: ${response.error}`);
+                        return;
+                    }
 
-                // Vista de Mi Unidad y archivos
-                const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
-                    .setMimeTypes('application/pdf')
-                    .setMode(window.google.picker.DocsViewMode.LIST)
-                    .setIncludeFolders(true)
-                    .setEnableDrives(true);
+                    // Vista principal de archivos (PDF)
+                    const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
+                        .setMimeTypes('application/pdf')
+                        .setMode(window.google.picker.DocsViewMode.LIST)
+                        .setIncludeFolders(true)
+                        .setEnableDrives(true);
 
-                // Vista de carpetas para facilitar la navegación
-                const folderView = new window.google.picker.DocsView(window.google.picker.ViewId.FOLDERS)
-                    .setSelectableMimeTypes('application/vnd.google-apps.folder')
-                    .setIncludeFolders(true)
-                    .setEnableDrives(true);
-
-                const picker = new window.google.picker.PickerBuilder()
-                    .addView(view)
-                    .addView(folderView)
-                    .addView(window.google.picker.ViewId.RECENTLY_PICKED)
-                    .setOAuthToken(response.access_token)
-                    .setDeveloperKey(developerKey)
-                    .enableFeature(window.google.picker.Feature.SUPPORT_DRIVES)
-                    .enableFeature(window.google.picker.Feature.SUPPORT_TEAM_DRIVES)
-                    .enableFeature(window.google.picker.Feature.NAV_HIDDEN) // Para forzar un diseño más estándar
-                    .setCallback((data: any) => {
-                        if (data.action === window.google.picker.Action.PICKED) {
-                            const file = data.docs[0];
-                            onFileSelected({ id: file.id, name: file.name });
-                        }
-                    })
-                    .build();
-                picker.setVisible(true);
-            },
-        });
-        tokenClient.requestAccessToken();
+                    const picker = new window.google.picker.PickerBuilder()
+                        .addView(view)
+                        .setOAuthToken(response.access_token)
+                        .setDeveloperKey(developerKey)
+                        .enableFeature(window.google.picker.Feature.SUPPORT_DRIVES)
+                        .enableFeature(window.google.picker.Feature.SUPPORT_TEAM_DRIVES)
+                        .setCallback((data: any) => {
+                            if (data.action === window.google.picker.Action.PICKED) {
+                                const file = data.docs[0];
+                                onFileSelected({ id: file.id, name: file.name });
+                            }
+                        })
+                        .build();
+                    picker.setVisible(true);
+                },
+            });
+            tokenClient.requestAccessToken();
+        } catch (err: any) {
+            console.error('Error creating picker:', err);
+            alert(`Error al abrir el selector: ${err.message}`);
+        }
     };
 
     return (

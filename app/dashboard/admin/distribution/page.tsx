@@ -14,10 +14,13 @@ export default function DistributionPage() {
 
     useEffect(() => {
         loadProjects();
-        const script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.async = true;
-        document.body.appendChild(script);
+        if (!document.getElementById('google-gsi-client')) {
+            const script = document.createElement('script');
+            script.id = 'google-gsi-client';
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.async = true;
+            document.body.appendChild(script);
+        }
     }, []);
 
     async function loadProjects() {
