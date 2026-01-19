@@ -30,9 +30,11 @@ export async function GET(req: Request) {
             if (error) throw error;
         }
 
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard/admin?google=success`);
+        const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        return NextResponse.redirect(`${APP_URL}/dashboard/admin?google=success`);
     } catch (error: any) {
+        const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
         console.error('Google Auth Error:', error);
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard/admin?google=error`);
+        return NextResponse.redirect(`${APP_URL}/dashboard/admin?google=error`);
     }
 }

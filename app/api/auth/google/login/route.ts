@@ -7,10 +7,14 @@ export async function GET() {
         'https://www.googleapis.com/auth/drive.metadata.readonly'
     ];
 
+    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const REDIRECT_URI = `${APP_URL}/api/auth/google/callback`;
+
     const authorizationUrl = googleAuthClient.generateAuthUrl({
-        access_type: 'offline', // Para obtener refresh token
+        access_type: 'offline',
         scope: scopes,
-        prompt: 'consent' // Obligar a mostrar el consentimiento para asegurar el refresh token
+        prompt: 'consent',
+        redirect_uri: REDIRECT_URI
     });
 
     return NextResponse.redirect(authorizationUrl);

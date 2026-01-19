@@ -2,7 +2,8 @@ import { google } from 'googleapis';
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const REDIRECT_URI = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`;
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const REDIRECT_URI = `${APP_URL}/api/auth/google/callback`;
 
 export const googleAuthClient = new google.auth.OAuth2(
     CLIENT_ID,

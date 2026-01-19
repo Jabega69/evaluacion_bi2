@@ -57,11 +57,6 @@ export default function AdminDashboard() {
             return;
         }
 
-        if (selectedTribunals.includes(tutorId)) {
-            alert('El tutor no puede ser miembro del tribunal del mismo proyecto.');
-            return;
-        }
-
         setIsSaving(true);
         try {
             if (editingProject) {
@@ -92,14 +87,12 @@ export default function AdminDashboard() {
     };
 
     const handleDeleteProject = async (id: string, title: string) => {
-        if (!confirm(`¿Seguro que quieres eliminar la investigación "${title}"? Se borrarán también todos los alumnos y evaluaciones asociados.`)) return;
-
+        if (!confirm(`¿Seguro que quieres eliminar "${title}"?`)) return;
         try {
             await api.projects.delete(id);
             loadData();
         } catch (err: any) {
-            console.error(err);
-            alert(err.message || 'Error al eliminar el proyecto');
+            alert(err.message || 'Error al eliminar');
         }
     };
 
@@ -123,448 +116,189 @@ export default function AdminDashboard() {
     };
 
     const toggleTribunal = (id: string) => {
-        if (id === tutorId) {
-            alert('El tutor asignado no puede formar parte del tribunal.');
-            return;
-        }
-
+        if (id === tutorId) return;
         setSelectedTribunals(prev => {
-            if (prev.includes(id)) {
-                return prev.filter(t => t !== id);
-            }
-            if (prev.length >= 3) {
-                alert('Solo puedes seleccionar un máximo de 3 miembros para el tribunal.');
-                return prev;
-            }
+            if (prev.includes(id)) return prev.filter(t => t !== id);
+            if (prev.length >= 3) return prev;
             return [...prev, id];
         });
     };
 
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-[80vh]">
-            <div className="w-16 h-16 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin mb-4"></div>
-            <p className="text-xl font-bold text-slate-400">Cargando...</p>
+            <div className="w-16 h-16 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mb-4" />
+            <p className="text-xl font-black text-slate-400 uppercase tracking-widest">Cargando Sistema</p>
         </div>
     );
 
     return (
-        <div style={{
-            width: '100%',
-            minHeight: '100vh',
-            padding: '2rem',
-            backgroundColor: '#F9FAFB', // Fondo base claro
-            fontFamily: "'Poppins', sans-serif"
-        }}>
-
-            <div style={{
-                maxWidth: '1400px',
-                margin: '0 auto 3rem auto',
-                textAlign: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-            }}>
-                <h1 style={{
-                    fontSize: '3rem',
-                    fontWeight: 900,
-                    color: '#0F172A', // Slate 900
-                    marginBottom: '1rem',
-                    lineHeight: 1.2
-                }}>
-                    Panel de <span style={{ color: '#2563EB' }}>Investigaciones</span> 🔬
-                </h1>
-
-                <button
-                    onClick={() => { resetForm(); setShowModal(true); }}
-                    style={{
-                        background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                        color: 'white',
-                        padding: '1rem 2.5rem',
-                        borderRadius: '50px',
-                        fontSize: '1.25rem',
-                        fontWeight: 800,
-                        border: 'none',
-                        cursor: 'pointer',
-                        boxShadow: '0 10px 20px -5px rgba(37, 99, 235, 0.4)',
-                        transition: 'all 0.2s',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.75rem'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <span style={{ fontSize: '1.5rem' }}>+</span> Nueva Investigación
-                </button>
+        <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-12 font-['Inter',sans-serif]">
+            {/* Background Decorations */}
+            <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
+                <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-50 rounded-full blur-[120px] opacity-60" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-50 rounded-full blur-[100px] opacity-40" />
             </div>
 
-            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-                {projects.length === 0 ? (
-                    <div style={{
-                        textAlign: 'center',
-                        padding: '5rem 2rem',
-                        backgroundColor: 'white',
-                        borderRadius: '30px',
-                        border: '4px dashed #E2E8F0',
-                        color: '#94A3B8'
-                    }}>
-                        <div style={{ fontSize: '5rem', marginBottom: '1.5rem', opacity: 0.5 }}>📂</div>
-                        <h3 style={{ fontSize: '2rem', fontWeight: 800, color: '#CBD5E1', marginBottom: '0.5rem' }}>No hay proyectos activos</h3>
-                        <p style={{ fontWeight: 600 }}>¡Comienza pulsando el botón azul superior!</p>
+            <div className="max-w-7xl mx-auto space-y-12">
+                {/* Header Section */}
+                <header className="flex flex-col md:flex-row justify-between items-center bg-white/40 backdrop-blur-xl border-2 border-white p-8 rounded-[3rem] shadow-xl shadow-indigo-100/50">
+                    <div className="text-center md:text-left space-y-2">
+                        <h1 className="text-5xl font-black text-slate-900 tracking-tight leading-none">
+                            Panel <span className="text-indigo-600">Admin</span>
+                        </h1>
+                        <p className="text-slate-500 font-bold text-lg">Gestión de Investigaciones Académicas</p>
                     </div>
-                ) : (
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', // Grid responsivo
-                        gap: '2rem'
-                    }}>
-                        {projects.map((project) => (
-                            <div key={project.id} style={{
-                                backgroundColor: 'white',
-                                borderRadius: '24px',
-                                overflow: 'hidden',
-                                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                                border: '1px solid #F1F5F9',
-                                transition: 'all 0.2s',
-                                position: 'relative'
-                            }}>
-                                <div style={{ padding: '1.5rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                                        <div style={{
-                                            padding: '0.25rem 0.75rem',
-                                            borderRadius: '99px',
-                                            backgroundColor: '#EFF6FF',
-                                            color: '#2563EB',
-                                            fontSize: '0.75rem',
-                                            fontWeight: 800,
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '0.05em'
-                                        }}>
-                                            Proyecto
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                            <button
-                                                onClick={() => openEditModal(project)}
-                                                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', padding: '0.25rem' }}
-                                                title="Editar"
-                                            >✏️</button>
-                                            <button
-                                                onClick={() => handleDeleteProject(project.id, project.title)}
-                                                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', padding: '0.25rem' }}
-                                                title="Eliminar"
-                                            >🗑️</button>
+                    <button
+                        onClick={() => { resetForm(); setShowModal(true); }}
+                        className="mt-6 md:mt-0 group relative overflow-hidden bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-indigo-200"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <span className="relative flex items-center gap-3">
+                            <span className="text-2xl">+</span> NUEVO PROYECTO
+                        </span>
+                    </button>
+                </header>
+
+                {/* Dashboard Stats / Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {projects.length === 0 ? (
+                        <div className="col-span-full py-32 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md rounded-[3rem] border-4 border-dashed border-slate-100">
+                            <span className="text-8xl mb-6 grayscale opacity-20">📚</span>
+                            <h3 className="text-2xl font-black text-slate-300 uppercase tracking-widest">Sin proyectos activos</h3>
+                        </div>
+                    ) : (
+                        projects.map((project) => (
+                            <div key={project.id} className="group relative bg-white border-2 border-slate-50 p-8 rounded-[2.5rem] shadow-sm transition-all hover:shadow-2xl hover:shadow-indigo-100 hover:-translate-y-2 overflow-hidden">
+                                {/* Gradient Overlay on hover */}
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 rounded-bl-[5rem] -mr-12 -mt-12 transition-transform group-hover:scale-110" />
+
+                                <div className="relative z-10 space-y-6">
+                                    <div className="flex justify-between items-start">
+                                        <span className="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider">
+                                            INVESTIGACIÓN
+                                        </span>
+                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onClick={() => openEditModal(project)} className="p-2 hover:bg-slate-50 rounded-lg text-lg">✏️</button>
+                                            <button onClick={() => handleDeleteProject(project.id, project.title)} className="p-2 hover:bg-red-50 rounded-lg text-lg text-red-500">🗑️</button>
                                         </div>
                                     </div>
-                                    <h3 style={{
-                                        fontSize: '1.5rem',
-                                        fontWeight: 800,
-                                        color: '#0F172A',
-                                        marginBottom: '0.5rem',
-                                        lineHeight: 1.3
-                                    }}>
+
+                                    <h3 className="text-2xl font-black text-slate-900 leading-tight min-h-[4.5rem] line-clamp-3">
                                         {project.title}
                                     </h3>
-                                    <p style={{ fontSize: '0.9rem', color: '#64748B' }}>
-                                        {project.students.length} Estudiante{project.students.length !== 1 ? 's' : ''}
-                                    </p>
-                                </div>
-                                <div style={{
-                                    padding: '1rem 1.5rem',
-                                    backgroundColor: '#F8FAFC',
-                                    borderTop: '1px solid #E2E8F0',
-                                    display: 'flex',
-                                    justifyContent: 'flex-end'
-                                }}>
-                                    <Link href={`/dashboard/admin/reports/${project.id}`} style={{
-                                        color: '#2563EB',
-                                        fontWeight: 700,
-                                        fontSize: '0.9rem',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        textDecoration: 'none'
-                                    }}>
-                                        Ver Resultados →
-                                    </Link>
+
+                                    <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
+                                        <div className="flex -space-x-3">
+                                            {project.students.map((s, i) => (
+                                                <div key={s.id} className="w-10 h-10 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-xs font-black text-slate-500 shadow-sm" title={s.name}>
+                                                    {s.name.charAt(0)}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <Link
+                                            href={`/dashboard/admin/reports/${project.id}`}
+                                            className="text-indigo-600 font-black text-xs uppercase tracking-widest hover:translate-x-1 transition-transform inline-flex items-center gap-2"
+                                        >
+                                            Resultados ➔
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                )}
+                        ))
+                    )}
+                </div>
             </div>
 
-            {/* MODAL GIGANTE - CON ESTILOS INLINE PARA GARANTIZAR LAYOUT (VERSIÓN COMPACTA) */}
+            {/* Premium Modal */}
             {showModal && (
-                <div style={{
-                    position: 'fixed',
-                    inset: 0,
-                    backgroundColor: 'rgba(15, 23, 42, 0.6)',
-                    backdropFilter: 'blur(8px)',
-                    zIndex: 9999,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '1rem'
-                }}>
-                    <div style={{
-                        width: '100%',
-                        maxWidth: '1100px', // Reducido de 1400px
-                        backgroundColor: 'white',
-                        borderRadius: '24px', // Reducido de 40px
-                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-                        overflow: 'hidden',
-                        border: '8px solid white', // Reducido de 12px
-                        display: 'flex',
-                        flexDirection: 'column',
-                        maxHeight: '95vh'
-                    }}>
-
-                        {/* Header del Modal */}
-                        <div style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0', position: 'relative' }}>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                style={{
-                                    position: 'absolute',
-                                    top: '1rem',
-                                    right: '1rem',
-                                    width: '40px', // Reducido
-                                    height: '40px',
-                                    borderRadius: '50%',
-                                    backgroundColor: '#F1F5F9',
-                                    border: 'none',
-                                    fontSize: '1.5rem',
-                                    cursor: 'pointer',
-                                    color: '#64748B',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}
-                            >
-                                &times;
-                            </button>
-                            <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.25rem', fontFamily: 'Poppins' }}>
-                                {editingProject ? 'Editar' : 'Nueva'} <span style={{ color: '#2563EB' }}>Investigación</span> 🚀
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
+                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-xl" onClick={() => setShowModal(false)} />
+                    <div className="relative w-full max-w-4xl bg-white rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+                        <header className="p-10 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                            <h2 className="text-3xl font-black text-slate-900">
+                                {editingProject ? 'Editar' : 'Nueva'} <span className="text-indigo-600">Investigación</span>
                             </h2>
-                        </div>
+                            <button onClick={() => setShowModal(false)} className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border-2 border-slate-100 text-2xl font-bold text-slate-400 hover:text-slate-900 transition-colors">&times;</button>
+                        </header>
 
-                        <div style={{ padding: '2rem', overflowY: 'auto', flex: 1 }}>
-                            <form onSubmit={handleAddProject} style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-
-                                {/* TÍTULO */}
-                                <div style={{ textAlign: 'center' }}>
-                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94A3B8', marginBottom: '0.5rem' }}>Título de la Obra</label>
+                        <div className="flex-1 overflow-y-auto p-10">
+                            <form onSubmit={handleAddProject} className="space-y-12">
+                                <div className="space-y-4 text-center">
+                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Título de la Obra</label>
                                     <input
                                         required
-                                        style={{
-                                            width: '100%',
-                                            padding: '1rem', // Reducido de 2rem
-                                            borderRadius: '16px',
-                                            backgroundColor: '#F8FAFC',
-                                            border: '2px solid #E2E8F0',
-                                            fontSize: '1.5rem', // Reducido de 2.5rem
-                                            fontWeight: 700,
-                                            textAlign: 'center',
-                                            color: '#1E293B',
-                                            outline: 'none',
-                                            fontFamily: 'Poppins'
-                                        }}
-                                        placeholder="ESCRIBE EL TÍTULO AQUÍ..."
+                                        className="w-full text-center text-3xl font-black text-slate-900 bg-slate-50 border-4 border-transparent focus:border-indigo-100 focus:bg-white rounded-3xl p-8 outline-none transition-all placeholder:opacity-20"
+                                        placeholder="TÍTULO AQUÍ..."
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
                                     />
                                 </div>
 
-                                {/* ALUMNOS - GRID DE 3 COLUMNAS REAL */}
-                                <div>
-                                    <label style={{ display: 'block', textAlign: 'center', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94A3B8', marginBottom: '1rem' }}>Equipo de Estudiantes (Mínimo 1)</label>
-                                    <div style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: 'repeat(3, 1fr)',
-                                        gap: '1rem', // Reducido de 2rem
-                                        width: '100%'
-                                    }}>
-                                        {studentNames.map((name, i) => (
-                                            <div key={i} style={{
-                                                position: 'relative',
-                                                borderRadius: '20px',
-                                                padding: '4px',
-                                                background: 'linear-gradient(135deg, #3B82F6 0%, #EC4899 100%)', // FILO CHULO
-                                                boxShadow: '0 4px 12px -2px rgba(59, 130, 246, 0.2)'
-                                            }}>
-                                                <div style={{
-                                                    backgroundColor: 'white',
-                                                    borderRadius: '16px',
-                                                    padding: '1rem', // Reducido
-                                                    height: '100%',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'center',
-                                                    gap: '0.75rem'
-                                                }}>
-                                                    <div style={{
-                                                        width: '40px', // Reducido
-                                                        height: '40px',
-                                                        borderRadius: '10px',
-                                                        backgroundColor: '#EFF6FF',
-                                                        color: '#2563EB',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        fontSize: '1rem',
-                                                        fontWeight: 800
-                                                    }}>
-                                                        0{i + 1}
-                                                    </div>
-                                                    <input
-                                                        style={{
-                                                            width: '100%',
-                                                            padding: '0.5rem',
-                                                            borderRadius: '8px',
-                                                            backgroundColor: '#F8FAFC',
-                                                            border: 'none',
-                                                            textAlign: 'center',
-                                                            fontSize: '1rem', // Reducido
-                                                            fontWeight: 600,
-                                                            color: '#334155',
-                                                            outline: 'none'
-                                                        }}
-                                                        placeholder="Nombre Alumno"
-                                                        value={name}
-                                                        onChange={(e) => {
-                                                            const newNames = [...studentNames];
-                                                            newNames[i] = e.target.value;
-                                                            setStudentNames(newNames);
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    {studentNames.map((name, i) => (
+                                        <div key={i} className="space-y-3">
+                                            <label className="text-[10px] font-black uppercase text-slate-400 text-center block">Alumno 0{i + 1}</label>
+                                            <input
+                                                className="w-full text-center font-bold p-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-blue-100 outline-none transition-all"
+                                                placeholder="Nombre..."
+                                                value={name}
+                                                onChange={(e) => {
+                                                    const n = [...studentNames];
+                                                    n[i] = e.target.value;
+                                                    setStudentNames(n);
+                                                }}
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
 
-                                {/* PROFESORES - GRID DE 4 COLUMNAS (1 Tutor + 3 Tribunal) */}
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '2rem', borderTop: '2px solid #F1F5F9', paddingTop: '2rem' }}>
-
-                                    {/* TUTOR */}
-                                    <div>
-                                        <label style={{ display: 'block', textAlign: 'center', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94A3B8', marginBottom: '1rem' }}>Profesor Tutor</label>
-                                        <div style={{
-                                            backgroundColor: '#FFF7ED',
-                                            borderRadius: '20px',
-                                            padding: '1.5rem',
-                                            border: '2px solid #FFEDD5',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            height: '100%'
-                                        }}>
-                                            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>👨‍🏫</div>
-                                            <select
-                                                required
-                                                style={{
-                                                    width: '100%',
-                                                    padding: '0.75rem',
-                                                    borderRadius: '12px',
-                                                    backgroundColor: 'white',
-                                                    border: 'none',
-                                                    fontSize: '0.9rem',
-                                                    fontWeight: 700,
-                                                    textAlign: 'center',
-                                                    color: '#EA580C',
-                                                    cursor: 'pointer',
-                                                    boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.05)'
-                                                }}
-                                                value={tutorId}
-                                                onChange={(e) => {
-                                                    const newTutorId = e.target.value;
-                                                    setTutorId(newTutorId);
-                                                    // Si el nuevo tutor estaba en el tribunal, quitarlo
-                                                    setSelectedTribunals(prev => prev.filter(id => id !== newTutorId));
-                                                }}
-                                            >
-                                                <option value="">Elegir Tutor...</option>
-                                                {tutors.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-                                            </select>
-                                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-12 border-t border-slate-100">
+                                    <div className="col-span-1 space-y-4">
+                                        <label className="text-xs font-black text-orange-500 uppercase block text-center">Tutor</label>
+                                        <select
+                                            required
+                                            className="w-full bg-orange-50 text-orange-700 font-black p-4 rounded-2xl outline-none border-2 border-transparent focus:border-orange-200"
+                                            value={tutorId}
+                                            onChange={(e) => {
+                                                const id = e.target.value;
+                                                setTutorId(id);
+                                                setSelectedTribunals(prev => prev.filter(t => t !== id));
+                                            }}
+                                        >
+                                            <option value="">Elegir...</option>
+                                            {tutors.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                        </select>
                                     </div>
-
-                                    {/* TRIBUNAL */}
-                                    <div>
-                                        <label style={{ display: 'block', textAlign: 'center', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94A3B8', marginBottom: '1rem' }}>Miembros del Tribunal</label>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                                    <div className="col-span-3 space-y-4">
+                                        <label className="text-xs font-black text-slate-400 uppercase block text-center tracking-widest">Tribunal (Elige 3)</label>
+                                        <div className="flex flex-wrap justify-center gap-3">
                                             {tribunals.map(t => (
-                                                <div
+                                                <button
                                                     key={t.id}
+                                                    type="button"
+                                                    disabled={t.id === tutorId}
                                                     onClick={() => toggleTribunal(t.id)}
-                                                    style={{
-                                                        position: 'relative',
-                                                        borderRadius: '20px',
-                                                        padding: '1rem',
-                                                        transition: 'all 0.2s',
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        alignItems: 'center',
-                                                        textAlign: 'center',
-                                                        backgroundColor: selectedTribunals.includes(t.id) ? '#1E293B' : (t.id === tutorId ? '#F1F5F9' : 'white'),
-                                                        color: selectedTribunals.includes(t.id) ? 'white' : (t.id === tutorId ? '#CBD5E1' : '#334155'),
-                                                        border: selectedTribunals.includes(t.id) ? 'none' : '2px solid #F1F5F9',
-                                                        opacity: t.id === tutorId ? 0.6 : 1,
-                                                        cursor: t.id === tutorId ? 'not-allowed' : 'pointer',
-                                                        transform: selectedTribunals.includes(t.id) ? 'scale(1.02)' : 'scale(1)',
-                                                        boxShadow: selectedTribunals.includes(t.id) ? '0 10px 20px -5px rgba(0,0,0,0.3)' : 'none'
-                                                    }}
+                                                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedTribunals.includes(t.id)
+                                                        ? 'bg-slate-900 text-white scale-105 shadow-lg'
+                                                        : t.id === tutorId ? 'opacity-20 grayscale' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
+                                                        }`}
                                                 >
-                                                    <div style={{
-                                                        width: '50px', // Reducido
-                                                        height: '50px',
-                                                        borderRadius: '14px',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        fontSize: '1.25rem',
-                                                        fontWeight: 800,
-                                                        marginBottom: '0.5rem',
-                                                        backgroundColor: selectedTribunals.includes(t.id) ? '#3B82F6' : '#F1F5F9',
-                                                        color: selectedTribunals.includes(t.id) ? 'white' : '#3B82F6'
-                                                    }}>
-                                                        {t.name.charAt(0)}
-                                                    </div>
-                                                    <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.1rem', fontFamily: 'Poppins', lineHeight: '1.2' }}>{t.name}</h3>
-                                                    <p style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.7 }}>
-                                                        Evaluador
-                                                    </p>
-                                                    {selectedTribunals.includes(t.id) && (
-                                                        <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', color: '#10B981', fontSize: '1rem', fontWeight: 900 }}>✓</div>
-                                                    )}
-                                                </div>
+                                                    {t.name}
+                                                </button>
                                             ))}
                                         </div>
                                     </div>
-
                                 </div>
 
-                                {/* BOTÓN FINAL */}
-                                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+                                <footer className="pt-12 text-center">
                                     <button
                                         disabled={isSaving || !title || !tutorId || selectedTribunals.length !== 3 || studentNames.filter(n => n.trim() !== '').length === 0}
                                         type="submit"
-                                        style={{
-                                            padding: '1rem 3rem',
-                                            borderRadius: '30px',
-                                            backgroundColor: (isSaving || !title || !tutorId || selectedTribunals.length !== 3 || studentNames.filter(n => n.trim() !== '').length === 0) ? '#D1D5DB' : '#10B981',
-                                            color: 'white',
-                                            fontSize: '1.25rem',
-                                            fontWeight: 800,
-                                            border: 'none',
-                                            cursor: (isSaving || !title || !tutorId || selectedTribunals.length !== 3 || studentNames.filter(n => n.trim() !== '').length === 0) ? 'not-allowed' : 'pointer',
-                                            boxShadow: (isSaving || !title || !tutorId || selectedTribunals.length !== 3 || studentNames.filter(n => n.trim() !== '').length === 0) ? 'none' : '0 10px 20px -5px rgba(16, 185, 129, 0.4)',
-                                            fontFamily: 'Poppins'
-                                        }}
+                                        className="bg-indigo-600 text-white px-16 py-6 rounded-[2rem] font-black text-xl shadow-2xl shadow-indigo-200 enabled:hover:scale-105 enabled:active:scale-95 disabled:opacity-30 transition-all uppercase tracking-widest"
                                     >
-                                        {isSaving ? 'GUARDANDO...' : `${editingProject ? 'ACTUALIZAR' : '¡LANZAR!'} INVESTIGACIÓN 🚀`}
+                                        {isSaving ? 'Guardando...' : `${editingProject ? 'Actualizar' : 'Crear'} Investigación 🚀`}
                                     </button>
-                                </div>
+                                </footer>
                             </form>
                         </div>
                     </div>
