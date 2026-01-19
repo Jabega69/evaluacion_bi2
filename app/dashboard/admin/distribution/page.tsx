@@ -92,7 +92,7 @@ export default function DistributionPage() {
 
                     <a
                         href="/api/auth/google/login"
-                        className="relative z-10 group flex items-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold transition-all hover:bg-black hover:scale-[1.02] active:scale-95 shadow-xl shadow-slate-200 text-center"
+                        className="relative z-10 group flex items-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold transition-all hover:bg-black hover:scale-[1.02] active:scale-95 shadow-xl shadow-slate-200 text-center whitespace-nowrap"
                     >
                         <span className="text-xl">🔑</span>
                         VINCULAR GOOGLE DRIVE

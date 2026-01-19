@@ -53,8 +53,17 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
                     .setIncludeFolders(true)
                     .setEnableDrives(true);
 
+                // Vista de compartidos con el usuario
+                const sharedView = new window.google.picker.DocsView(window.google.picker.ViewId.PDFs)
+                    .setOwnedByMe(false)
+                    .setMode(window.google.picker.DocsViewMode.LIST)
+                    .setIncludeFolders(true)
+                    .setEnableDrives(true);
+
                 const picker = new window.google.picker.PickerBuilder()
                     .addView(view)
+                    .addView(sharedView)
+                    .addView(window.google.picker.ViewId.RECENTLY_PICKED)
                     .setOAuthToken(response.access_token)
                     .setDeveloperKey(developerKey)
                     .enableFeature(window.google.picker.Feature.SUPPORT_DRIVES)
