@@ -19,6 +19,7 @@ export default function CalendarPage() {
     async function loadProjects() {
         setLoading(true);
         const data = await api.projects.getAll();
+
         // Sort by date (asc) handling nulls last
         data.sort((a, b) => {
             if (!a.presentationDate) return 1;
@@ -26,19 +27,23 @@ export default function CalendarPage() {
             return new Date(a.presentationDate).getTime() - new Date(b.presentationDate).getTime();
         });
 
+        const pad = (n: number) => String(n).padStart(2, '0');
+
         // Init edits state
         const initialEdits: any = {};
         data.forEach(p => {
             let localDateStr = '';
             if (p.presentationDate) {
+                // Convertir el timestamp del servidor a la hora local exacta del navegador
                 const date = new Date(p.presentationDate);
-                // Convertir a formato local YYYY-MM-DDTHH:mm manualmente para evitar desfases de UTC
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                const hours = String(date.getHours()).padStart(2, '0');
-                const minutes = String(date.getMinutes()).padStart(2, '0');
-                localDateStr = `${year}-${month}-${day}T${hours}:${minutes}`;
+                if (!isNaN(date.getTime())) {
+                    const year = date.getFullYear();
+                    const month = pad(date.getMonth() + 1);
+                    const day = pad(date.getDate());
+                    const hours = pad(date.getHours());
+                    const minutes = pad(date.getMinutes());
+                    localDateStr = `${year}-${month}-${day}T${hours}:${minutes}`;
+                }
             }
 
             initialEdits[p.id] = {
@@ -55,8 +60,24 @@ export default function CalendarPage() {
         setSubmitting(projectId);
         const edit = edits[projectId];
 
-        // Guardar la fecha tal cual se ha introducido en el input local
-        const dateToSave = edit.date ? new Date(edit.date).toISOString() : null;
+        let dateToSave = null;
+        if (edit.date && edit.date.includes('T')) {
+            // Extraemos los componentes de la fecha local del input
+            const [datePart, timePart] = edit.date.split('T');
+
+            // Obtenemos el offset actual del navegador en formato ISO (ej: +01:00)
+            const dateObj = new Date();
+            const offsetMinutes = -dateObj.getTimezoneOffset();
+            const sign = offsetMinutes >= 0 ? '+' : '-';
+            const absOffset = Math.abs(offsetMinutes);
+            const hh = String(Math.floor(absOffset / 60)).padStart(2, '0');
+            const mm = String(absOffset % 60).padStart(2, '0');
+            const offsetStr = `${sign}${hh}:${mm}`;
+
+            // Construimos la cadena ISO completa incluyendo el offset local
+            // Esto asegura que la base de datos reciba exactamente lo que ve el usuario
+            dateToSave = `${datePart}T${timePart}:00${offsetStr}`;
+        }
 
         try {
             await api.projects.schedule({
