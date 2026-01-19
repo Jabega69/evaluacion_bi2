@@ -95,7 +95,7 @@ export default function ReportView({ project }: Props) {
             }}>
                 <div style={{ flex: '0 1 auto' }}>
                     <h2 style={{ fontSize: '1.1rem', fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                        {viewMode === 'standard' ? 'Acta de resultados' : 'Detalles de evaluación'} 📑 <span style={{ fontSize: '0.45rem', verticalAlign: 'middle', opacity: 0.3 }}>v4.1</span>
+                        {viewMode === 'standard' ? 'Acta de resultados' : 'Detalles de evaluación'} 📑 <span style={{ fontSize: '0.45rem', verticalAlign: 'middle', opacity: 0.3 }}>v4.2</span>
                     </h2>
                     <p style={{ color: '#64748B', fontWeight: 600, fontSize: '0.6rem', marginTop: '0.1rem' }}>
                         {viewMode === 'standard' ? 'Documento oficial' : 'Desglose técnico'}

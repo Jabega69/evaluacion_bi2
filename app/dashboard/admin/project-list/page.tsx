@@ -50,17 +50,13 @@ export default function ProjectListPage() {
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha Exposición</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y-2 divide-slate-400">
                             {projects.map((project) => (
                                 <tr key={project.id} className="hover:bg-slate-50 transition-colors">
-                                    <td className="px-6 py-4">
+                                    <td className="px-6 py-6">
                                         <div className="font-bold text-slate-900 text-sm mb-1">{project.title}</div>
-                                        <div className="flex flex-wrap gap-1">
-                                            {project.students.map(s => (
-                                                <span key={s.id} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">
-                                                    {s.name}
-                                                </span>
-                                            ))}
+                                        <div className="text-slate-600 text-xs font-medium">
+                                            {project.students.map(s => s.name).join(', ')}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-slate-600">

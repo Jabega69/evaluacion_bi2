@@ -210,9 +210,22 @@ export const generateProjectListPDF = (projects: Project[]) => {
             ];
         }),
         theme: 'grid',
-        headStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold', lineColor: [51, 65, 85], lineWidth: 0.5 },
-        styles: { fontSize: 10, cellPadding: 6, valign: 'middle', lineColor: [71, 85, 105], lineWidth: 0.4, textColor: [15, 23, 42] },
-        alternateRowStyles: { fillColor: [248, 250, 252] },
+        headStyles: {
+            fillColor: [241, 245, 249],
+            textColor: [15, 23, 42],
+            fontStyle: 'bold',
+            lineColor: [0, 0, 0],
+            lineWidth: 0.5
+        },
+        styles: {
+            fontSize: 10,
+            cellPadding: 6,
+            valign: 'middle',
+            lineColor: [0, 0, 0],
+            lineWidth: 0.5,
+            textColor: [0, 0, 0]
+        },
+        alternateRowStyles: { fillColor: [255, 255, 255] },
         columnStyles: {
             0: { cellWidth: 70, fontStyle: 'bold' },
             1: { cellWidth: 50 },
