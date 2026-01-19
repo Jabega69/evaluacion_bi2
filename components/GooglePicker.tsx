@@ -6,6 +6,8 @@ interface GooglePickerProps {
     onFileSelected: (file: { id: string; name: string }) => void;
     clientId: string;
     developerKey: string;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 declare global {
@@ -15,36 +17,46 @@ declare global {
     }
 }
 
-export default function GooglePicker({ onFileSelected, clientId, developerKey }: GooglePickerProps) {
-    const [pickerApiLoaded, setPickerApiLoaded] = useState(false);
+let scriptLoading = false;
+let scriptLoaded = false;
+
+export default function GooglePicker({ onFileSelected, clientId, developerKey, isOpen, onClose }: GooglePickerProps) {
+    const [pickerApiLoaded, setPickerApiLoaded] = useState(scriptLoaded);
 
     useEffect(() => {
+        if (scriptLoaded) {
+            setPickerApiLoaded(true);
+            return;
+        }
+        if (scriptLoading) return;
+
         const loadScript = () => {
-            if (document.getElementById('google-picker-sdk')) {
-                if (window.gapi) {
-                    window.gapi.load('picker', { callback: () => setPickerApiLoaded(true) });
-                }
-                return;
-            }
+            scriptLoading = true;
             const script = document.createElement('script');
-            script.id = 'google-picker-sdk';
             script.src = 'https://apis.google.com/js/api.js';
             script.onload = () => {
-                window.gapi.load('picker', { callback: () => setPickerApiLoaded(true) });
+                window.gapi.load('picker', {
+                    callback: () => {
+                        scriptLoaded = true;
+                        setPickerApiLoaded(true);
+                    }
+                });
             };
             document.body.appendChild(script);
         };
         loadScript();
     }, []);
 
-    const createPicker = async () => {
-        if (!pickerApiLoaded) {
-            console.error('Picker API not loaded yet');
-            return;
+    useEffect(() => {
+        if (isOpen && pickerApiLoaded) {
+            createPicker();
         }
+    }, [isOpen, pickerApiLoaded]);
 
+    const createPicker = async () => {
         if (!clientId || !developerKey) {
-            alert('Error: Datos de configuración de Google incompletos (Client ID o API Key)');
+            console.error('Google Config Missing');
+            onClose();
             return;
         }
 
@@ -55,11 +67,10 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
                 callback: (response: any) => {
                     if (response.error !== undefined) {
                         console.error('OAuth Error:', response);
-                        alert(`Error de autenticación: ${response.error}`);
+                        onClose();
                         return;
                     }
 
-                    // Vista 1: Mi Unidad (Propios)
                     const myDriveView = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
                         .setMimeTypes('application/pdf')
                         .setMode(window.google.picker.DocsViewMode.LIST)
@@ -67,8 +78,7 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
                         .setEnableDrives(true)
                         .setLabel('MI UNIDAD');
 
-                    // Vista 2: Compartido conmigo
-                    const sharedWithMeView = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
+                    const sharedView = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
                         .setMimeTypes('application/pdf')
                         .setOwnedByMe(false)
                         .setMode(window.google.picker.DocsViewMode.LIST)
@@ -78,17 +88,19 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
 
                     const picker = new window.google.picker.PickerBuilder()
                         .addView(myDriveView)
-                        .addView(sharedWithMeView)
+                        .addView(sharedView)
                         .addView(window.google.picker.ViewId.RECENTLY_PICKED)
                         .setOAuthToken(response.access_token)
                         .setDeveloperKey(developerKey)
                         .enableFeature(window.google.picker.Feature.SUPPORT_DRIVES)
                         .enableFeature(window.google.picker.Feature.SUPPORT_TEAM_DRIVES)
-                        .enableFeature(window.google.picker.Feature.MULTISELECT_ENABLED)
                         .setCallback((data: any) => {
                             if (data.action === window.google.picker.Action.PICKED) {
                                 const file = data.docs[0];
                                 onFileSelected({ id: file.id, name: file.name });
+                                onClose();
+                            } else if (data.action === window.google.picker.Action.CANCEL) {
+                                onClose();
                             }
                         })
                         .build();
@@ -96,21 +108,11 @@ export default function GooglePicker({ onFileSelected, clientId, developerKey }:
                 },
             });
             tokenClient.requestAccessToken();
-        } catch (err: any) {
-            console.error('Error creating picker:', err);
-            alert(`Error al abrir el selector: ${err.message}`);
+        } catch (err) {
+            console.error('Picker error:', err);
+            onClose();
         }
     };
 
-    return (
-        <button
-            onClick={(e) => { e.preventDefault(); createPicker(); }}
-            className="group flex items-center gap-3 px-6 py-4 bg-white border-2 border-slate-100 rounded-2xl text-sm font-black text-slate-700 hover:border-blue-600 hover:text-blue-600 transition-all shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap"
-        >
-            <div className="w-6 h-6 flex items-center justify-center bg-slate-50 rounded-lg group-hover:bg-blue-50 transition-colors">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg" className="w-4 h-4" alt="Drive" />
-            </div>
-            SELECCIONAR MEMORIA
-        </button>
-    );
+    return null;
 }

@@ -11,6 +11,8 @@ export default function DistributionPage() {
     const [status, setStatus] = useState<Record<string, 'idle' | 'sending' | 'success' | 'error'>>({});
     const [selectedFile, setSelectedFile] = useState<{ id: string, name: string } | null>(null);
     const [confirmingProject, setConfirmingProject] = useState<Project | null>(null);
+    const [isPickerOpen, setIsPickerOpen] = useState(false);
+    const [targetProjectId, setTargetProjectId] = useState<string | null>(null);
 
     useEffect(() => {
         loadProjects();
@@ -179,14 +181,18 @@ export default function DistributionPage() {
                                         </div>
                                     ) : (
                                         <div className="w-full lg:w-auto flex justify-center">
-                                            <GooglePicker
-                                                clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}
-                                                developerKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY || ''}
-                                                onFileSelected={(file) => {
-                                                    setSelectedFile(file);
-                                                    setConfirmingProject(project);
+                                            <button
+                                                onClick={() => {
+                                                    setTargetProjectId(project.id);
+                                                    setIsPickerOpen(true);
                                                 }}
-                                            />
+                                                className="group flex items-center gap-3 px-8 py-4 bg-white border-2 border-slate-100 rounded-2xl text-sm font-black text-slate-700 hover:border-blue-600 hover:text-blue-600 transition-all shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap"
+                                            >
+                                                <div className="w-6 h-6 flex items-center justify-center bg-slate-50 rounded-lg group-hover:bg-blue-50 transition-colors">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg" className="w-4 h-4" alt="Drive" />
+                                                </div>
+                                                SELECCIONAR MEMORIA
+                                            </button>
                                         </div>
                                     )}
                                 </div>
@@ -195,6 +201,20 @@ export default function DistributionPage() {
                     )}
                 </div>
             </div>
+
+            <GooglePicker
+                clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}
+                developerKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY || ''}
+                isOpen={isPickerOpen}
+                onClose={() => setIsPickerOpen(false)}
+                onFileSelected={(file) => {
+                    const project = projects.find(p => p.id === targetProjectId);
+                    if (project) {
+                        setSelectedFile(file);
+                        setConfirmingProject(project);
+                    }
+                }}
+            />
 
             {/* Premium Confirmation Modal */}
             {confirmingProject && selectedFile && (
