@@ -158,3 +158,68 @@ export const generateDetailedPDF = (
         doc.save(`Informe_${studentName.replace(/\s+/g, '_')}_${new Date().getTime()}.pdf`);
     }
 };
+
+export const generateProjectListPDF = (projects: Project[]) => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let yPos = 20;
+
+    // --- Header (Logo IES PRADO) ---
+    try {
+        // Logo del IES (actualizado con nueva imagen de 798x192, ratio 4.15)
+        // 180mm de ancho -> 43.3mm de alto
+        doc.addImage('/logo-ies.png', 'JPEG', 15, 10, 180, 43.3);
+    } catch (e) {
+        // Fallback si falla la imagen
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('IES PRADO MAYOR', 15, 20);
+    }
+
+    yPos += 45;
+
+    // Línea horizontal decorativa
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.1);
+    doc.line(15, yPos, pageWidth - 15, yPos);
+
+    yPos += 15;
+
+    // --- Title ---
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('LISTADO GENERAL DE PROYECTOS', pageWidth / 2, yPos, { align: 'center' });
+    yPos += 15;
+
+    autoTable(doc, {
+        startY: yPos,
+        head: [['Proyecto / Alumnos', 'Tribunal', 'Tutor/a', 'Exposición']],
+        body: projects.map(p => {
+            const studentNames = p.students.map(s => s.name).join(', ');
+            const tribunalNames = p.tribunalNames?.join('\n') || 'Sin asignar';
+            const dateStr = p.presentationDate
+                ? new Date(p.presentationDate).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                : 'Pendiente';
+            const locationStr = p.presentationLocation ? `\n(${p.presentationLocation})` : '';
+
+            return [
+                p.title + '\n(' + studentNames + ')',
+                tribunalNames,
+                p.tutorName || 'Sin asignar',
+                dateStr + locationStr
+            ];
+        }),
+        theme: 'grid',
+        headStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold', lineColor: [200, 200, 200], lineWidth: 0.1 },
+        styles: { fontSize: 10, cellPadding: 4, valign: 'middle', lineColor: [200, 200, 200], lineWidth: 0.1, textColor: [51, 65, 85] },
+        alternateRowStyles: { fillColor: [255, 255, 255] },
+        columnStyles: {
+            0: { cellWidth: 70, fontStyle: 'bold' },
+            1: { cellWidth: 50 },
+            2: { cellWidth: 35 },
+            3: { cellWidth: 'auto', halign: 'center' }
+        }
+    });
+
+    doc.save(`Listado_Proyectos_${new Date().toISOString().split('T')[0]}.pdf`);
+};

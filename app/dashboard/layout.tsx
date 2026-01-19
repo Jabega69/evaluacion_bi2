@@ -10,6 +10,7 @@ const navItems = {
         { icon: '👥', label: 'Profesores', path: '/dashboard/admin/users', color: 'orange' },
         { icon: '🗓️', label: 'Calendario', path: '/dashboard/admin/calendar', color: 'blue' },
         { icon: '📈', label: 'Informes', path: '/dashboard/reports', color: 'pink' },
+        { icon: '📑', label: 'Listado Proyectos', path: '/dashboard/admin/project-list', color: 'indigo' },
     ],
     tribunal: [
         { icon: '📚', label: 'Mis proyectos', path: '/dashboard/tribunal', color: 'purple' },
