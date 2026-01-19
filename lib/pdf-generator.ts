@@ -211,21 +211,21 @@ export const generateProjectListPDF = (projects: Project[]) => {
         }),
         theme: 'grid',
         headStyles: {
-            fillColor: [241, 245, 249],
-            textColor: [15, 23, 42],
+            fillColor: [226, 232, 240],
+            textColor: [0, 0, 0],
             fontStyle: 'bold',
             lineColor: [0, 0, 0],
-            lineWidth: 0.5
+            lineWidth: 0.8
         },
         styles: {
             fontSize: 10,
-            cellPadding: 6,
+            cellPadding: 8,
             valign: 'middle',
             lineColor: [0, 0, 0],
-            lineWidth: 0.5,
+            lineWidth: 0.8,
             textColor: [0, 0, 0]
         },
-        alternateRowStyles: { fillColor: [255, 255, 255] },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
         columnStyles: {
             0: { cellWidth: 70, fontStyle: 'bold' },
             1: { cellWidth: 50 },
@@ -234,5 +234,6 @@ export const generateProjectListPDF = (projects: Project[]) => {
         }
     });
 
-    doc.save(`Listado_Proyectos_${new Date().toISOString().split('T')[0]}.pdf`);
+    const fileNameDate = new Date().toISOString().split('T')[0];
+    doc.save(`Listado_Proyectos_${fileNameDate}.pdf`);
 };
