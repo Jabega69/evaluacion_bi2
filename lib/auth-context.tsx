@@ -118,7 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         checkInitialSession();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: any, session: any) => {
             console.log('[AuthContext] Auth session change:', event, session?.user?.email);
             if (session?.user?.email) {
                 await fetchUserRole(session.user.email, session.user);

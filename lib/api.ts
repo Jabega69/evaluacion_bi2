@@ -177,7 +177,7 @@ export const api = {
 
             if (aError || !assignments || assignments.length === 0) return [];
 
-            const projectIds = assignments.map(a => a.project_id);
+            const projectIds = assignments.map((a: any) => a.project_id);
             const { data, error } = await supabase
                 .from('projects')
                 .select(`*, students (*)`)
@@ -256,9 +256,9 @@ export const api = {
             if (error || !evals) return null;
 
             // Agrupar evaluaciones por tipo
-            const writtenEvals = evals.filter(e => e.type === 'written');
-            const oralEvals = evals.filter(e => e.type === 'oral');
-            const tutorEvals = evals.filter(e => e.type === 'tutor');
+            const writtenEvals = evals.filter((e: any) => e.type === 'written');
+            const oralEvals = evals.filter((e: any) => e.type === 'oral');
+            const tutorEvals = evals.filter((e: any) => e.type === 'tutor');
 
             // Calcular medias (si hay varios miembros del tribunal)
             const calcMean = (arr: any[]) => {
@@ -285,7 +285,7 @@ export const api = {
             const tutorScore = calcMean(tutorEvals);
 
             // Preparar datos detallados para el informe de expertos
-            const detailedEvals = evals.map(e => {
+            const detailedEvals = evals.map((e: any) => {
                 let subtotal = 0;
                 if (e.type === 'written') {
                     const contentTotal = Object.values(e.scores.contentScores || {}).reduce((a: any, b: any) => a + (Number(b) || 0), 0);

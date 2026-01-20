@@ -18,7 +18,7 @@ export async function POST(req: Request) {
         }
 
         // Buscamos cualquier usuario que sea admin (en role o roles)
-        const admin = admins.find(u =>
+        const admin = admins.find((u: any) =>
             u.role === 'admin' || (u.roles && u.roles.includes('admin'))
         );
 
