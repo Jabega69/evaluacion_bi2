@@ -1,5 +1,5 @@
 import { googleAuthClient, getRedirectUri } from '@/lib/google-api';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/admin-supabase';
 import { NextResponse, NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
