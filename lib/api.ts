@@ -105,7 +105,8 @@ export const api = {
                         user_id,
                         user:users(name, email)
                     )
-                `);
+                `)
+                .order('presentation_date', { ascending: true });
 
             if (error) {
                 console.error('Error fetching projects:', error);
@@ -181,7 +182,8 @@ export const api = {
             const { data, error } = await supabase
                 .from('projects')
                 .select(`*, students (*)`)
-                .in('id', projectIds);
+                .in('id', projectIds)
+                .order('presentation_date', { ascending: true });
 
             if (error) return [];
             return (data as any[]).map(p => ({
@@ -196,7 +198,8 @@ export const api = {
             const { data, error } = await supabase
                 .from('projects')
                 .select(`*, students (*)`)
-                .eq('tutor_id', tutorId);
+                .eq('tutor_id', tutorId)
+                .order('presentation_date', { ascending: true });
 
             if (error) return [];
             return (data as any[]).map(p => ({
