@@ -131,6 +131,30 @@ export default function TutorDashboard() {
                                         </div>
                                     </div>
 
+                                    {/* INFO EXPOSICIÓN COMPACTA */}
+                                    <div style={{
+                                        backgroundColor: 'rgba(255,255,255,0.5)',
+                                        borderRadius: '12px',
+                                        padding: '0.6rem 0.8rem',
+                                        marginBottom: '1.5rem',
+                                        fontSize: '0.75rem',
+                                        color: '#0F766E',
+                                        fontWeight: 700,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '0.3rem',
+                                        border: '1px solid rgba(255,255,255,0.8)'
+                                    }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                            <span>📅</span> {project.presentationDate ? new Date(project.presentationDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Pendiente'}
+                                            <span style={{ opacity: 0.3 }}>|</span>
+                                            <span>⏰</span> {project.presentationDate ? new Date(project.presentationDate).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : 'Pendiente'}
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                            <span>📍</span> {project.presentationLocation || 'Aula pendiente'}
+                                        </div>
+                                    </div>
+
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
                                         {project.students.map(student => (
                                             <Link

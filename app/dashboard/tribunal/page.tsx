@@ -121,6 +121,37 @@ export default function TribunalDashboard() {
                                             {project.title}
                                         </h2>
 
+                                        {/* INFO EXPOSICIÓN */}
+                                        <div style={{
+                                            backgroundColor: 'rgba(255,255,255,0.7)',
+                                            borderRadius: '12px',
+                                            padding: '0.75rem 1.5rem',
+                                            display: 'inline-flex',
+                                            flexWrap: 'wrap',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            gap: '1.5rem',
+                                            marginBottom: '2rem',
+                                            fontSize: '0.9rem',
+                                            color: '#334155',
+                                            fontWeight: 700,
+                                            border: '1px solid white',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                        }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span style={{ fontSize: '1.2rem' }}>📅</span>
+                                                {project.presentationDate ? new Date(project.presentationDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'long' }) : 'Fecha pendiente'}
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span style={{ fontSize: '1.2rem' }}>⏰</span>
+                                                {project.presentationDate ? new Date(project.presentationDate).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : 'Hora pendiente'}
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span style={{ fontSize: '1.2rem' }}>📍</span>
+                                                {project.presentationLocation || 'Aula pendiente'}
+                                            </div>
+                                        </div>
+
                                         {/* Grid de Alumnos */}
                                         <div style={{
                                             display: 'flex',
