@@ -4,6 +4,8 @@ import { useAuth } from '@/lib/auth-context';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
+import RoleSwitcher from '@/components/RoleSwitcher';
+
 const navItems = {
     admin: [
         { icon: '📊', label: 'Proyectos', path: '/dashboard/admin', color: 'purple' },
@@ -24,7 +26,7 @@ const navItems = {
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const { user, logout, isLoading } = useAuth();
+    const { user, logout, isLoading, setActiveRole } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
 
@@ -32,11 +34,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         if (!isLoading && !user) {
             router.push('/');
         }
-    }, [user, isLoading, router, pathname]);
+        // If user has multiple roles but NO activeRole set, set the first one as default
+        if (user && user.roles.length > 0 && !user.activeRole) {
+            setActiveRole(user.roles[0]);
+        }
+    }, [user, isLoading, router, pathname, setActiveRole]);
 
-    if (!user || !user.activeRole) return null;
+    if (!user || (!user.activeRole && user.roles.length === 0)) return null;
 
-    const items = navItems[user.activeRole as keyof typeof navItems] || [];
+    const activeRole = user.activeRole || user.roles[0];
+    const items = navItems[activeRole as keyof typeof navItems] || [];
 
     return (
         <div className="min-h-screen">
@@ -49,9 +56,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </div>
                         <div className="sidebar-logo">EvalResearch</div>
                     </div>
-                    <p className="text-xs font-semibold tracking-wider" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                        <span style={{ textTransform: "capitalize" }}>{user.activeRole}</span> Panel
-                    </p>
+                </div>
+
+                <div className="px-5">
+                    <RoleSwitcher />
                 </div>
 
                 <div className="sidebar-nav">
