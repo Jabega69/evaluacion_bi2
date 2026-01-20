@@ -5,9 +5,11 @@ import { api } from '@/lib/api';
 import { Project } from '@/types';
 import GooglePicker from '@/components/GooglePicker';
 import { useAuth } from '@/lib/auth-context';
+import { useSearchParams } from 'next/navigation';
 
 export default function DistributionPage() {
     const { user: currentUser } = useAuth();
+    const searchParams = useSearchParams();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState<Record<string, 'idle' | 'sending' | 'success' | 'error'>>({});
@@ -17,6 +19,13 @@ export default function DistributionPage() {
     const [targetProjectId, setTargetProjectId] = useState<string | null>(null);
 
     useEffect(() => {
+        const googleStatus = searchParams.get('google');
+        if (googleStatus === 'success') {
+            alert('✅ Cuenta vinculada correctamente con Google Drive.');
+        } else if (googleStatus === 'error') {
+            alert('❌ Error al vincular con Google Drive.');
+        }
+
         loadProjects();
         if (!document.getElementById('google-gsi-client')) {
             const script = document.createElement('script');
@@ -98,13 +107,20 @@ export default function DistributionPage() {
                         </p>
                     </div>
 
-                    <a
-                        href={`/api/auth/google/login?userId=${currentUser?.id}`}
-                        className="relative z-10 group flex items-center gap-4 px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black transition-all hover:bg-black hover:scale-[1.05] active:scale-95 shadow-2xl shadow-slate-200 whitespace-nowrap text-sm tracking-widest"
-                    >
-                        <span className="text-2xl group-hover:rotate-12 transition-transform">🔑</span>
-                        VINCULAR GOOGLE DRIVE
-                    </a>
+                    {!currentUser ? (
+                        <div className="flex items-center gap-4 px-10 py-5 bg-slate-100 text-slate-400 rounded-[2rem] font-black animate-pulse cursor-not-allowed">
+                            <span className="text-2xl">⏳</span>
+                            VERIFICANDO SESIÓN...
+                        </div>
+                    ) : (
+                        <a
+                            href={`/api/auth/google/login?userId=${currentUser.id}`}
+                            className="relative z-10 group flex items-center gap-4 px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black transition-all hover:bg-black hover:scale-[1.05] active:scale-95 shadow-2xl shadow-slate-200 whitespace-nowrap text-sm tracking-widest"
+                        >
+                            <span className="text-2xl group-hover:rotate-12 transition-transform">🔑</span>
+                            VINCULAR GOOGLE DRIVE
+                        </a>
+                    )}
                 </header>
 
                 {/* Projects Grid/List */}

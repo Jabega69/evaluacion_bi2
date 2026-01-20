@@ -1,21 +1,23 @@
 import { googleAuthClient, getGmailClient, getDriveClient } from '@/lib/google-api';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
     try {
         const { projectId, fileId, fileName } = await req.json();
 
-        // 1. Obtener los tokens del administrador (asumimos el primer admin con tokens por ahora)
-        const { data: admins, error: adminError } = await supabase
+        // 1. Obtener los tokens del administrador (usamos supabaseAdmin para acceso total)
+        const { data: admins, error: adminError } = await supabaseAdmin
             .from('users')
             .select('*')
             .not('google_tokens', 'is', null);
 
         if (adminError || !admins) {
-            return NextResponse.json({ error: 'Administradores no encontrados' }, { status: 400 });
+            console.error('Admin lookup error:', adminError);
+            return NextResponse.json({ error: 'Erro al buscar administradores' }, { status: 500 });
         }
 
+        // Buscamos cualquier usuario que sea admin (en role o roles)
         const admin = admins.find(u =>
             u.role === 'admin' || (u.roles && u.roles.includes('admin'))
         );
@@ -30,12 +32,12 @@ export async function POST(req: Request) {
         // 2. Refrescar el token si es necesario
         if (tokens.expiry_date && tokens.expiry_date < Date.now()) {
             const { credentials } = await googleAuthClient.refreshAccessToken();
-            await supabase.from('users').update({ google_tokens: credentials }).eq('id', admin.id);
+            await supabaseAdmin.from('users').update({ google_tokens: credentials }).eq('id', admin.id);
             googleAuthClient.setCredentials(credentials);
         }
 
         // 3. Obtener el proyecto y sus evaluadores
-        const { data: project, error: pError } = await supabase
+        const { data: project, error: pError } = await supabaseAdmin
             .from('projects')
             .select(`
                 *,
@@ -138,7 +140,7 @@ ${admin.name}
         console.log('Email sent successfully');
 
         // 6. Marcar como enviado (opcional, podríamos añadir una columna a projects)
-        await supabase.from('projects').update({ distributed_at: new Date().toISOString() }).eq('id', projectId);
+        await supabaseAdmin.from('projects').update({ distributed_at: new Date().toISOString() }).eq('id', projectId);
 
         return NextResponse.json({ success: true });
     } catch (error: any) {
