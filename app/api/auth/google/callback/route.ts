@@ -1,4 +1,4 @@
-import { googleAuthClient, getRedirectUri } from '@/lib/google-api';
+import { getGoogleAuthClient, getRedirectUri } from '@/lib/google-api';
 import { supabaseAdmin } from '@/lib/admin-supabase';
 import { NextResponse, NextRequest } from 'next/server';
 
@@ -20,7 +20,8 @@ export async function GET(req: NextRequest) {
 
     try {
         console.log('Exchanging code for tokens...');
-        const { tokens } = await googleAuthClient.getToken({
+        const authClient = getGoogleAuthClient();
+        const { tokens } = await authClient.getToken({
             code,
             redirect_uri: REDIRECT_URI
         });

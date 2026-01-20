@@ -1,4 +1,4 @@
-import { googleAuthClient, getGmailClient, getDriveClient } from '@/lib/google-api';
+import { getGoogleAuthClient, getGmailClient, getDriveClient } from '@/lib/google-api';
 import { supabaseAdmin } from '@/lib/admin-supabase';
 import { NextResponse } from 'next/server';
 
@@ -29,13 +29,25 @@ export async function POST(req: Request) {
         console.log('Using Admin for distribution:', admin.name, '| Email:', admin.email);
 
         const tokens = admin.google_tokens;
-        googleAuthClient.setCredentials(tokens);
+        const authClient = getGoogleAuthClient();
+        authClient.setCredentials(tokens);
 
         // 2. Refrescar el token si es necesario
-        if (tokens.expiry_date && tokens.expiry_date < Date.now()) {
-            const { credentials } = await googleAuthClient.refreshAccessToken();
-            await supabaseAdmin.from('users').update({ google_tokens: credentials }).eq('id', admin.id);
-            googleAuthClient.setCredentials(credentials);
+        if (tokens.expiry_date && tokens.expiry_date < (Date.now() + 60000)) {
+            console.log('Token expired or about to expire, refreshing...');
+            if (!tokens.refresh_token) {
+                throw new Error('No hay token de refresco. Por favor, vuelve a vincular tu cuenta de Google.');
+            }
+            try {
+                const { credentials } = await authClient.refreshAccessToken();
+                // Combinar para no perder el refresh_token original si Google no lo devuelve de nuevo
+                const updatedTokens = { ...tokens, ...credentials };
+                await supabaseAdmin.from('users').update({ google_tokens: updatedTokens }).eq('id', admin.id);
+                authClient.setCredentials(updatedTokens);
+            } catch (refreshError: any) {
+                console.error('Failed to refresh token:', refreshError.message);
+                throw new Error('Error al refrescar el acceso a Google. Vuelve a vincular tu cuenta.');
+            }
         }
 
         // 3. Obtener el proyecto y sus evaluadores
@@ -63,7 +75,7 @@ export async function POST(req: Request) {
 
         // 4. Descargar el archivo de Drive para adjuntarlo
         console.log('Downloading file:', fileId);
-        const drive = getDriveClient(googleAuthClient.credentials.access_token!);
+        const drive = getDriveClient(authClient.credentials.access_token!);
         const fileResponse = await drive.files.get({
             fileId: fileId,
             alt: 'media'
@@ -73,7 +85,7 @@ export async function POST(req: Request) {
         console.log('File downloaded, size:', fileBuffer.length);
 
         // 5. Preparar el correo
-        const gmail = getGmailClient(googleAuthClient.credentials.access_token!);
+        const gmail = getGmailClient(authClient.credentials.access_token!);
         const studentNames = project.students.map((s: any) => s.name).join(', ');
         const dateStr = project.presentation_date ? new Date(project.presentation_date).toLocaleString('es-ES') : 'Pendiente';
 

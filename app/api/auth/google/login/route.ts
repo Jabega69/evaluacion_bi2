@@ -1,4 +1,4 @@
-import { googleAuthClient, getRedirectUri } from '@/lib/google-api';
+import { getGoogleAuthClient, getRedirectUri } from '@/lib/google-api';
 import { NextResponse, NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -17,7 +17,8 @@ export async function GET(req: NextRequest) {
 
     console.log('Initiating OAuth with Dynamic REDIRECT_URI:', REDIRECT_URI, 'for userId:', userId);
 
-    const authorizationUrl = googleAuthClient.generateAuthUrl({
+    const authClient = getGoogleAuthClient();
+    const authorizationUrl = authClient.generateAuthUrl({
         access_type: 'offline',
         scope: scopes,
         prompt: 'consent',
