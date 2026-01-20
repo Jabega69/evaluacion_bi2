@@ -191,7 +191,9 @@ export const api = {
                 title: p.title,
                 tutorId: p.tutor_id,
                 students: p.students || [],
-                tribunalIds: [graderId] // Simplificado para la vista actual
+                tribunalIds: [graderId],
+                presentationDate: p.presentation_date,
+                presentationLocation: p.presentation_location
             })) as Project[];
         },
         getByTutor: async (tutorId: string): Promise<Project[]> => {
@@ -207,7 +209,9 @@ export const api = {
                 title: p.title,
                 tutorId: p.tutor_id,
                 students: p.students || [],
-                tribunalIds: p.tribunal_ids || []
+                tribunalIds: p.tribunal_ids || [],
+                presentationDate: p.presentation_date,
+                presentationLocation: p.presentation_location
             })) as Project[];
         },
         create: async (data: { title: string, tutorId: string, studentNames: string[], tribunalIds: string[] }) => {
