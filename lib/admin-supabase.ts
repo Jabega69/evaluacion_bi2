@@ -1,51 +1,55 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const isServer = typeof window === 'undefined';
-const isConfigured = isServer &&
-    supabaseUrl &&
-    supabaseServiceKey &&
-    supabaseUrl !== 'undefined' &&
-    supabaseServiceKey !== 'undefined';
 
-export const supabaseAdmin = isConfigured
-    ? createClient(supabaseUrl, supabaseServiceKey)
-    : ({
-        auth: {
-            admin: {
-                createUser: async () => ({ data: { user: null }, error: { message: 'Admin client not configured' } }),
-                deleteUser: async () => ({ error: { message: 'Admin client not configured' } }),
-                updateUserById: async () => ({ error: { message: 'Admin client not configured' } }),
-            }
-        },
-        from: () => ({
-            select: () => ({
-                eq: () => ({
-                    single: async () => ({ data: null, error: { message: 'Admin client not configured' } }),
-                    limit: () => ({ data: [], error: null }),
-                }),
+const isValid = (val: any): val is string => {
+    if (!val || typeof val !== 'string') return false;
+    const trimmed = val.trim();
+    if (trimmed === '' || trimmed === 'undefined' || trimmed === 'null' || trimmed.length < 10) return false;
+    return true;
+};
+
+let adminInstance: any = null;
+
+if (isServer && isValid(url) && isValid(key)) {
+    try {
+        console.log('[Supabase Admin] Initializing on server...');
+        adminInstance = createClient(url, key);
+    } catch (e: any) {
+        console.error('[Supabase Admin] CRITICAL: Init error:', e.message);
+    }
+}
+
+const mockAdmin = {
+    auth: {
+        admin: {
+            createUser: async () => ({ data: { user: null }, error: { message: 'Admin not configured' } }),
+            deleteUser: async () => ({ error: { message: 'Admin not configured' } }),
+            updateUserById: async () => ({ error: { message: 'Admin not configured' } }),
+            listUsers: async () => ({ data: { users: [] }, error: null }),
+        }
+    },
+    from: () => ({
+        select: () => ({
+            eq: () => ({
+                single: async () => ({ data: null, error: { message: 'Admin not configured' } }),
                 limit: () => ({ data: [], error: null }),
-                order: () => ({ data: [], error: null }),
             }),
-            insert: () => ({
-                select: () => ({
-                    single: async () => ({ data: null, error: null })
-                })
-            }),
-            update: () => ({
-                eq: () => ({
-                    select: () => ({ data: [], error: null })
-                })
-            }),
-            delete: () => ({
-                eq: () => ({ data: null, error: null })
-            }),
-            upsert: () => ({ data: null, error: null }),
-        })
-    } as any);
+            limit: () => ({ data: [], error: null }),
+            order: () => ({ data: [], error: null }),
+        }),
+        insert: () => ({ select: () => ({ single: async () => ({ data: null, error: null }) }) }),
+        update: () => ({ eq: () => ({ select: () => ({ data: [], error: null }) }) }),
+        delete: () => ({ eq: () => ({ data: null, error: null }) }),
+        upsert: () => ({ data: null, error: null }),
+    })
+} as any;
 
-if (isServer && !isConfigured) {
-    console.warn('Supabase Admin: Not initialized (Server-side) - check SUPABASE_SERVICE_ROLE_KEY');
+export const supabaseAdmin = adminInstance || mockAdmin;
+
+if (isServer && !adminInstance) {
+    console.warn('[Supabase Admin] Service role key missing or invalid. Admin functions will fail.');
 }
