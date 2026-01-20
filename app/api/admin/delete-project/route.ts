@@ -13,6 +13,16 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Servicio de base de datos no configurado (Admin)' }, { status: 500 });
         }
 
+        // 1. Delete related evaluations
+        await supabaseAdmin.from('evaluations').delete().eq('project_id', projectId);
+
+        // 2. Delete tribunal assignments
+        await supabaseAdmin.from('project_tribunals').delete().eq('project_id', projectId);
+
+        // 3. Delete students
+        await supabaseAdmin.from('students').delete().eq('project_id', projectId);
+
+        // 4. Finally delete the project
         const { error } = await supabaseAdmin
             .from('projects')
             .delete()
