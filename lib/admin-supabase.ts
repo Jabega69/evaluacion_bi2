@@ -3,28 +3,40 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-const isValid = (key: string) => key && key.length > 10 && key !== 'undefined';
-
-const realAdmin = (typeof window === 'undefined' && isValid(supabaseUrl) && isValid(supabaseServiceKey))
-    ? createClient(supabaseUrl, supabaseServiceKey)
-    : null;
-
-const proxyHandler = {
-    get: (target: any, prop: string) => {
-        if (!realAdmin) {
-            const msg = typeof window !== 'undefined'
-                ? 'Forbidden: Admin client called on browser'
-                : 'Admin client not initialized (check service role key)';
-            throw new Error(msg);
-        }
-        return (realAdmin as any)[prop];
-    }
+const isValid = (key: any) => {
+    if (typeof key !== 'string') return false;
+    const k = key.trim();
+    return k.length > 20 && k !== 'undefined' && k !== 'null';
 };
 
-export const supabaseAdmin = new Proxy({}, proxyHandler) as ReturnType<typeof createClient>;
+let _realAdmin: any = null;
 
-if (typeof window === 'undefined' && !realAdmin) {
-    console.warn('--- SUPABASE ADMIN NOT INITIALIZED ---');
-    console.warn('Check SUPABASE_SERVICE_ROLE_KEY if you are on the server.');
-    console.warn('---');
-}
+const getAdmin = () => {
+    if (_realAdmin) return _realAdmin;
+
+    const isServer = typeof window === 'undefined';
+    if (isServer && isValid(supabaseUrl) && isValid(supabaseServiceKey)) {
+        try {
+            console.log('[Supabase Admin] Initializing server-side client...');
+            _realAdmin = createClient(supabaseUrl, supabaseServiceKey);
+            return _realAdmin;
+        } catch (e: any) {
+            console.error('[Supabase Admin Init Error]:', e.message);
+        }
+    }
+    return null;
+};
+
+export const supabaseAdmin = new Proxy({}, {
+    get: (target, prop) => {
+        const client = getAdmin();
+        if (!client) {
+            const isServer = typeof window === 'undefined';
+            const msg = isServer
+                ? 'Supabase Admin Error: SUPABASE_SERVICE_ROLE_KEY is missing or invalid on the server.'
+                : 'Security Error: You are trying to use the Supabase Admin client on the browser. This is strictly forbidden.';
+            throw new Error(msg);
+        }
+        return client[prop];
+    }
+}) as ReturnType<typeof createClient>;
