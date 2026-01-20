@@ -17,6 +17,7 @@ const navItems = {
     ],
     tribunal: [
         { icon: '📚', label: 'Mis proyectos', path: '/dashboard/tribunal', color: 'purple' },
+        { icon: '✨', label: 'Evaluación Estimativa', path: 'https://gemini.google.com/gem/1VwxtbNFizoyaWyNH6-9dnenK1poejxoI?usp=sharing', color: 'blue', external: true },
         { icon: '📈', label: 'Informes', path: '/dashboard/reports', color: 'pink' },
     ],
     tutor: [
@@ -43,7 +44,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (!user || (!user.activeRole && user.roles.length === 0)) return null;
 
     const activeRole = user.activeRole || user.roles[0];
-    const items = navItems[activeRole as keyof typeof navItems] || [];
+    const items = (navItems[activeRole as keyof typeof navItems] || []) as any[];
 
     return (
         <div className="min-h-screen">
@@ -66,7 +67,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {items.map((item) => (
                         <div
                             key={item.path}
-                            onClick={() => router.push(item.path)}
+                            onClick={() => {
+                                if (item.external) {
+                                    window.open(item.path, '_blank');
+                                } else {
+                                    router.push(item.path);
+                                }
+                            }}
                             className={`sidebar-item ${pathname === item.path ? 'active' : ''}`}
                         >
                             <span className="sidebar-item-icon">{item.icon}</span>
