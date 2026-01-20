@@ -7,6 +7,8 @@ import GooglePicker from '@/components/GooglePicker';
 import { useAuth } from '@/lib/auth-context';
 import { useSearchParams } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default function DistributionPage() {
     const { user: currentUser, refreshUser } = useAuth();
     const searchParams = useSearchParams();
@@ -17,17 +19,29 @@ export default function DistributionPage() {
     const [confirmingProject, setConfirmingProject] = useState<Project | null>(null);
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const [targetProjectId, setTargetProjectId] = useState<string | null>(null);
+    const [justLinked, setJustLinked] = useState(false);
 
     useEffect(() => {
-        const googleStatus = searchParams.get('google');
+        // Doble comprobación: via Next.js params y via window literal
+        const params = new URLSearchParams(window.location.search);
+        const googleStatus = params.get('google') || searchParams.get('google');
+
+        console.log('Detected Google Status:', googleStatus);
+
         if (googleStatus === 'success') {
-            alert('✅ Cuenta vinculada correctamente con Google Drive.');
+            setJustLinked(true);
             refreshUser();
-            // Limpiar la URL sin recargar la página
+            // Limpiar la URL sin recargar para no repetir la alerta
             window.history.replaceState({}, '', window.location.pathname);
+
+            // Forzar un refresco extra después de un pequeño delay
+            setTimeout(() => {
+                refreshUser();
+            }, 2000);
         } else if (googleStatus === 'error') {
-            const reason = searchParams.get('reason');
-            alert(`❌ Error al vincular con Google Drive: ${reason || 'Error desconocido'}`);
+            const reason = params.get('reason') || searchParams.get('reason');
+            alert(`❌ ERROR DE VINCULACIÓN: ${reason}. Por favor, vuelve a intentarlo.`);
+            window.history.replaceState({}, '', window.location.pathname);
         }
 
         loadProjects();
@@ -110,6 +124,12 @@ export default function DistributionPage() {
                             Gestiona el envío automático de reportes finales a los tribunales asignados.
                         </p>
                     </div>
+
+                    {justLinked && (
+                        <div className="relative z-10 w-full mb-6 p-4 bg-green-500 text-white rounded-2xl font-bold animate-bounce text-center">
+                            ✅ ¡VINCULACIÓN COMPLETADA CON ÉXITO!
+                        </div>
+                    )}
 
                     {!currentUser ? (
                         <div className="flex items-center gap-4 px-10 py-5 bg-slate-100 text-slate-400 rounded-[2rem] font-black animate-pulse cursor-not-allowed">
