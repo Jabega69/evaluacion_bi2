@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Project } from '@/types';
 import GooglePicker from '@/components/GooglePicker';
+import { useAuth } from '@/lib/auth-context';
 
 export default function DistributionPage() {
+    const { user: currentUser } = useAuth();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState<Record<string, 'idle' | 'sending' | 'success' | 'error'>>({});
@@ -97,7 +99,7 @@ export default function DistributionPage() {
                     </div>
 
                     <a
-                        href="/api/auth/google/login"
+                        href={`/api/auth/google/login?userId=${currentUser?.id}`}
                         className="relative z-10 group flex items-center gap-4 px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black transition-all hover:bg-black hover:scale-[1.05] active:scale-95 shadow-2xl shadow-slate-200 whitespace-nowrap text-sm tracking-widest"
                     >
                         <span className="text-2xl group-hover:rotate-12 transition-transform">🔑</span>

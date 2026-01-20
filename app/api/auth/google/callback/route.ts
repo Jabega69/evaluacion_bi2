@@ -1,5 +1,5 @@
 import { googleAuthClient, getRedirectUri } from '@/lib/google-api';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import { NextResponse, NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -18,15 +18,23 @@ export async function GET(req: NextRequest) {
             redirect_uri: REDIRECT_URI
         });
 
-        const { data: { user } } = await supabase.auth.getUser();
+        const state = searchParams.get('state');
+        console.log('Google Auth Callback - State (UserId):', state);
 
-        if (user) {
-            const { error } = await supabase
+        if (state) {
+            // Usamos supabaseAdmin para ignorar RLS y asegurar la actualización
+            const { error } = await supabaseAdmin
                 .from('users')
                 .update({ google_tokens: tokens })
-                .eq('id', user.id);
+                .eq('id', state);
 
-            if (error) throw error;
+            if (error) {
+                console.error('Error updating user tokens:', error);
+                throw error;
+            }
+            console.log('Successfully linked Google tokens for user:', state);
+        } else {
+            console.warn('Google Auth Callback: No state (userId) provided. Tokens not saved.');
         }
 
         return NextResponse.redirect(new URL('/dashboard/admin/distribution?google=success', req.url));

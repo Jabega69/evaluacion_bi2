@@ -10,13 +10,17 @@ export async function GET(req: NextRequest) {
     const host = req.headers.get('host') || 'localhost:3000';
     const REDIRECT_URI = getRedirectUri(host);
 
-    console.log('Initiating OAuth with Dynamic REDIRECT_URI:', REDIRECT_URI);
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('userId');
+
+    console.log('Initiating OAuth with Dynamic REDIRECT_URI:', REDIRECT_URI, 'for userId:', userId);
 
     const authorizationUrl = googleAuthClient.generateAuthUrl({
         access_type: 'offline',
         scope: scopes,
         prompt: 'consent',
-        redirect_uri: REDIRECT_URI
+        redirect_uri: REDIRECT_URI,
+        state: userId || undefined
     });
 
     return NextResponse.redirect(authorizationUrl);
