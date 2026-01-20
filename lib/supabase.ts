@@ -9,6 +9,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Admin client for server-side operations (use only in API routes)
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+// Admin client for server-side operations (use ONLY in API routes)
+// Sensitive keys are not available on the client, so we prevent initialization there.
+export const supabaseAdmin = (typeof window === 'undefined' && process.env.SUPABASE_SERVICE_ROLE_KEY)
+    ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY)
+    : null as any;
