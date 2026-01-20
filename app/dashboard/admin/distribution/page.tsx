@@ -8,7 +8,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useSearchParams } from 'next/navigation';
 
 export default function DistributionPage() {
-    const { user: currentUser } = useAuth();
+    const { user: currentUser, refreshUser } = useAuth();
     const searchParams = useSearchParams();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
@@ -22,8 +22,12 @@ export default function DistributionPage() {
         const googleStatus = searchParams.get('google');
         if (googleStatus === 'success') {
             alert('✅ Cuenta vinculada correctamente con Google Drive.');
+            refreshUser();
+            // Limpiar la URL sin recargar la página
+            window.history.replaceState({}, '', window.location.pathname);
         } else if (googleStatus === 'error') {
-            alert('❌ Error al vincular con Google Drive.');
+            const reason = searchParams.get('reason');
+            alert(`❌ Error al vincular con Google Drive: ${reason || 'Error desconocido'}`);
         }
 
         loadProjects();

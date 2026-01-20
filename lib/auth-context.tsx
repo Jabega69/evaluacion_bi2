@@ -12,6 +12,7 @@ interface AuthContextType {
     signUp: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
     logout: () => Promise<void>;
     setActiveRole: (role: Role) => void;
+    refreshUser: () => Promise<void>;
     isLoading: boolean;
 }
 
@@ -209,8 +210,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const refreshUser = async () => {
+        if (user?.email) {
+            await fetchUserRole(user.email);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, loginWithGoogle, signUp, logout, setActiveRole, isLoading }}>
+        <AuthContext.Provider value={{ user, login, loginWithGoogle, signUp, logout, setActiveRole, refreshUser, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

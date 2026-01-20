@@ -26,6 +26,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Administrador no vinculado con Google' }, { status: 400 });
         }
 
+        console.log('Using Admin for distribution:', admin.name, '| Email:', admin.email);
+
         const tokens = admin.google_tokens;
         googleAuthClient.setCredentials(tokens);
 
