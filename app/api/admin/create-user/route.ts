@@ -1,18 +1,15 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/admin-supabase';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
     try {
         const { email, password, name, roles } = await req.json();
 
-        // 1. Initialize Supabase with Service Role Key (Server-side only)
-        // This allows creating users without signing them in
-        const supabaseAdmin = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        );
+        if (!supabaseAdmin) {
+            return NextResponse.json({ error: 'Servicio de base de datos no configurado (Admin)' }, { status: 500 });
+        }
 
-        // 2. Create the user in Supabase Auth
+        // 1. Create the user in Supabase Auth
         const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
             password,
@@ -25,7 +22,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: authError.message }, { status: 400 });
         }
 
-        // 3. Insert into public.users table (or update if already exists from seed)
+        // 2. Insert into public.users table (or update if already exists from seed)
         const { error: dbError } = await supabaseAdmin
             .from('users')
             .upsert({

@@ -1,14 +1,13 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/admin-supabase';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
     try {
         const { title, tutorId, studentNames, tribunalIds } = await req.json();
 
-        const supabaseAdmin = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        );
+        if (!supabaseAdmin) {
+            return NextResponse.json({ error: 'Servicio de base de datos no configurado (Admin)' }, { status: 500 });
+        }
 
         console.log('[CreateProject] Starting for title:', title);
 

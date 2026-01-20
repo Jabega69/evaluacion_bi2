@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/admin-supabase';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -9,10 +9,9 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
         }
 
-        const supabaseAdmin = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        );
+        if (!supabaseAdmin) {
+            return NextResponse.json({ error: 'Servicio de base de datos no configurado (Admin)' }, { status: 500 });
+        }
 
         // 1. Update Supabase Auth Metadata (if user exists in Auth)
         const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
@@ -22,8 +21,6 @@ export async function POST(req: Request) {
 
         if (authError) {
             console.warn('Auth Update Warning (User might not exist in Auth):', authError.message);
-            // We continue even if Auth fails, because the user might only exist in the public table
-            // or might have been created via a different method.
         }
 
         // 2. Update public.users table
