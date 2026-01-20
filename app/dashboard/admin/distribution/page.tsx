@@ -112,6 +112,17 @@ export default function DistributionPage() {
                             <span className="text-2xl">⏳</span>
                             VERIFICANDO SESIÓN...
                         </div>
+                    ) : currentUser.google_tokens ? (
+                        <div className="relative z-10 group flex items-center gap-4 px-10 py-5 bg-green-50 text-green-700 rounded-[2rem] font-black border-2 border-green-100 shadow-sm">
+                            <span className="text-2xl">✅</span>
+                            DRIVE VINCULADO
+                            <a
+                                href={`/api/auth/google/login?userId=${currentUser.id}`}
+                                className="ml-4 text-[10px] underline opacity-50 hover:opacity-100"
+                            >
+                                Re-vincular
+                            </a>
+                        </div>
                     ) : (
                         <a
                             href={`/api/auth/google/login?userId=${currentUser.id}`}

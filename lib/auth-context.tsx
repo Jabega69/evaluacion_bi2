@@ -59,7 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     setUser({
                         ...data,
                         roles,
-                        activeRole: roles.length === 1 ? roles[0] : undefined
+                        activeRole: roles.length === 1 ? roles[0] : undefined,
+                        google_tokens: data.google_tokens
                     });
                     success = true;
                 }

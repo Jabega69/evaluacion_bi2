@@ -17,29 +17,54 @@ export async function GET(req: NextRequest) {
             code,
             redirect_uri: REDIRECT_URI
         });
-
         const state = searchParams.get('state');
-        console.log('Google Auth Callback - State (UserId):', state);
 
+        // 1. Intento por ID (state)
         if (state) {
-            // Usamos supabaseAdmin para ignorar RLS y asegurar la actualización
-            const { error } = await supabaseAdmin
+            console.log('Google Auth: Attempting update by ID:', state);
+            const { error, count } = await supabaseAdmin
                 .from('users')
                 .update({ google_tokens: tokens })
-                .eq('id', state);
+                .eq('id', state)
+                .select();
 
-            if (error) {
-                console.error('Error updating user tokens:', error);
-                throw error;
+            if (!error && count && count > 0) {
+                console.log('Google Auth: Linked by ID successfully');
+                return NextResponse.redirect(new URL('/dashboard/admin/distribution?google=success', req.url));
             }
-            console.log('Successfully linked Google tokens for user:', state);
-        } else {
-            console.warn('Google Auth Callback: No state (userId) provided. Tokens not saved.');
+            if (error) console.error('Google Auth: ID update error:', error);
         }
 
-        return NextResponse.redirect(new URL('/dashboard/admin/distribution?google=success', req.url));
+        // 2. Fallback por Email (decodificando id_token)
+        if (tokens.id_token) {
+            try {
+                const payloadBase64 = tokens.id_token.split('.')[1];
+                const payloadJson = Buffer.from(payloadBase64, 'base64').toString();
+                const decodedToken = JSON.parse(payloadJson);
+                const email = decodedToken.email;
+
+                if (email) {
+                    console.log('Google Auth: Attempting fallback by Email:', email);
+                    const { error, count } = await supabaseAdmin
+                        .from('users')
+                        .update({ google_tokens: tokens })
+                        .eq('email', email)
+                        .select();
+
+                    if (!error && count && count > 0) {
+                        console.log('Google Auth: Linked by Email successfully');
+                        return NextResponse.redirect(new URL('/dashboard/admin/distribution?google=success', req.url));
+                    }
+                }
+            } catch (e) {
+                console.error('Google Auth: Error decoding id_token:', e);
+            }
+        }
+
+        console.error('Google Auth: Failed to link account - No matching user found');
+        return NextResponse.redirect(new URL('/dashboard/admin/distribution?google=error', req.url));
     } catch (error: any) {
-        console.error('Google Auth Error:', error);
+        console.error('Google Auth: Critical Error:', error);
         return NextResponse.redirect(new URL('/dashboard/admin/distribution?google=error', req.url));
     }
 }

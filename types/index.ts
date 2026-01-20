@@ -7,6 +7,7 @@ export interface User {
   roles: Role[];
   activeRole?: Role;
   needs_password_reset?: boolean;
+  google_tokens?: any;
 }
 
 export interface Student {
