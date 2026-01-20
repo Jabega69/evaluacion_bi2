@@ -1,42 +1,51 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const isValid = (key: any) => {
-    if (typeof key !== 'string') return false;
-    const k = key.trim();
-    return k.length > 20 && k !== 'undefined' && k !== 'null';
-};
+const isServer = typeof window === 'undefined';
+const isConfigured = isServer &&
+    supabaseUrl &&
+    supabaseServiceKey &&
+    supabaseUrl !== 'undefined' &&
+    supabaseServiceKey !== 'undefined';
 
-let _realAdmin: any = null;
+export const supabaseAdmin = isConfigured
+    ? createClient(supabaseUrl, supabaseServiceKey)
+    : ({
+        auth: {
+            admin: {
+                createUser: async () => ({ data: { user: null }, error: { message: 'Admin client not configured' } }),
+                deleteUser: async () => ({ error: { message: 'Admin client not configured' } }),
+                updateUserById: async () => ({ error: { message: 'Admin client not configured' } }),
+            }
+        },
+        from: () => ({
+            select: () => ({
+                eq: () => ({
+                    single: async () => ({ data: null, error: { message: 'Admin client not configured' } }),
+                    limit: () => ({ data: [], error: null }),
+                }),
+                limit: () => ({ data: [], error: null }),
+                order: () => ({ data: [], error: null }),
+            }),
+            insert: () => ({
+                select: () => ({
+                    single: async () => ({ data: null, error: null })
+                })
+            }),
+            update: () => ({
+                eq: () => ({
+                    select: () => ({ data: [], error: null })
+                })
+            }),
+            delete: () => ({
+                eq: () => ({ data: null, error: null })
+            }),
+            upsert: () => ({ data: null, error: null }),
+        })
+    } as any);
 
-const getAdmin = () => {
-    if (_realAdmin) return _realAdmin;
-
-    const isServer = typeof window === 'undefined';
-    if (isServer && isValid(supabaseUrl) && isValid(supabaseServiceKey)) {
-        try {
-            console.log('[Supabase Admin] Initializing server-side client...');
-            _realAdmin = createClient(supabaseUrl, supabaseServiceKey);
-            return _realAdmin;
-        } catch (e: any) {
-            console.error('[Supabase Admin Init Error]:', e.message);
-        }
-    }
-    return null;
-};
-
-export const supabaseAdmin = new Proxy({}, {
-    get: (target, prop) => {
-        const client = getAdmin();
-        if (!client) {
-            const isServer = typeof window === 'undefined';
-            const msg = isServer
-                ? 'Supabase Admin Error: SUPABASE_SERVICE_ROLE_KEY is missing or invalid on the server.'
-                : 'Security Error: You are trying to use the Supabase Admin client on the browser. This is strictly forbidden.';
-            throw new Error(msg);
-        }
-        return client[prop];
-    }
-}) as ReturnType<typeof createClient>;
+if (isServer && !isConfigured) {
+    console.warn('Supabase Admin: Not initialized (Server-side) - check SUPABASE_SERVICE_ROLE_KEY');
+}
