@@ -87,6 +87,7 @@ export default function DistributionPage() {
             }
 
             setStatus(prev => ({ ...prev, [projectId]: 'success' }));
+            loadProjects(); // Recargar para ver el cambio de color
             setTimeout(() => {
                 setStatus(prev => ({ ...prev, [projectId]: 'idle' }));
             }, 5000);
@@ -207,6 +208,13 @@ export default function DistributionPage() {
                                         <div className="text-[10px] font-bold text-slate-400 uppercase italic">
                                             {project.tribunalEmails?.length || 0} destinatarios configurados
                                         </div>
+                                        {project.distributedAt && (
+                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 rounded-lg border border-red-100/50">
+                                                <span className="text-[10px] font-black uppercase tracking-tighter">
+                                                    Enviado el {new Date(project.distributedAt).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -239,12 +247,16 @@ export default function DistributionPage() {
                                                     setTargetProjectId(project.id);
                                                     setIsPickerOpen(true);
                                                 }}
-                                                className="group flex items-center gap-3 px-8 py-4 bg-white border-2 border-slate-100 rounded-2xl text-sm font-black text-slate-700 hover:border-blue-600 hover:text-blue-600 transition-all shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap"
+                                                className={`group flex items-center gap-3 px-8 py-4 bg-white border-2 rounded-2xl text-sm font-black transition-all shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap ${project.distributedAt
+                                                    ? 'border-red-100 text-red-500 hover:border-red-600'
+                                                    : 'border-slate-100 text-slate-700 hover:border-blue-600 hover:text-blue-600'
+                                                    }`}
                                             >
-                                                <div className="w-6 h-6 flex items-center justify-center bg-slate-50 rounded-lg group-hover:bg-blue-50 transition-colors">
+                                                <div className={`w-6 h-6 flex items-center justify-center rounded-lg transition-colors ${project.distributedAt ? 'bg-red-50' : 'bg-slate-50 group-hover:bg-blue-50'
+                                                    }`}>
                                                     <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg" className="w-4 h-4" alt="Drive" />
                                                 </div>
-                                                SELECCIONAR MEMORIA
+                                                {project.distributedAt ? 'RE-ENVIAR MEMORIA' : 'SELECCIONAR MEMORIA'}
                                             </button>
                                         </div>
                                     )}

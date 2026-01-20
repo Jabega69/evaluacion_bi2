@@ -27,6 +27,7 @@ export interface Project {
   tutorEmail?: string;
   tribunalNames?: string[];
   tribunalEmails?: string[];
+  distributedAt?: string;
 }
 
 // Rubric Structures

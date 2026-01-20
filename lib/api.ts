@@ -123,7 +123,8 @@ export const api = {
                 tribunalNames: (p.project_tribunals || []).map((t: any) => t.user?.name).filter(Boolean),
                 tribunalEmails: (p.project_tribunals || []).map((t: any) => t.user?.email).filter(Boolean),
                 presentationDate: p.presentation_date,
-                presentationLocation: p.presentation_location
+                presentationLocation: p.presentation_location,
+                distributedAt: p.distributed_at
             })) as Project[];
         },
         getById: async (id: string): Promise<Project | undefined> => {
@@ -142,7 +143,8 @@ export const api = {
                 students: project.students || [],
                 tribunalIds: ((project as any).project_tribunals || []).map((t: any) => t.user_id),
                 presentationDate: project.presentation_date,
-                presentationLocation: project.presentation_location
+                presentationLocation: project.presentation_location,
+                distributedAt: project.distributed_at
             } as Project;
         },
         update: async (id: string, updates: Partial<Project>): Promise<boolean> => {
@@ -193,7 +195,8 @@ export const api = {
                 students: p.students || [],
                 tribunalIds: [graderId],
                 presentationDate: p.presentation_date,
-                presentationLocation: p.presentation_location
+                presentationLocation: p.presentation_location,
+                distributedAt: p.distributed_at
             })) as Project[];
         },
         getByTutor: async (tutorId: string): Promise<Project[]> => {
@@ -211,7 +214,8 @@ export const api = {
                 students: p.students || [],
                 tribunalIds: p.tribunal_ids || [],
                 presentationDate: p.presentation_date,
-                presentationLocation: p.presentation_location
+                presentationLocation: p.presentation_location,
+                distributedAt: p.distributed_at
             })) as Project[];
         },
         create: async (data: { title: string, tutorId: string, studentNames: string[], tribunalIds: string[] }) => {
