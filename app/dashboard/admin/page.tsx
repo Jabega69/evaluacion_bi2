@@ -275,7 +275,7 @@ export default function AdminDashboard() {
                                     display: 'flex',
                                     justifyContent: 'flex-end'
                                 }}>
-                                    <Link href={`/dashboard/admin/reports/${project.id}`} style={{
+                                    <Link href={`/dashboard/reports/${project.id}`} style={{
                                         color: '#2563EB',
                                         fontWeight: 700,
                                         fontSize: '0.9rem',
