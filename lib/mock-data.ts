@@ -194,8 +194,8 @@ export const WRITTEN_RUBRIC: WrittenRubric = {
     ],
     formatItems: [
         { id: 'f1', label: 'Márgenes correctos (2.5cm)', maxScore: 1 },
-        { id: 'f2', label: 'Tipografía (Times/Arial 12pt)', maxScore: 1 },
-        { id: 'f3', label: 'Interlineado (1.5)', maxScore: 1 },
+        { id: 'f2', label: 'Tipografía (Times 12pt / Arial 11pt)', maxScore: 1 },
+        { id: 'f3', label: 'Interlineado doble', maxScore: 1 },
         { id: 'f4', label: 'Paginación correcta', maxScore: 1 },
         { id: 'f5', label: 'Índice bien estructura', maxScore: 1 },
         { id: 'f6', label: 'Citas según APA 7', maxScore: 1 },
