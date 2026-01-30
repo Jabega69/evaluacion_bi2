@@ -128,9 +128,7 @@ export const generateDetailedPDF = (
                 });
             }
 
-            if (ev.feedback) {
-                details.push([{ content: 'OBSERVACIONES: ' + ev.feedback, colSpan: 2, styles: { fontStyle: 'italic', textColor: [100, 100, 100] } }]);
-            }
+
 
             autoTable(doc, {
                 startY: yPos,

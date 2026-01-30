@@ -471,60 +471,7 @@ export default function ReportView({ project }: Props) {
                                             </div>
                                         </div>
 
-                                        {/* Line Separator */}
-                                        <div style={{ width: '100%', height: '1px', backgroundColor: '#F1F5F9' }}></div>
 
-                                        {/* Observaciones */}
-                                        <div>
-                                            <h3 style={{ fontSize: '1.25rem', fontWeight: 950, color: '#0F172A', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                <span style={{ fontSize: '1.5rem' }}>✒️</span> Observaciones del Tribunal
-                                            </h3>
-
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                                {reportData.evaluations.filter((ev: any) => ev.feedback).length === 0 ? (
-                                                    <div style={{
-                                                        padding: '3rem 2rem',
-                                                        textAlign: 'center',
-                                                        backgroundColor: '#F8FAFC',
-                                                        borderRadius: '24px',
-                                                        border: '2px dashed #E2E8F0',
-                                                        color: '#94A3B8'
-                                                    }}>
-                                                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>😴</div>
-                                                        <p style={{ fontWeight: 700, fontSize: '0.9rem' }}>No se han registrado observaciones todavía.</p>
-                                                    </div>
-                                                ) : (
-                                                    reportData.evaluations.map((ev: any, i: number) => ev.feedback && (
-                                                        <div key={i} style={{
-                                                            padding: '1.5rem',
-                                                            borderRadius: '24px',
-                                                            backgroundColor: '#F8FAFC',
-                                                            border: '1px solid #F1F5F9'
-                                                        }}>
-                                                            <div style={{
-                                                                fontSize: '0.7rem',
-                                                                fontWeight: 900,
-                                                                color: '#94A3B8',
-                                                                marginBottom: '0.75rem',
-                                                                display: 'flex',
-                                                                justifyContent: 'space-between',
-                                                                letterSpacing: '0.05em'
-                                                            }}>
-                                                                <span>{ev.graderName}</span>
-                                                                <span style={{
-                                                                    color: ev.type === 'written' ? '#6366F1' : (ev.type === 'oral' ? '#F43F5E' : '#10B981'),
-                                                                    backgroundColor: 'white',
-                                                                    padding: '0.2rem 0.5rem',
-                                                                    borderRadius: '6px',
-                                                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                                                                }}>{ev.type === 'written' ? 'Escrita' : (ev.type === 'oral' ? 'Oral' : 'Tutoría')}</span>
-                                                            </div>
-                                                            <p style={{ fontSize: '1rem', color: '#334155', fontWeight: 600, fontStyle: 'italic', lineHeight: 1.6 }}>"{ev.feedback}"</p>
-                                                        </div>
-                                                    ))
-                                                )}
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </>
