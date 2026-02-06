@@ -355,46 +355,23 @@ export const api = {
                 submittedAt: data.submitted_at
             };
         },
-        submitWritten: async (evaluation: WrittenEvaluation) => {
-            // Check if exists
-            const { data: existing } = await supabase
+        submitWritten: async (evaluation: Omit<WrittenEvaluation, 'id' | 'submittedAt'>) => {
+            const { error } = await supabase
                 .from('evaluations')
-                .select('id')
-                .eq('project_id', evaluation.projectId)
-                .eq('student_id', evaluation.studentId)
-                .eq('grader_id', evaluation.graderId)
-                .eq('type', 'written')
-                .maybeSingle();
-
-            if (existing) {
-                // Update
-                const { error } = await supabase
-                    .from('evaluations')
-                    .update({
-                        scores: {
-                            contentScores: evaluation.contentScores,
-                            formatScores: evaluation.formatScores
-                        },
-                        submitted_at: new Date().toISOString()
-                    })
-                    .eq('id', existing.id);
-                return { success: !error };
-            } else {
-                // Insert
-                const { error } = await supabase
-                    .from('evaluations')
-                    .insert({
-                        project_id: evaluation.projectId,
-                        student_id: evaluation.studentId,
-                        grader_id: evaluation.graderId,
-                        type: 'written',
-                        scores: {
-                            contentScores: evaluation.contentScores,
-                            formatScores: evaluation.formatScores
-                        }
-                    });
-                return { success: !error };
-            }
+                .upsert({
+                    project_id: evaluation.projectId,
+                    student_id: evaluation.studentId,
+                    grader_id: evaluation.graderId,
+                    type: 'written',
+                    scores: {
+                        contentScores: evaluation.contentScores,
+                        formatScores: evaluation.formatScores
+                    },
+                    submitted_at: new Date().toISOString()
+                }, {
+                    onConflict: 'project_id, student_id, grader_id, type'
+                });
+            return { success: !error };
         },
         getOral: async (projectId: string, studentId: string, graderId: string): Promise<OralEvaluation | null> => {
             const { data, error } = await supabase
@@ -418,43 +395,23 @@ export const api = {
                 submittedAt: data.submitted_at
             };
         },
-        submitOral: async (evaluation: OralEvaluation) => {
-            const { data: existing } = await supabase
+        submitOral: async (evaluation: Omit<OralEvaluation, 'id' | 'submittedAt'>) => {
+            const { error } = await supabase
                 .from('evaluations')
-                .select('id')
-                .eq('project_id', evaluation.projectId)
-                .eq('student_id', evaluation.studentId)
-                .eq('grader_id', evaluation.graderId)
-                .eq('type', 'oral')
-                .maybeSingle();
-
-            if (existing) {
-                const { error } = await supabase
-                    .from('evaluations')
-                    .update({
-                        scores: {
-                            blockScores: evaluation.blockScores,
-                            timeScore: evaluation.timeScore
-                        },
-                        submitted_at: new Date().toISOString()
-                    })
-                    .eq('id', existing.id);
-                return { success: !error };
-            } else {
-                const { error } = await supabase
-                    .from('evaluations')
-                    .insert({
-                        project_id: evaluation.projectId,
-                        student_id: evaluation.studentId,
-                        grader_id: evaluation.graderId,
-                        type: 'oral',
-                        scores: {
-                            blockScores: evaluation.blockScores,
-                            timeScore: evaluation.timeScore
-                        }
-                    });
-                return { success: !error };
-            }
+                .upsert({
+                    project_id: evaluation.projectId,
+                    student_id: evaluation.studentId,
+                    grader_id: evaluation.graderId,
+                    type: 'oral',
+                    scores: {
+                        blockScores: evaluation.blockScores,
+                        timeScore: evaluation.timeScore
+                    },
+                    submitted_at: new Date().toISOString()
+                }, {
+                    onConflict: 'project_id, student_id, grader_id, type'
+                });
+            return { success: !error };
         },
         getTutor: async (projectId: string, studentId: string, tutorId: string): Promise<TutorEvaluation | null> => {
             const { data, error } = await supabase
@@ -477,41 +434,22 @@ export const api = {
                 submittedAt: data.submitted_at
             };
         },
-        submitTutor: async (evaluation: TutorEvaluation) => {
-            const { data: existing } = await supabase
+        submitTutor: async (evaluation: Omit<TutorEvaluation, 'id' | 'submittedAt'>) => {
+            const { error } = await supabase
                 .from('evaluations')
-                .select('id')
-                .eq('project_id', evaluation.projectId)
-                .eq('student_id', evaluation.studentId)
-                .eq('grader_id', evaluation.tutorId)
-                .eq('type', 'tutor')
-                .maybeSingle();
-
-            if (existing) {
-                const { error } = await supabase
-                    .from('evaluations')
-                    .update({
-                        scores: {
-                            scores: evaluation.scores
-                        },
-                        submitted_at: new Date().toISOString()
-                    })
-                    .eq('id', existing.id);
-                return { success: !error };
-            } else {
-                const { error } = await supabase
-                    .from('evaluations')
-                    .insert({
-                        project_id: evaluation.projectId,
-                        student_id: evaluation.studentId,
-                        grader_id: evaluation.tutorId,
-                        type: 'tutor',
-                        scores: {
-                            scores: evaluation.scores
-                        }
-                    });
-                return { success: !error };
-            }
+                .upsert({
+                    project_id: evaluation.projectId,
+                    student_id: evaluation.studentId,
+                    grader_id: evaluation.tutorId,
+                    type: 'tutor',
+                    scores: {
+                        scores: evaluation.scores
+                    },
+                    submitted_at: new Date().toISOString()
+                }, {
+                    onConflict: 'project_id, student_id, grader_id, type'
+                });
+            return { success: !error };
         }
     }
 };

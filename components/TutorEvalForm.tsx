@@ -34,12 +34,10 @@ export default function TutorEvalForm({ rubric, project, student, tutorId, initi
         setSubmitting(true);
         try {
             await api.submissions.submitTutor({
-                id: crypto.randomUUID(),
                 projectId: project.id,
                 tutorId: tutorId,
                 studentId: student.id,
-                scores,
-                submittedAt: new Date().toISOString()
+                scores
             });
             router.push('/dashboard/tutor');
         } catch (err) {

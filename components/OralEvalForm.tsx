@@ -50,13 +50,11 @@ export default function OralEvalForm({ rubric, project, student, graderId, initi
         setSubmitting(true);
         try {
             await api.submissions.submitOral({
-                id: crypto.randomUUID(),
                 projectId: project.id,
                 studentId: student.id,
                 graderId: graderId,
                 blockScores,
-                timeScore: selectedTimeRange !== -1 ? rubric.timeRanges[selectedTimeRange].score : 0,
-                submittedAt: new Date().toISOString()
+                timeScore: selectedTimeRange !== -1 ? rubric.timeRanges[selectedTimeRange].score : 0
             });
             router.push('/dashboard/tribunal');
         } catch (err) {

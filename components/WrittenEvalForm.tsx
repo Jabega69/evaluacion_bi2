@@ -58,13 +58,11 @@ export default function WrittenEvalForm({ rubric, project, student, graderId, in
         setSubmitting(true);
         try {
             await api.submissions.submitWritten({
-                id: crypto.randomUUID(),
                 projectId: project.id,
                 studentId: student.id,
                 graderId: graderId,
                 contentScores,
-                formatScores,
-                submittedAt: new Date().toISOString()
+                formatScores
             });
             router.push('/dashboard/tribunal');
         } catch (err) {
