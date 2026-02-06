@@ -160,6 +160,7 @@ export default function OralEvalForm({ rubric, project, student, graderId, initi
                                         backgroundColor: 'white'
                                     }}
                                     value={blockScores[item.id] !== undefined ? blockScores[item.id] : ''}
+                                    onWheel={(e) => e.currentTarget.blur()}
                                     onChange={(e) => {
                                         const val = Math.min(item.maxScore, Math.max(0, Number(e.target.value)));
                                         setBlockScores(prev => ({ ...prev, [item.id]: val }));

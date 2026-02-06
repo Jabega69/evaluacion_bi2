@@ -215,6 +215,7 @@ export default function WrittenEvalForm({ rubric, project, student, graderId, in
                                             backgroundColor: '#F8FAFC'
                                         }}
                                         value={contentScores[item.id] || ''}
+                                        onWheel={(e) => e.currentTarget.blur()}
                                         onChange={(e) => {
                                             const val = Math.min(10, Math.max(0, Number(e.target.value)));
                                             setContentScores(prev => ({ ...prev, [item.id]: val }));
