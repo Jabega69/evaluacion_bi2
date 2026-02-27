@@ -157,6 +157,89 @@ export const generateDetailedPDF = (
     }
 };
 
+export const generateStudentPDF = (
+    reportData: any,
+    project: Project,
+    studentName: string,
+    preview: boolean = false
+) => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let yPos = 20;
+
+    // --- Header (Logo IES PRADO) ---
+    try {
+        // Logo del IES (actualizado con nueva imagen de 798x192, ratio 4.15)
+        // 180mm de ancho -> 43.3mm de alto
+        doc.addImage('/logo-ies.png', 'JPEG', 15, 10, 180, 43.3);
+    } catch (e) {
+        // Fallback si falla la imagen
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('IES PRADO MAYOR', 15, 20);
+    }
+
+    yPos += 40;
+
+    // Línea horizontal decorativa
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.1);
+    doc.line(15, yPos, pageWidth - 15, yPos);
+
+    yPos += 15;
+
+    // --- Title ---
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INFORME DE EVALUACIÓN DETALLADA', pageWidth / 2, yPos, { align: 'center' });
+    yPos += 15;
+
+    // --- Section 1: Identification Data ---
+    autoTable(doc, {
+        startY: yPos,
+        head: [['1.- DATOS DE IDENTIFICACIÓN']],
+        body: [
+            ['PROYECTO: ' + project.title],
+            ['ALUMNO/A: ' + studentName],
+            ['FECHA DE PRESENTACIÓN: ' + (project.presentationDate ? new Date(project.presentationDate).toLocaleDateString('es-ES') : 'No asignada')],
+            ['LUGAR: ' + (project.presentationLocation || 'No asignado')],
+            ['FECHA DE GENERACIÓN: ' + new Date().toLocaleDateString('es-ES')],
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [211, 211, 211], textColor: [0, 0, 0], fontStyle: 'bold' },
+        styles: { fontSize: 10, cellPadding: 3 },
+    });
+    // @ts-ignore
+    yPos = doc.lastAutoTable.finalY + 10;
+
+    // --- Section 2: Summary of Scores ---
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('2.- RESUMEN DE PUNTUACIONES', 20, yPos);
+    yPos += 5;
+
+    autoTable(doc, {
+        startY: yPos,
+        head: [['Componente', 'Peso', 'Nota (Base 10)', 'Puntos Finales']],
+        body: [
+            ['Memoria Escrita', '50%', reportData.written.score.toFixed(2), reportData.written.final.toFixed(2)],
+            ['Defensa Oral', '30%', reportData.oral.score.toFixed(2), reportData.oral.final.toFixed(2)],
+            ['Seguimiento Tutoría', '20%', reportData.tutor.score.toFixed(2), reportData.tutor.final.toFixed(2)],
+            [{ content: 'NOTA FINAL (Sobre 10)', colSpan: 3, styles: { fontStyle: 'bold', halign: 'right' } }, { content: reportData.total, styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } }],
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [211, 211, 211], textColor: [0, 0, 0], fontStyle: 'bold' },
+        styles: { fontSize: 10, cellPadding: 3 },
+    });
+
+    // Output the PDF
+    if (preview) {
+        window.open(doc.output('bloburl'), '_blank');
+    } else {
+        doc.save(`Informe_Alumno_${studentName.replace(/\\s+/g, '_')}_${new Date().getTime()}.pdf`);
+    }
+};
+
 export const generateProjectListPDF = (projects: Project[]) => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { generateDetailedPDF } from '@/lib/pdf-generator';
+import { generateDetailedPDF, generateStudentPDF } from '@/lib/pdf-generator';
 
 
 interface Props {
@@ -75,6 +75,15 @@ export default function ReportView({ project }: Props) {
         );
     };
 
+    const handleExportStudentPDF = (preview: boolean = false) => {
+        if (!reportData || !project) return;
+        generateStudentPDF(
+            reportData,
+            project,
+            studentName,
+            preview
+        );
+    };
 
     const studentName = project.students.find(s => s.id === selectedStudentId)?.name || 'Estudiante';
 
@@ -160,6 +169,29 @@ export default function ReportView({ project }: Props) {
                     >
                         👁️ PDF
                     </button>
+
+                    {isAdmin && (
+                        <button
+                            onClick={() => handleExportStudentPDF(true)}
+                            style={{
+                                padding: '0.4rem 0.75rem',
+                                borderRadius: '12px',
+                                fontWeight: 900,
+                                fontSize: '0.65rem',
+                                backgroundColor: 'white',
+                                color: '#2563EB',
+                                border: '1px solid #DBEAFE',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.04em',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                            }}
+                        >
+                            👁️ Pdf para alumno /a
+                        </button>
+                    )}
 
                     <button
                         onClick={() => handleExportPDF(false)}
@@ -458,7 +490,7 @@ export default function ReportView({ project }: Props) {
                                                             </div>
                                                             <div>
                                                                 <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1E293B' }}>{ev.graderName}</div>
-                                                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94A3B8',  }}>
+                                                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94A3B8', }}>
                                                                     {ev.type === "written" ? "Escrita" : (ev.type === "oral" ? "Oral" : "Tutoría")}
                                                                 </div>
                                                             </div>
