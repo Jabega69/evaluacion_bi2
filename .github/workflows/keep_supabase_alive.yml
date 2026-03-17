@@ -1,0 +1,17 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    - cron: '0 0 */4 * *' # Cada 4 días
+  workflow_dispatch: # Ejecución manual
+
+jobs:
+  ping_db:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: |
+          CLEAN_URL=$(echo "${{ secrets.SUPABASE_URL }}" | sed 's:/*$::')
+          curl -i -s -X GET "$CLEAN_URL/rest/v1/health_check?select=*" \
+          -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
