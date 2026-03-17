@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Project, User } from '@/types';
 import Link from 'next/link';
+import { generateAllGradesPDF } from '@/lib/pdf-generator';
 
 // Ucademy-inspired palettes
 const CARD_VARIANTS = [
@@ -18,6 +19,7 @@ export default function AdminDashboard() {
     const [allUsers, setAllUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
 
     // Form state
     const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -140,6 +142,23 @@ export default function AdminDashboard() {
         });
     };
 
+    const handleExportAllGrades = async () => {
+        setIsExporting(true);
+        try {
+            const gradesData = await api.projects.getAllStudentsGrades();
+            if (gradesData && gradesData.length > 0) {
+                generateAllGradesPDF(gradesData);
+            } else {
+                alert('No se encontraron calificaciones o estudiantes para exportar.');
+            }
+        } catch (error) {
+            console.error('Error exportando calificaciones:', error);
+            alert('Ocurrió un error al generar el PDF global.');
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-[80vh]">
             <div className="w-16 h-16 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin mb-4"></div>
@@ -174,28 +193,66 @@ export default function AdminDashboard() {
                     Panel de <span style={{ color: '#2563EB' }}>Investigaciones</span> 🔬
                 </h1>
 
-                <button
-                    onClick={() => { resetForm(); setShowModal(true); }}
-                    style={{
-                        background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                        color: 'white',
-                        padding: '1rem 2.5rem',
-                        borderRadius: '50px',
-                        fontSize: '1.25rem',
-                        fontWeight: 800,
-                        border: 'none',
-                        cursor: 'pointer',
-                        boxShadow: '0 10px 20px -5px rgba(37, 99, 235, 0.4)',
-                        transition: 'all 0.2s',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.75rem'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <span style={{ fontSize: '1.5rem' }}>+</span> Nueva Investigación
-                </button>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <button
+                        onClick={() => { resetForm(); setShowModal(true); }}
+                        style={{
+                            background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                            color: 'white',
+                            padding: '1rem 2.5rem',
+                            borderRadius: '50px',
+                            fontSize: '1.25rem',
+                            fontWeight: 800,
+                            border: 'none',
+                            cursor: 'pointer',
+                            boxShadow: '0 10px 20px -5px rgba(37, 99, 235, 0.4)',
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                        <span style={{ fontSize: '1.5rem' }}>+</span> Nueva Investigación
+                    </button>
+
+                    <button
+                        onClick={handleExportAllGrades}
+                        disabled={isExporting}
+                        style={{
+                            background: 'white',
+                            color: isExporting ? '#94A3B8' : '#059669',
+                            padding: '1rem 2.5rem',
+                            borderRadius: '50px',
+                            fontSize: '1.25rem',
+                            fontWeight: 800,
+                            border: isExporting ? '2px solid #E2E8F0' : '2px solid #059669',
+                            cursor: isExporting ? 'not-allowed' : 'pointer',
+                            boxShadow: isExporting ? 'none' : '0 10px 20px -5px rgba(5, 150, 105, 0.2)',
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem'
+                        }}
+                        onMouseOver={(e) => !isExporting && (e.currentTarget.style.transform = 'translateY(-2px)')}
+                        onMouseOut={(e) => !isExporting && (e.currentTarget.style.transform = 'translateY(0)')}
+                    >
+                        {isExporting ? (
+                            <div style={{ 
+                                width: '20px', 
+                                height: '20px', 
+                                border: '3px solid #E2E8F0', 
+                                borderTop: '3px solid #94A3B8', 
+                                borderRadius: '50%', 
+                                animation: 'spin 1s linear infinite' 
+                            }}></div>
+                        ) : (
+                            <span style={{ fontSize: '1.5rem' }}>📑</span>
+                        )}
+                        {isExporting ? 'Generando...' : 'Exportar Notas'}
+                    </button>
+                </div>
             </div>
 
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>

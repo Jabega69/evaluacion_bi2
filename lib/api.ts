@@ -323,6 +323,76 @@ export const api = {
                 total: (writtenScore * 0.5 + oralScore * 0.3 + tutorScore * 0.2).toFixed(2),
                 evaluations: detailedEvals
             };
+        },
+        getAllStudentsGrades: async () => {
+            // Obtenemos todos los proyectos con sus alumnos
+            const { data: projects, error: projectsError } = await supabase
+                .from('projects')
+                .select(`id, title, students (*)`);
+
+            // Obtenemos todas las evaluaciones
+            const { data: evals, error: evalsError } = await supabase
+                .from('evaluations')
+                .select('*');
+
+            if (projectsError || evalsError || !projects || !evals) {
+                console.error("Error fetching data for grades report");
+                return [];
+            }
+
+            const calcMean = (arr: any[]) => {
+                if (arr.length === 0) return 0;
+                const total = arr.reduce((acc, curr) => {
+                    let subtotal = 0;
+                    if (curr.type === 'written') {
+                        const contentTotal = Object.values(curr.scores.contentScores || {}).reduce((a: any, b: any) => a + (Number(b) || 0), 0);
+                        const formatTotal = Object.values(curr.scores.formatScores || {}).filter(v => v === true).length;
+                        subtotal = (contentTotal as number / 13) * 0.9 + (formatTotal / 6) * 10 * 0.1;
+                    } else if (curr.type === 'oral') {
+                        const blocksTotal = Object.values(curr.scores.blockScores || {}).reduce((a: any, b: any) => a + (Number(b) || 0), 0);
+                        subtotal = (blocksTotal as number) + (Number(curr.scores.timeScore) || 0);
+                    } else if (curr.type === 'tutor') {
+                        subtotal = Object.values(curr.scores.scores || {}).reduce((a: any, b: any) => a + (Number(b) || 0), 0) as number;
+                    }
+                    return acc + subtotal;
+                }, 0);
+                return total / arr.length;
+            };
+
+            const results: any[] = [];
+
+            // Procesar cada proyecto y alumno
+            projects.forEach((project: any) => {
+                const projectEvals = evals.filter((e: any) => e.project_id === project.id);
+                const students = project.students || [];
+
+                students.forEach((student: any) => {
+                    const studentEvals = projectEvals.filter((e: any) => e.student_id === student.id);
+                    
+                    const writtenEvals = studentEvals.filter((e: any) => e.type === 'written');
+                    const oralEvals = studentEvals.filter((e: any) => e.type === 'oral');
+                    const tutorEvals = studentEvals.filter((e: any) => e.type === 'tutor');
+
+                    const writtenScore = calcMean(writtenEvals);
+                    const oralScore = calcMean(oralEvals);
+                    const tutorScore = calcMean(tutorEvals);
+                    const totalScore = (writtenScore * 0.5) + (oralScore * 0.3) + (tutorScore * 0.2);
+
+                    results.push({
+                        studentName: student.name,
+                        projectName: project.title,
+                        writtenScore: writtenScore,
+                        oralScore: oralScore,
+                        tutorScore: tutorScore,
+                        totalScore: totalScore
+                    });
+                });
+            });
+
+            // Ordenar alfabéticamente por nombre de alumno
+            results.sort((a, b) => a.studentName.localeCompare(b.studentName));
+            
+            return results;
         }
     },
 

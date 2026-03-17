@@ -318,3 +318,74 @@ export const generateProjectListPDF = (projects: Project[]) => {
     const fileNameDate = new Date().toISOString().split('T')[0];
     doc.save(`Listado_Proyectos_${fileNameDate}.pdf`);
 };
+
+export const generateAllGradesPDF = (gradesData: any[]) => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let yPos = 20;
+
+    // --- Header (Logo IES PRADO) ---
+    try {
+        doc.addImage('/logo-ies.png', 'JPEG', 15, 10, 180, 43.3);
+    } catch (e) {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('IES PRADO MAYOR', 15, 20);
+    }
+
+    yPos += 45;
+
+    // Línea horizontal decorativa
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.1);
+    doc.line(15, yPos, pageWidth - 15, yPos);
+
+    yPos += 15;
+
+    // --- Title ---
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CALIFICACIONES GLOBALES DEL ALUMNADO', pageWidth / 2, yPos, { align: 'center' });
+    yPos += 15;
+
+    autoTable(doc, {
+        startY: yPos,
+        head: [['Alumno/a', 'Proyecto', 'Escrita (50%)', 'Oral (30%)', 'Tutoría (20%)', 'Nota Final']],
+        body: gradesData.map(d => [
+            d.studentName,
+            d.projectName,
+            d.writtenScore.toFixed(2),
+            d.oralScore.toFixed(2),
+            d.tutorScore.toFixed(2),
+            d.totalScore.toFixed(2)
+        ]),
+        theme: 'grid',
+        headStyles: {
+            fillColor: [37, 99, 235], // Blue-600
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            lineColor: [226, 232, 240], // slate-200
+            lineWidth: 0.5
+        },
+        styles: {
+            fontSize: 9,
+            cellPadding: 5,
+            valign: 'middle',
+            lineColor: [226, 232, 240],
+            lineWidth: 0.5,
+            textColor: [51, 65, 85] // slate-700
+        },
+        alternateRowStyles: { fillColor: [248, 250, 252] }, // slate-50
+        columnStyles: {
+            0: { cellWidth: 50, fontStyle: 'bold', textColor: [15, 23, 42] }, // slate-900
+            1: { cellWidth: 60 },
+            2: { cellWidth: 20, halign: 'center' },
+            3: { cellWidth: 20, halign: 'center' },
+            4: { cellWidth: 20, halign: 'center' },
+            5: { cellWidth: 20, halign: 'center', fontStyle: 'bold', textColor: [5, 150, 105] } // emerald-600 para la nota final
+        }
+    });
+
+    const fileNameDate = new Date().toISOString().split('T')[0];
+    doc.save(`Calificaciones_Globales_${fileNameDate}.pdf`);
+};
