@@ -10,16 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Debug secrets        # ← AÑADIDO
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        run: |
-          echo "URL length: ${#SUPABASE_URL}"
-          echo "KEY length: ${#SUPABASE_ANON_KEY}"
-          echo "URL starts with: ${SUPABASE_URL:0:15}"
-
-      - name: Ping Supabase        # ← EL QUE YA TENÍAS
+      - name: Ping Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -33,7 +24,6 @@ jobs:
             -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
             -H "Accept: application/json")
           echo "📡 HTTP status: $HTTP_STATUS"
-          echo "📄 Respuesta: $(cat response.txt)"
           if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
             echo "✅ Supabase activo"
           else
