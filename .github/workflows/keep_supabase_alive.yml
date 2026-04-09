@@ -28,7 +28,7 @@ jobs:
           echo "🌐 Haciendo ping a Supabase..."
           HTTP_STATUS=$(curl -s -o response.txt -w "%{http_code}" \
             --max-time 15 \
-            "$CLEAN_URL/rest/v1/evaluaciones?select=id&limit=1" \
+            "$CLEAN_URL/rest/v1/evaluations?select=id&limit=1" \
             -H "apikey: $SUPABASE_ANON_KEY" \
             -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
             -H "Accept: application/json")
