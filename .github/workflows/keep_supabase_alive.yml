@@ -2,47 +2,41 @@ name: Keep Supabase Alive
 
 on:
   schedule:
-    - cron: '0 0 */4 * *' # Cada 4 días
-  workflow_dispatch: # Ejecución manual
+    - cron: '0 0 */4 * *'
+  workflow_dispatch:
 
 jobs:
   ping_db:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Ping Supabase
+      - name: Debug secrets        # ← AÑADIDO
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          echo "🔍 Verificando secrets..."
+          echo "URL length: ${#SUPABASE_URL}"
+          echo "KEY length: ${#SUPABASE_ANON_KEY}"
+          echo "URL starts with: ${SUPABASE_URL:0:15}"
 
-          if [ -z "$SUPABASE_URL" ]; then
-            echo "❌ Error: SUPABASE_URL no está configurado"
-            exit 1
-          fi
-
-          if [ -z "$SUPABASE_ANON_KEY" ]; then
-            echo "❌ Error: SUPABASE_ANON_KEY no está configurado"
-            exit 1
-          fi
-
-          # Eliminar trailing slash si existe
+      - name: Ping Supabase        # ← EL QUE YA TENÍAS
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
           CLEAN_URL="${SUPABASE_URL%/}"
-
           echo "🌐 Haciendo ping a Supabase..."
-
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+          HTTP_STATUS=$(curl -s -o response.txt -w "%{http_code}" \
             --max-time 15 \
-            "$CLEAN_URL/rest/v1/" \
+            "$CLEAN_URL/rest/v1/evaluaciones?select=id&limit=1" \
             -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
-
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Accept: application/json")
           echo "📡 HTTP status: $HTTP_STATUS"
-
+          echo "📄 Respuesta: $(cat response.txt)"
           if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
-            echo "✅ Supabase está activo y respondiendo correctamente"
+            echo "✅ Supabase activo"
           else
-            echo "❌ Supabase respondió con status inesperado: $HTTP_STATUS"
+            echo "❌ Status inesperado: $HTTP_STATUS"
             exit 1
           fi
