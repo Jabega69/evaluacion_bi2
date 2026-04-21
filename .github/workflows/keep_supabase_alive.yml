@@ -15,35 +15,11 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          CLEAN_URL="${SUPABASE_URL%/}"
-          echo "🌐 Haciendo ping a Supabase..."
-          HTTP_STATUS=$(curl -s -o response.txt -w "%{http_code}" \
-            --max-time 15 \
-            "$CLEAN_URL/rest/v1/evaluations?select=id&limit=1" \
-            -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
-            -H "Accept: application/json")
-          echo "📡 HTTP status: $HTTP_STATUS"
-          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
-            echo "✅ Supabase activo"
-          else
-            echo "❌ Status inesperado: $HTTP_STATUS"
-            exit 1
-          fi
-          run: |
-          CLEAN_URL="${SUPABASE_URL%/}"
-          echo "🔍 URL que se usará: $CLEAN_URL"
-          echo "🌐 Haciendo ping a Supabase..."
-          HTTP_STATUS=$(curl -s -o response.txt -w "%{http_code}" \
-            --max-time 15 \
-            "$CLEAN_URL/rest/v1/evaluations?select=id&limit=1" \
-            -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
-            -H "Accept: application/json")
-          echo "📡 HTTP status: $HTTP_STATUS"
-          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
-            echo "✅ Supabase activo"
-          else
-            echo "❌ Status inesperado: $HTTP_STATUS"
-            exit 1
-          fi
+          echo "URL length: ${#SUPABASE_URL}"
+          echo "🌐 Haciendo ping..."
+          curl -f --max-time 15 \
+            "${SUPABASE_URL}/rest/v1/evaluations?select=id&limit=1" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            -H "Accept: application/json"
+          echo "✅ Supabase activo"
