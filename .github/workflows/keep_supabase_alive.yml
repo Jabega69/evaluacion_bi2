@@ -2,25 +2,41 @@ name: Keep Supabase Alive
 
 on:
   schedule:
-    - cron: '0 0 */2 * *'
-  workflow_dispatch:
+    - cron: '0 9 * * *'   # diario a las 09:00 UTC
+  workflow_dispatch:        # permite lanzarlo a mano
 
 jobs:
-  ping_db:
+  ping:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 5
     steps:
-      - name: Ping Supabase
+      - name: Insert + cleanup keep_alive row
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          echo "🕐 Iniciando ping a Supabase..."
-          
-          curl -f --max-time 15 --retry 3 --retry-delay 10 \
-            "${SUPABASE_URL}/rest/v1/evaluations?select=id&limit=1" \
+          set -euo pipefail
+          echo "::group::Keep-alive ping $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+
+          # 1. INSERT — escritura real en Postgres
+          echo "→ Insertando fila..."
+          curl --fail-with-body --retry 3 --retry-delay 10 --silent --show-error \
+            -X POST "${SUPABASE_URL}/rest/v1/keep_alive" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
             -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
-            -H "Accept: application/json"
-          
-          echo "✅ Supabase activo - $(date -u)"
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d '{}'
+          echo ""
+
+          # 2. DELETE — borra filas de más de 7 días
+          echo "→ Limpiando filas antiguas..."
+          CUTOFF=$(date -u -d '7 days ago' -Iseconds)
+          curl --fail-with-body --retry 3 --retry-delay 10 --silent --show-error \
+            -X DELETE "${SUPABASE_URL}/rest/v1/keep_alive?pinged_at=lt.${CUTOFF}" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}"
+          echo ""
+
+          echo "✅ Keep-alive completado"
+          echo "::endgroup::"
