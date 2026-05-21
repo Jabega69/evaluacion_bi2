@@ -16,7 +16,7 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           set -euo pipefail
-          echo "Keep-alive ping $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          echo "Keep-alive ping $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
 
           echo "Insertando fila..."
           curl --fail-with-body --retry 3 --retry-delay 10 --silent --show-error \
@@ -25,7 +25,13 @@ jobs:
             -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
             -H "Content-Type: application/json" \
             -H "Prefer: return=representation" \
-            -d '{}'
+            -d "{}"
 
           echo "Limpiando filas antiguas..."
-          CUTOFF=$(date -u -d '7 da
+          CUTOFF=$(date -u -d "7 days ago" +"%Y-%m-%dT%H:%M:%SZ")
+          curl --fail-with-body --retry 3 --retry-delay 10 --silent --show-error \
+            -X DELETE "${SUPABASE_URL}/rest/v1/keep_alive?pinged_at=lt.${CUTOFF}" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}"
+
+          echo "Keep-alive completado"
