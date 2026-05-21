@@ -1,16 +1,4 @@
-name: Keep Supabase Alive
-
-on:
-  schedule:
-    - cron: '0 9 * * *'   # diario a las 09:00 UTC
-  workflow_dispatch:        # permite lanzarlo a mano
-
-jobs:
-  ping:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Insert + cleanup keep_alive row
+- name: Insert + cleanup keep_alive row
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -18,7 +6,6 @@ jobs:
           set -euo pipefail
           echo "::group::Keep-alive ping $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
 
-          # 1. INSERT — escritura real en Postgres
           echo "→ Insertando fila..."
           curl --fail-with-body --retry 3 --retry-delay 10 --silent --show-error \
             -X POST "${SUPABASE_URL}/rest/v1/keep_alive" \
@@ -29,9 +16,8 @@ jobs:
             -d '{}'
           echo ""
 
-          # 2. DELETE — borra filas de más de 7 días
           echo "→ Limpiando filas antiguas..."
-          CUTOFF=$(date -u -d '7 days ago' -Iseconds)
+          CUTOFF=$(date -u -d '7 days ago' +'%Y-%m-%dT%H:%M:%SZ')
           curl --fail-with-body --retry 3 --retry-delay 10 --silent --show-error \
             -X DELETE "${SUPABASE_URL}/rest/v1/keep_alive?pinged_at=lt.${CUTOFF}" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
